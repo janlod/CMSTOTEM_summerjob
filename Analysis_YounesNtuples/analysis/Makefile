@@ -4,7 +4,7 @@ ROOTCFLAGS := $(shell root-config --cflags)
 ROOTLIBS := $(shell root-config --glibs)
 
 TARGET = exe_ana
-SRCS = main.cc analysis.cc
+SRCS = analysis.cc
 OBJS = $(SRCS:.cc=.o)
 
 all: $(TARGET)

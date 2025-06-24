@@ -62,7 +62,13 @@ void analysis(){
         std::string filebasename = filename.erase(filename.size() - 5);
         
         // Put the analysis tool here that you want to use
-        dz_dist(tree, filebasename);
+        dxy_dist(tree, filebasename);
         }
     }
+
+
+int main() {
+    analysis();
+    return 0;
+}
 

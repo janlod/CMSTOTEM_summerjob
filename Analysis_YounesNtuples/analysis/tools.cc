@@ -217,5 +217,109 @@ void dz_dist(TTree *tree, std::string filebasename){
 }
 
 
+void dz_eta_correl(TTree *tree, std::string filebasename){
+    Float_t trk_dz[1000], trk_eta[1000];
+    Int_t ntrk;
+
+    tree->SetBranchAddress("trk_dz", trk_dz);
+    tree->SetBranchAddress("trk_eta", trk_eta);
+    tree->SetBranchAddress("ntrk", &ntrk);
+        
+    TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
+    TH2F* hist2d = new TH2F(("dz vs eta from " + filebasename).c_str(), "dz eta correl", 400, -0.5, 0.5, 400, -3.0, 3.0);
+    hist2d->GetXaxis()->SetTitle("dz");
+    hist2d->GetYaxis()->SetTitle("#eta");
+    //c1->SetLogy();
+
+    Long64_t nentries = tree->GetEntries();
+    Int_t counter4 = 0;
+    for (Int_t i = 0; i < nentries; i++) {
+        tree->GetEntry(i);
+        if(ntrk == 4){
+            for(Int_t i_trk = 0; i_trk < ntrk; i_trk++){
+                hist2d->Fill(trk_dz[i_trk], trk_eta[i_trk]);
+            }
+            
+            counter4++;
+        }
+    }
+    std::cout<< counter4 << std::endl;
+    hist2d->Draw();                
+    c1->SaveAs(("plots/dz_eta_correl/dz_eta_" + filebasename + ".png").c_str());
+    delete hist2d;
+    delete c1;
+}
+
+
+void dxy_phi_correl(TTree *tree, std::string filebasename){
+    Float_t trk_dxy[1000], trk_phi[1000];
+    Int_t ntrk;
+
+    tree->SetBranchAddress("trk_dxy", trk_dxy);
+    tree->SetBranchAddress("trk_phi", trk_phi);
+    tree->SetBranchAddress("ntrk", &ntrk);
+        
+    TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
+    TH2F* hist2d = new TH2F(("dxy vs phi from " + filebasename).c_str(), "dxy phi correl", 400, -0.3, 0.3, 400, -3.14, 3.14);
+    hist2d->GetXaxis()->SetTitle("dxy");
+    hist2d->GetYaxis()->SetTitle("#phi");
+    //c1->SetLogy();
+
+    Long64_t nentries = tree->GetEntries();
+    Int_t counter4 = 0;
+    for (Int_t i = 0; i < nentries; i++) {
+        tree->GetEntry(i);
+        if(ntrk == 4){
+            for(Int_t i_trk = 0; i_trk < ntrk; i_trk++){
+                hist2d->Fill(trk_dxy[i_trk], trk_phi[i_trk]);
+            }
+            
+            counter4++;
+        }
+    }
+    std::cout<< counter4 << std::endl;
+    hist2d->Draw();                
+    c1->SaveAs(("plots/dxy_phi_correl/dxy_phi_" + filebasename + ".png").c_str());
+    delete hist2d;
+    delete c1;
+}
+
+
+void dxy_dist(TTree *tree, std::string filebasename){
+    Float_t trk_dxy[1000], trk_dxyerr[1000];
+    Int_t ntrk;
+
+    tree->SetBranchAddress("trk_dxy", trk_dxy);
+    tree->SetBranchAddress("trk_dxyerr", trk_dxyerr);
+    tree->SetBranchAddress("ntrk", &ntrk);
+        
+    TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
+    TH1F* hist1d = new TH1F(("dxy from" + filebasename).c_str(), "dxy", 400, 0.0, 0.15);
+    hist1d->GetXaxis()->SetTitle("dxy");
+    //c1->SetLogy();
+
+    Long64_t nentries = tree->GetEntries();
+    Int_t counter4 = 0;
+    for (Int_t i = 0; i < nentries; i++) {
+        tree->GetEntry(i);
+        if(ntrk == 4){
+            for(Int_t i_trk = 0; i_trk < ntrk; i_trk++){
+                //Choose what to plot
+                //hist1d->Fill(trk_dxy[i_trk]);
+                hist1d->Fill(trk_dxyerr[i_trk]);
+            }
+            
+            counter4++;
+        }
+    }
+    std::cout<< counter4 << std::endl;
+    hist1d->Draw("E1");                
+    c1->SaveAs(("plots/dxyerr_dist/dxy_" + filebasename + ".png").c_str());
+    delete hist1d;
+    delete c1;
+}
+
+
+
             
         
