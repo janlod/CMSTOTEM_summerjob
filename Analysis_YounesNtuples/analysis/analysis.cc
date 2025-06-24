@@ -62,7 +62,7 @@ void analysis(){
         std::string filebasename = filename.erase(filename.size() - 5);
         
         // Put the analysis tool here that you want to use
-        primVertex_dist(tree, filebasename, 4);
+        dz_dist(tree, filebasename);
         }
     }
 
