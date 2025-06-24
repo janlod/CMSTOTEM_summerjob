@@ -1,0 +1,84 @@
+rm -f analysis.o exe_ana
+g++ -O2 -Wall -std=c++17 -pthread -std=c++17 -m64 -I/usr/include/root -c analysis.cc -o analysis.o
+g++ -O2 -Wall -std=c++17 analysis.o -o exe_ana -L/usr/lib64/root -lGui -lCore -lImt -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lROOTVecOps -lTree -lTreePlayer -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lROOTNTuple -lMultiProc -lROOTDataFrame -lROOTNTupleUtil -pthread -lm -ldl -rdynamic
+./exe_ana
+Fit for TOTEM20.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      43586.5
+NDf                       =          397
+Edm                       =  2.25014e-06
+NCalls                    =           73
+Constant                  =       8494.4   +/-   13.2822     
+Mean                      =  -2.0423e-05   +/-   0.00086546  
+Sigma                     =       0.7974   +/-   0.000897323  	 (limited)
+Fit for TOTEM21.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      44277.2
+NDf                       =          397
+Edm                       =  3.01811e-08
+NCalls                    =           74
+Constant                  =      8609.72   +/-   13.3756     
+Mean                      = -0.000360567   +/-   0.000859052 
+Sigma                     =     0.796305   +/-   0.00088996   	 (limited)
+Fit for TOTEM22.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      43790.1
+NDf                       =          397
+Edm                       =   1.4002e-09
+NCalls                    =           76
+Constant                  =      8458.23   +/-   13.2736     
+Mean                      =  0.000397761   +/-   0.000868464 
+Sigma                     =     0.799533   +/-   0.000905346  	 (limited)
+Fit for TOTEM23.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      43207.6
+NDf                       =          397
+Edm                       =  1.24516e-09
+NCalls                    =           76
+Constant                  =      8420.06   +/-   13.2111     
+Mean                      = -0.000935783   +/-   0.000870278 
+Sigma                     =     0.799253   +/-   0.000902649  	 (limited)
+Fit for TOTEM40.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      42881.9
+NDf                       =          397
+Edm                       =   1.5196e-06
+NCalls                    =           73
+Constant                  =      8982.87   +/-   13.6462     
+Mean                      =   0.00024006   +/-   0.000839059 
+Sigma                     =     0.792596   +/-   0.00086334   	 (limited)
+Fit for TOTEM41.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      41613.1
+NDf                       =          397
+Edm                       =  2.19422e-08
+NCalls                    =           74
+Constant                  =      8982.14   +/-   13.5582     
+Mean                      = -0.000668658   +/-   0.000839985 
+Sigma                     =     0.794287   +/-   0.00085529   	 (limited)
+Fit for TOTEM42.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      42374.9
+NDf                       =          397
+Edm                       =  5.25864e-09
+NCalls                    =           76
+Constant                  =      8991.81   +/-   13.6272     
+Mean                      =  0.000561334   +/-   0.000837995 
+Sigma                     =     0.791376   +/-   0.000857788  	 (limited)
+Fit for TOTEM43.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      42615.1
+NDf                       =          397
+Edm                       =  4.82821e-09
+NCalls                    =           76
+Constant                  =      8988.08   +/-   13.6514     
+Mean                      = -0.000150191   +/-   0.000837684 
+Sigma                     =     0.790437   +/-   0.00085979   	 (limited)

@@ -12,6 +12,7 @@
 #include "TGraphErrors.h"
 #include "TLatex.h"
 #include "TLine.h"
+#include "TPaveText.h"
 #include "TMinuit.h"
 #include "TStyle.h"
 #include "TProfile.h"
@@ -62,7 +63,9 @@ void analysis(){
         std::string filebasename = filename.erase(filename.size() - 5);
         
         // Put the analysis tool here that you want to use
-        dxy_dist(tree, filebasename);
+
+        //dxy_dist(tree, filebasename);
+        dz_dist(tree, filebasename);
         }
     }
 
