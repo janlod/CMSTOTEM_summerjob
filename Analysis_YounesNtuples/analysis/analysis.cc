@@ -57,7 +57,7 @@ void analysis(){
     int listSize = fileList.size();
     for (int ifile=0; ifile<listSize; ifile++){
         std::string filename = fileList.at(ifile);
-        TFile *rootfile = new TFile(("../YounesNtuples/" + filename).c_str(), "read");
+        TFile *rootfile = new TFile(("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/" + filename).c_str(), "read");
         TTree *tree = (TTree*)rootfile->Get("tree");
 
         std::string filebasename = filename.erase(filename.size() - 5);
@@ -65,7 +65,8 @@ void analysis(){
         // Put the analysis tool here that you want to use
 
         //dxy_dist(tree, filebasename);
-        dz_dist(tree, filebasename);
+        //dz_dist(tree, filebasename);
+        p_dist(tree, filebasename);
         }
     }
 
