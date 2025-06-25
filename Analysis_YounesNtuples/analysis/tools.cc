@@ -31,6 +31,7 @@
 #include "math.h"
 #include "math.h"
 #include "stdlib.h"
+#include <cstdlib> 
 
 // This needs to be shortened and optimised, especially the option selction, right now very much code duplication
 void primVertex_dist(TTree *tree, std::string filebasename, int option){
@@ -417,6 +418,121 @@ void p_dist(TTree *tree, std::string filebasename){
     delete hist1d;
     delete c1;
 }
+
+//Printing array for testing purposes
+void print(int arr[4][2][3]){ 
+    for(int i=0; i<4; i++){
+        for(int j=0; j<2; j++){
+            for(int k=0; k<3; k++){
+                std::cout << "Array entry "<<i<<" "<<j<<" "<<k<<" : "<< arr[i][j][k]<<std::endl; 
+            }
+        }
+    }
+}
+
+//For debugging
+bool isParticlesNonZero(int arr[4][2][3]) {
+    int* flat = &arr[0][0][0];
+    for (int i = 0; i < 4 * 2 * 3; ++i) {
+        if (flat[i] != 0) return true;
+    }
+    return false;
+}
+
+bool is4trksPiKP(int arr[4][2][3]){
+    int* flat = &arr[0][0][0];
+    int entrycounter = 0;
+    for (int i = 0; i < 4 * 2 * 3; ++i) {
+        if (flat[i] != 0) entrycounter++;
+    }
+    if(entrycounter == 4) return true;
+    return false;
+}
+
+
+
+void loopers(TTree *tree, std::string filebasename){
+    Float_t trk_p[1000];
+    Int_t ntrk;
+    Int_t trk_q[1000], trk_isK[1000], trk_isPi[1000], trk_isP[1000];
+
+    tree->SetBranchAddress("trk_p", trk_p);
+    tree->SetBranchAddress("trk_q", trk_q);
+    tree->SetBranchAddress("trk_isK", trk_isK);
+    tree->SetBranchAddress("trk_isPi", trk_isPi);
+    tree->SetBranchAddress("trk_isP", trk_isP);
+    tree->SetBranchAddress("ntrk", &ntrk);
+
+    // TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
+    // TH1F* hist1 = new TH1F(("Pairing 1 from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 4);
+    // hist1->GetXaxis()->SetTitle("|p3+p4|/m");
+
+    // TCanvas *c2 = new TCanvas("Figure","Figure",1000,800);
+    // TH1F* hist2 = new TH1F(("Pairing 2 from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 4);
+    // hist2->GetXaxis()->SetTitle("|p3+p4|/m");
+
+    // Mass of possible particles in Mev taken from particle data group
+    Float_t massPi = 139.570; 
+    Float_t massK = 493.677;
+    Float_t massP = 938.272;
+
+    /**
+    Multidimensional array holds 
+    and whether particle is Pion Kaon or proton (encoded bz 0 or 1) 
+    particles[trk number][charge][what kind of particle]
+    can be 1 or 0*/
+    Long64_t nentries = tree->GetEntries();
+    int counter4trks = 0;
+    int nice4trks = 0;
+    for(int event=0; event<nentries; event++){
+        tree->GetEntry(event);
+        int particles[4][2][3] {0};
+        
+        if(ntrk == 4){
+            counter4trks++;
+            for(int itrk=0; itrk<ntrk; itrk++){
+                //check if charge has expected values
+                if(trk_q[itrk]!=1 && trk_q[itrk]!=-1){
+                    std::cerr <<"Unexpected charge +1 or -1 expected" << std::endl;
+                    exit(0);
+                }
+                if(trk_isPi[itrk]!=0){
+                    if(trk_q[itrk]==1){
+                        particles[itrk][1][0] = 1;
+                    }else{
+                        particles[itrk][0][0] = 1;
+                    }   
+                }else if(trk_isK[itrk]!=0){
+                    if(trk_q[itrk]==1){
+                        particles[itrk][1][1] = 1;
+                    }else{
+                        particles[itrk][0][1] = 1;
+                    }   
+                }else if(trk_isP[itrk]!=0){
+                    if(trk_q[itrk]==1){
+                        particles[itrk][1][2] = 1;
+                    }else if(trk_q[itrk]==-1){
+                       particles[itrk][0][2] = 1;
+                    }   
+                }  
+            }
+        if(is4trksPiKP(particles)){
+            print(particles); 
+            nice4trks++;
+        }
+        
+        
+        }
+        
+
+        // Pairing the particles
+    }
+    std::cout<<nice4trks<<std::endl; 
+
+}
+
+
+
 
 
 

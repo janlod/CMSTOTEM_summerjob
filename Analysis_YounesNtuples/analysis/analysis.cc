@@ -66,7 +66,8 @@ void analysis(){
 
         //dxy_dist(tree, filebasename);
         //dz_dist(tree, filebasename);
-        p_dist(tree, filebasename);
+        //p_dist(tree, filebasename);
+        loopers(tree, filebasename);
         }
     }
 
