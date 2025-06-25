@@ -484,42 +484,45 @@ void loopers(TTree *tree, std::string filebasename){
     Long64_t nentries = tree->GetEntries();
     int counter4trks = 0;
     int nice4trks = 0;
+    int pioncounter = 0;
+    int protoncounter = 0;
+    int kaoncounter = 0;
     for(int event=0; event<nentries; event++){
         tree->GetEntry(event);
         int particles[4][2][3] {0};
         
         if(ntrk == 4){
             counter4trks++;
-            for(int itrk=0; itrk<ntrk; itrk++){
-                //check if charge has expected values
-                if(trk_q[itrk]!=1 && trk_q[itrk]!=-1){
-                    std::cerr <<"Unexpected charge +1 or -1 expected" << std::endl;
-                    exit(0);
-                }
-                if(trk_isPi[itrk]!=0){
-                    if(trk_q[itrk]==1){
-                        particles[itrk][1][0] = 1;
-                    }else{
-                        particles[itrk][0][0] = 1;
-                    }   
-                }else if(trk_isK[itrk]!=0){
-                    if(trk_q[itrk]==1){
-                        particles[itrk][1][1] = 1;
-                    }else{
-                        particles[itrk][0][1] = 1;
-                    }   
-                }else if(trk_isP[itrk]!=0){
-                    if(trk_q[itrk]==1){
-                        particles[itrk][1][2] = 1;
-                    }else if(trk_q[itrk]==-1){
-                       particles[itrk][0][2] = 1;
-                    }   
-                }  
-            }
-        if(is4trksPiKP(particles)){
-            print(particles); 
-            nice4trks++;
-        }
+            // for(int itrk=0; itrk<ntrk; itrk++){
+            //     //check if charge has expected values
+            //     if(trk_q[itrk]!=1 && trk_q[itrk]!=-1){
+            //         std::cerr <<"Unexpected charge +1 or -1 expected" << std::endl;
+            //         exit(0);
+            //     }
+            //     if(trk_isPi[itrk]!=0){
+            //         pioncounter++;
+            //         if(trk_q[itrk]==1){
+            //             particles[itrk][1][0] = 1;
+            //         }else{
+            //             particles[itrk][0][0] = 1;
+            //         }   
+            //     }else if(trk_isK[itrk]!=0){
+            //         kaoncounter++;
+            //         if(trk_q[itrk]==1){
+            //             particles[itrk][1][1] = 1;
+            //         }else{
+            //             particles[itrk][0][1] = 1;
+            //         }   
+            //     }else if(trk_isP[itrk]!=0){
+            //         protoncounter++;
+            //         if(trk_q[itrk]==1){
+            //             particles[itrk][1][2] = 1;
+            //         }else if(trk_q[itrk]==-1){
+            //            particles[itrk][0][2] = 1;
+            //         }   
+            //     }  
+            // }
+            
         
         
         }
@@ -527,7 +530,10 @@ void loopers(TTree *tree, std::string filebasename){
 
         // Pairing the particles
     }
-    std::cout<<nice4trks<<std::endl; 
+    std::cout<<pioncounter<<std::endl;
+    std::cout<<kaoncounter<<std::endl;
+    std::cout<<protoncounter<<std::endl;
+
 
 }
 
