@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
 #include <map>
 #include <fstream>
 #include <string>
@@ -64,11 +65,26 @@ void primVertex_dist(TTree *tree, std::string filebasename, int option){
 
         gausFit->SetLineColor(kRed);
         gausFit->SetLineWidth(2);
+
+        double amplitude = gausFit->GetParameter(0);
+        double mean      = gausFit->GetParameter(1);
+        double sigma     = gausFit->GetParameter(2);
+
+
+        TPaveText* pave = new TPaveText(0.125, 0.7, 0.425, 0.88, "NDC"); 
+        pave->SetFillColor(0);     
+        pave->SetTextAlign(12);    
+        pave->SetTextSize(0.03);   
+        pave->AddText(Form("Gaussian Fit:"));
+        pave->AddText(Form("Mean = %.3f", mean));
+        pave->AddText(Form("Sigma = %.3f", sigma));
+        pave->AddText(Form("Amplitude = %.1f", amplitude));
           
         hist1d->Draw("E1");
         gausFit->Draw("same"); 
+        pave->Draw("same");
         //c1->SaveAs(("plots/zPV_dist/zPV_" + filebasename + ".png").c_str());
-        c1->SaveAs(("zPV_" + filebasename + ".png").c_str());
+        c1->SaveAs(("plots/zPV_dist/zPV_" + filebasename + ".png").c_str());
 
 
         delete hist1d;
@@ -420,7 +436,7 @@ void p_dist(TTree *tree, std::string filebasename){
 }
 
 //Printing array for testing purposes
-void print(int arr[4][2][3]){ 
+void print(std::array<std::array<std::array<int, 3>, 2>, 4> arr){ 
     for(int i=0; i<4; i++){
         for(int j=0; j<2; j++){
             for(int k=0; k<3; k++){
@@ -431,7 +447,7 @@ void print(int arr[4][2][3]){
 }
 
 //For debugging
-bool isParticlesNonZero(int arr[4][2][3]) {
+bool isParticlesNonZero(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
     int* flat = &arr[0][0][0];
     for (int i = 0; i < 4 * 2 * 3; ++i) {
         if (flat[i] != 0) return true;
@@ -439,7 +455,7 @@ bool isParticlesNonZero(int arr[4][2][3]) {
     return false;
 }
 
-bool is4trksPiKP(int arr[4][2][3]){
+bool is4trksPiKP(std::array<std::array<std::array<int, 3>, 2>, 4> arr){
     int* flat = &arr[0][0][0];
     int entrycounter = 0;
     for (int i = 0; i < 4 * 2 * 3; ++i) {
@@ -451,7 +467,11 @@ bool is4trksPiKP(int arr[4][2][3]){
 
 
 
+using Array3D = std::array<std::array<std::array<int, 3>, 2>, 4>;
+std::vector<Array3D> arr_vec;
+
 void loopers(TTree *tree, std::string filebasename){
+    arr_vec.clear();
     Float_t trk_p[1000];
     Int_t ntrk;
     Int_t trk_q[1000], trk_isK[1000], trk_isPi[1000], trk_isP[1000];
@@ -476,53 +496,60 @@ void loopers(TTree *tree, std::string filebasename){
     Float_t massK = 493.677;
     Float_t massP = 938.272;
 
+
+    
     /**
     Multidimensional array holds 
     and whether particle is Pion Kaon or proton (encoded bz 0 or 1) 
     particles[trk number][charge][what kind of particle]
     can be 1 or 0*/
     Long64_t nentries = tree->GetEntries();
-    int counter4trks = 0;
-    int nice4trks = 0;
-    int pioncounter = 0;
-    int protoncounter = 0;
-    int kaoncounter = 0;
+    int counter4 = 0;
     for(int event=0; event<nentries; event++){
         tree->GetEntry(event);
-        int particles[4][2][3] {0};
+        std::array<std::array<std::array<int, 3>, 2>, 4> particles {0};
+        
         
         if(ntrk == 4){
-            counter4trks++;
-            // for(int itrk=0; itrk<ntrk; itrk++){
-            //     //check if charge has expected values
-            //     if(trk_q[itrk]!=1 && trk_q[itrk]!=-1){
-            //         std::cerr <<"Unexpected charge +1 or -1 expected" << std::endl;
-            //         exit(0);
-            //     }
-            //     if(trk_isPi[itrk]!=0){
-            //         pioncounter++;
-            //         if(trk_q[itrk]==1){
-            //             particles[itrk][1][0] = 1;
-            //         }else{
-            //             particles[itrk][0][0] = 1;
-            //         }   
-            //     }else if(trk_isK[itrk]!=0){
-            //         kaoncounter++;
-            //         if(trk_q[itrk]==1){
-            //             particles[itrk][1][1] = 1;
-            //         }else{
-            //             particles[itrk][0][1] = 1;
-            //         }   
-            //     }else if(trk_isP[itrk]!=0){
-            //         protoncounter++;
-            //         if(trk_q[itrk]==1){
-            //             particles[itrk][1][2] = 1;
-            //         }else if(trk_q[itrk]==-1){
-            //            particles[itrk][0][2] = 1;
-            //         }   
-            //     }  
+            counter4++;
+            for(int itrk=0; itrk<ntrk; itrk++){
+                //check if charge has expected values
+                if(trk_q[itrk]!=1 && trk_q[itrk]!=-1){
+                    std::cerr <<"Unexpected charge +1 or -1 expected" << std::endl;
+                    exit(0);
+                }
+                if(trk_isPi[itrk]!=0){
+                    if(trk_q[itrk]==1){
+                        //std::cout<<"Pi- detected"<<std::endl;
+                        particles[itrk][1][0] = 1;
+                    }else{
+                        //std::cout<<"Pi- detected"<<std::endl;
+                        particles[itrk][0][0] = 1;
+                    }   
+                }else if(trk_isK[itrk]!=0){
+                    if(trk_q[itrk]==1){
+                        //std::cout<<"K+ detected"<<std::endl;
+                        particles[itrk][1][1] = 1;
+                    }else{
+                        //std::cout<<"K+ detected"<<std::endl;
+                        particles[itrk][0][1] = 1;
+                    }   
+                }else if(trk_isP[itrk]!=0){
+                    if(trk_q[itrk]==1){
+                        //std::cout<<"p+ detected"<<std::endl;
+                        particles[itrk][1][2] = 1;
+                    }else if(trk_q[itrk]==-1){
+                        //std::cout<<"p- detected"<<std::endl;
+                       particles[itrk][0][2] = 1;
+                    }   
+                }  
+            }
+            // if(isParticlesNonZero(particles)){
+            //     arr_vec.push_back(particles);
             // }
-            
+            if(is4trksPiKP(particles)){
+                arr_vec.push_back(particles);
+            }
         
         
         }
@@ -530,12 +557,15 @@ void loopers(TTree *tree, std::string filebasename){
 
         // Pairing the particles
     }
-    std::cout<<pioncounter<<std::endl;
-    std::cout<<kaoncounter<<std::endl;
-    std::cout<<protoncounter<<std::endl;
-
-
+    
+// if(arr_vec.size() == 0){
+//     std::cout<<arr_vec.size()<<std::endl;
+// }else{
+//     std::cout<<arr_vec.size()<<std::endl;
+//     print(arr_vec.at(0));
+// }
 }
+
 
 
 

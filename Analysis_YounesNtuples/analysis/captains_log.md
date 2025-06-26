@@ -11,3 +11,6 @@
 
 - June 24 17:14:
     Implmented everything from Tracks in CMS Tracker part of glueball_study_topics doc except last two bullet points
+
+- June 25 16:50:
+    Worked on analysis for loopers
