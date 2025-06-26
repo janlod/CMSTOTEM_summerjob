@@ -418,8 +418,6 @@ void p_dist(TTree *tree, std::string filebasename){
         tree->GetEntry(i);
         if(ntrk == 4){
             for(Int_t i_trk = 0; i_trk < ntrk; i_trk++){
-                //Choose what to plot
-                //hist1d->Fill(trk_dxy[i_trk]);
                 hist1d->Fill(trk_p[i_trk]);
             }
             
@@ -445,24 +443,13 @@ void print(std::array<std::array<std::array<int, 3>, 2>, 4> arr){
     }
 }
 
-//For debugging
-bool isParticlesNonZero(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
-    int* flat = &arr[0][0][0];
-    int entrycounter = 0;
-    for (int i = 0; i < 4 * 2 * 3; ++i) {
-        if (flat[i] != 0) entrycounter++;
-    }if (entrycounter!=0) return true;
-    return false;
-}
-
-bool is4trksPiKP(std::array<std::array<std::array<int, 3>, 2>, 4> arr){
+int countNonzeroEntries(std::array<std::array<std::array<int, 3>, 2>, 4> arr){
     int* flat = &arr[0][0][0];
     int entrycounter = 0;
     for (int i = 0; i < 4 * 2 * 3; ++i) {
         if (flat[i] != 0) entrycounter++;
     }
-    if(entrycounter == 4) return true;
-    return false;
+    return entrycounter;
 }
 
 
@@ -523,17 +510,11 @@ void loopers(TTree *tree, std::string filebasename){
     TH1F* hist1 = new TH1F(("Pairing 1 from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 0.05);
     hist1->GetXaxis()->SetTitle("|p3+p4|/m");
 
-    // TCanvas *c2 = new TCanvas("Figure","Figure",1000,800);
-    // TH1F* hist2 = new TH1F(("Pairing 2 from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 4);
-    // hist2->GetXaxis()->SetTitle("|p3+p4|/m");
-
     // Mass of possible particles in Mev taken from particle data group
     Float_t massPi = 139.570; 
     Float_t massK = 493.677;
     Float_t massP = 938.272;
 
-
-    
     /**
     Multidimensional array holds information on what track is which particle and charge
     particles[trk number][charge][what kind of particle]
@@ -546,8 +527,6 @@ void loopers(TTree *tree, std::string filebasename){
         tree->GetEntry(event);
         std::array<std::array<std::array<int, 3>, 2>, 4> particles {0};
         
-
-
         if(ntrk == 4){
             counter4++;
             for(int itrk=0; itrk<ntrk; itrk++){
@@ -582,16 +561,15 @@ void loopers(TTree *tree, std::string filebasename){
                     }   
                 }  
             }
-            // if(isParticlesNonZero(particles)){
-            //     arr_vec.push_back(particles);
-            // }
+        
             if(countPions(particles) == 2){
                 pionPairCounter++;
             }
             if(countPions(particles) == 4){
                 counter4Pions++;
             }
-            if(is4trksPiKP(particles)){
+
+            if(countNonzeroEntries(particles) == 4){
                 arr_vec.push_back(particles);
             }
         
@@ -625,12 +603,22 @@ void loopers(TTree *tree, std::string filebasename){
     }
 
     int pions = 0;
+    int kaons = 0;
+    int protons = 0;
     for(std::array<std::array<std::array<int, 3>, 2>, 4> val : arr_vec){
         pions+=countPions(val);
+        kaons+=countKaons(val);
+        protons+=countProtons(val);
     }
-    std::cout<<pions<<std::endl;
-    hist1->Draw();
-    c1->SaveAs(("plots/pion_loopers/Pionloopers_" + filebasename + ".png").c_str());
+    int all4identified = arr_vec.size();
+
+    std::cout<<"Selecting events with all 4 tracks identified as Pi, K or p"<<std::endl;
+    std::cout<<"Total # of selected events: " << all4identified<<std::endl;
+    std::cout<<"Total # of Pions in selected events: "<<pions<<std::endl;
+    std::cout<<"Total # of Kaons in selected events: "<<kaons<<std::endl;
+    std::cout<<"Total # of Protons in selected events: "<<protons<<std::endl;
+    // hist1->Draw();
+    // c1->SaveAs(("plots/pion_loopers/Pionloopers_" + filebasename + ".png").c_str());
 }
 
 
