@@ -1,0 +1,5 @@
+Plots where created by demanding 
+ntrks == 4
+# Pions == 2
+one Pi+ and one Pi- each
+then plotted |p_{Pi+} + p_{Pi-}|/m_{Pi}

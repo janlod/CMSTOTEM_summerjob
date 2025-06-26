@@ -64,11 +64,11 @@ void analysis(){
         
         // Put the analysis tool here that you want to use
 
-        primVertex_dist(tree, filebasename, 3);
+        //primVertex_dist(tree, filebasename, 3);
         //dxy_dist(tree, filebasename);
         //dz_dist(tree, filebasename);
         //p_dist(tree, filebasename);
-        //loopers(tree, filebasename);
+        loopers(tree, filebasename);
         }
     }
 

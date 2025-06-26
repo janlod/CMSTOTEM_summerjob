@@ -83,7 +83,6 @@ void primVertex_dist(TTree *tree, std::string filebasename, int option){
         hist1d->Draw("E1");
         gausFit->Draw("same"); 
         pave->Draw("same");
-        //c1->SaveAs(("plots/zPV_dist/zPV_" + filebasename + ".png").c_str());
         c1->SaveAs(("plots/zPV_dist/zPV_" + filebasename + ".png").c_str());
 
 
@@ -449,9 +448,10 @@ void print(std::array<std::array<std::array<int, 3>, 2>, 4> arr){
 //For debugging
 bool isParticlesNonZero(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
     int* flat = &arr[0][0][0];
+    int entrycounter = 0;
     for (int i = 0; i < 4 * 2 * 3; ++i) {
-        if (flat[i] != 0) return true;
-    }
+        if (flat[i] != 0) entrycounter++;
+    }if (entrycounter!=0) return true;
     return false;
 }
 
@@ -465,6 +465,42 @@ bool is4trksPiKP(std::array<std::array<std::array<int, 3>, 2>, 4> arr){
     return false;
 }
 
+
+int countPions(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
+    int count = 0;
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            if (arr[i][j][0] != 0) {
+                ++count;
+            }
+        }
+    }
+    return count;
+}
+
+int countKaons(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
+    int count = 0;
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            if (arr[i][j][1] != 0) {
+                ++count;
+            }
+        }
+    }
+    return count;
+}
+
+int countProtons(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
+    int count = 0;
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            if (arr[i][j][2] != 0) {
+                ++count;
+            }
+        }
+    }
+    return count;
+}
 
 
 using Array3D = std::array<std::array<std::array<int, 3>, 2>, 4>;
@@ -483,9 +519,9 @@ void loopers(TTree *tree, std::string filebasename){
     tree->SetBranchAddress("trk_isP", trk_isP);
     tree->SetBranchAddress("ntrk", &ntrk);
 
-    // TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
-    // TH1F* hist1 = new TH1F(("Pairing 1 from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 4);
-    // hist1->GetXaxis()->SetTitle("|p3+p4|/m");
+    TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
+    TH1F* hist1 = new TH1F(("Pairing 1 from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 0.05);
+    hist1->GetXaxis()->SetTitle("|p3+p4|/m");
 
     // TCanvas *c2 = new TCanvas("Figure","Figure",1000,800);
     // TH1F* hist2 = new TH1F(("Pairing 2 from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 4);
@@ -499,17 +535,19 @@ void loopers(TTree *tree, std::string filebasename){
 
     
     /**
-    Multidimensional array holds 
-    and whether particle is Pion Kaon or proton (encoded bz 0 or 1) 
+    Multidimensional array holds information on what track is which particle and charge
     particles[trk number][charge][what kind of particle]
     can be 1 or 0*/
     Long64_t nentries = tree->GetEntries();
     int counter4 = 0;
+    int counter4Pions = 0;
+    int pionPairCounter = 0;
     for(int event=0; event<nentries; event++){
         tree->GetEntry(event);
         std::array<std::array<std::array<int, 3>, 2>, 4> particles {0};
         
-        
+
+
         if(ntrk == 4){
             counter4++;
             for(int itrk=0; itrk<ntrk; itrk++){
@@ -520,7 +558,7 @@ void loopers(TTree *tree, std::string filebasename){
                 }
                 if(trk_isPi[itrk]!=0){
                     if(trk_q[itrk]==1){
-                        //std::cout<<"Pi- detected"<<std::endl;
+                        //std::cout<<"Pi+ detected"<<std::endl;
                         particles[itrk][1][0] = 1;
                     }else{
                         //std::cout<<"Pi- detected"<<std::endl;
@@ -547,23 +585,52 @@ void loopers(TTree *tree, std::string filebasename){
             // if(isParticlesNonZero(particles)){
             //     arr_vec.push_back(particles);
             // }
+            if(countPions(particles) == 2){
+                pionPairCounter++;
+            }
+            if(countPions(particles) == 4){
+                counter4Pions++;
+            }
             if(is4trksPiKP(particles)){
                 arr_vec.push_back(particles);
             }
         
         
         }
-        
 
+        
+        int poscounter=0;
+        int negcounter=0;
+        int trkpos=6;
+        int trkneg=6;
         // Pairing the particles
+        if(countPions(particles) == 2){
+            for(int itrk=0; itrk<ntrk; itrk++){
+                if(particles[itrk][0][0]!=0){
+                    trkneg = itrk;
+                    negcounter++;
+                }else if(particles[itrk][1][0]!=0){
+                    trkpos = itrk;
+                    poscounter++;
+                }
+            }
+            // std::cout<<"Pi- track: "<<trkneg<<std::endl;
+            // std::cout<<"Pi+ track: "<<trkpos<<std::endl;
+            // std::cout<<"# of Pi+: "<<poscounter<<std::endl;
+            // std::cout<<"# of Pi-: "<<negcounter<<std::endl;
+        }
+        if(poscounter==1 && negcounter==1){
+            hist1->Fill(abs(trk_p[trkpos] + trk_p[trkneg])/massPi);
+        }
     }
-    
-// if(arr_vec.size() == 0){
-//     std::cout<<arr_vec.size()<<std::endl;
-// }else{
-//     std::cout<<arr_vec.size()<<std::endl;
-//     print(arr_vec.at(0));
-// }
+
+    int pions = 0;
+    for(std::array<std::array<std::array<int, 3>, 2>, 4> val : arr_vec){
+        pions+=countPions(val);
+    }
+    std::cout<<pions<<std::endl;
+    hist1->Draw();
+    c1->SaveAs(("plots/pion_loopers/Pionloopers_" + filebasename + ".png").c_str());
 }
 
 
