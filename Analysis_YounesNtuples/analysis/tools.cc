@@ -304,8 +304,31 @@ void dz_eta_correl(TTree *tree, std::string filebasename){
     delete c1;
 }
 
+TH1D* CropHistogram(TH1D* h_original, double x_min, double x_max) {
+    // Get bin range corresponding to x_min and x_max
+    int bin_min = h_original->FindBin(x_min);
+    int bin_max = h_original->FindBin(x_max);
 
-void dxy_phi_correl(TTree *tree, std::string filebasename){
+    int new_nbins = bin_max - bin_min + 1;
+    double new_xmin = h_original->GetBinLowEdge(bin_min);
+    double new_xmax = h_original->GetBinLowEdge(bin_max + 1); // upper edge
+
+    // Create cropped histogram
+    TH1D* h_cropped = new TH1D("h_cropped", "Cropped Histogram;X;Entries", new_nbins, new_xmin, new_xmax);
+
+    for (int i = 1; i <= new_nbins; ++i) {
+        int original_bin = bin_min + i - 1;
+        double content = h_original->GetBinContent(original_bin);
+        double error = h_original->GetBinError(original_bin);
+        h_cropped->SetBinContent(i, content);
+        h_cropped->SetBinError(i, error);
+    }
+
+    return h_cropped;
+}
+
+
+void dxy_phi_correl(TTree *tree, std::string filebasename, bool cut){
     Float_t trk_dxy[1000], trk_phi[1000];
     Int_t ntrk;
 
@@ -317,6 +340,10 @@ void dxy_phi_correl(TTree *tree, std::string filebasename){
     TH2F* hist2d = new TH2F(("dxy vs phi from " + filebasename).c_str(), "dxy phi correl", 400, -0.3, 0.3, 400, -3.14, 3.14);
     hist2d->GetXaxis()->SetTitle("dxy");
     hist2d->GetYaxis()->SetTitle("#phi");
+
+    TF1* gausFit = new TF1("gausFit", "gaus", -0.02, 0.02);
+    
+
     //c1->SetLogy();
 
     Long64_t nentries = tree->GetEntries();
@@ -327,13 +354,29 @@ void dxy_phi_correl(TTree *tree, std::string filebasename){
             for(Int_t i_trk = 0; i_trk < ntrk; i_trk++){
                 hist2d->Fill(trk_dxy[i_trk], trk_phi[i_trk]);
             }
-            
             counter4++;
         }
     }
     std::cout<< counter4 << std::endl;
-    hist2d->Draw();                
-    c1->SaveAs(("plots/dxy_phi_correl/dxy_phi_" + filebasename + ".png").c_str());
+    //hist2d->Draw();              
+    //c1->SaveAs(("plots/dxy_phi_correl/dxy_phi_" + filebasename + ".png").c_str());
+     if(cut){
+            TH1D *histslice = hist2d->ProjectionX("slice");
+            histslice->Fit(gausFit, "R");
+           
+            double mean      = gausFit->GetParameter(1);
+            double sigma     = gausFit->GetParameter(2);
+            TH1D *cuttedHisto = CropHistogram(histslice, mean-3*sigma, mean +3*sigma);
+            gausFit->SetLineColor(kRed);
+            gausFit->SetLineWidth(2);
+
+            // cuttedHisto->Draw();
+            // gausFit->Draw("same");
+            //histslice->Draw();
+            cuttedHisto->Draw();
+
+        }
+    c1->SaveAs("test.png");
     delete hist2d;
     delete c1;
 }
@@ -528,13 +571,10 @@ void loopers_4trks(TTree *tree, std::string filebasename){
     arr_vec.clear();
     Float_t trk_p[1000];
     Int_t ntrk;
-    Int_t trk_q[1000], trk_isK[1000], trk_isPi[1000], trk_isP[1000];
+    Int_t trk_q[1000];
 
     tree->SetBranchAddress("trk_p", trk_p);
     tree->SetBranchAddress("trk_q", trk_q);
-    tree->SetBranchAddress("trk_isK", trk_isK);
-    tree->SetBranchAddress("trk_isPi", trk_isPi);
-    tree->SetBranchAddress("trk_isP", trk_isP);
     tree->SetBranchAddress("ntrk", &ntrk);
 
     TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
@@ -551,104 +591,31 @@ void loopers_4trks(TTree *tree, std::string filebasename){
     particles[trk number][charge][what kind of particle]
     can be 1 or 0*/
     Long64_t nentries = tree->GetEntries();
-    int counter4 = 0;
     int counter4Pions = 0;
     int pionPairCounter = 0;
     for(int event=0; event<nentries; event++){
         tree->GetEntry(event);
-        std::array<std::array<std::array<int, 3>, 2>, 4> particles {0};
+        std::vector<int> posPart_trk;
+        std::vector<int> negPart_trk;
         
-        if(ntrk == 4){
-            counter4++;
+        if(ntrk == 5){
             for(int itrk=0; itrk<ntrk; itrk++){
-                //check if charge has expected values
-                if(trk_q[itrk]!=1 && trk_q[itrk]!=-1){
-                    std::cerr <<"Unexpected charge +1 or -1 expected" << std::endl;
-                    exit(0);
-                }
-                if(trk_isPi[itrk]!=0){
-                    if(trk_q[itrk]==1){
-                        //std::cout<<"Pi+ detected"<<std::endl;
-                        particles[itrk][1][0] = 1;
-                    }else{
-                        //std::cout<<"Pi- detected"<<std::endl;
-                        particles[itrk][0][0] = 1;
-                    }   
-                }else if(trk_isK[itrk]!=0){
-                    if(trk_q[itrk]==1){
-                        //std::cout<<"K+ detected"<<std::endl;
-                        particles[itrk][1][1] = 1;
-                    }else{
-                        //std::cout<<"K+ detected"<<std::endl;
-                        particles[itrk][0][1] = 1;
-                    }   
-                }else if(trk_isP[itrk]!=0){
-                    if(trk_q[itrk]==1){
-                        //std::cout<<"p+ detected"<<std::endl;
-                        particles[itrk][1][2] = 1;
-                    }else if(trk_q[itrk]==-1){
-                        //std::cout<<"p- detected"<<std::endl;
-                       particles[itrk][0][2] = 1;
-                    }   
-                }  
+               if(trk_q[itrk] == -1){
+                negPart_trk.push_back(itrk);
+                //std::cout<<"Pos"<<std::endl;
+               } else if(trk_q[itrk] == 1){
+                posPart_trk.push_back(itrk);
+                //std::cout<<"Neg"<<std::endl;
+               }
+               if(negPart_trk.size() > ntrk/2 + 1 || posPart_trk.size() > ntrk/2 + 1){
+                    continue;
+               }
+               if(negPart_trk.size() < posPart_trk.size()){
+                    // TBC
+               }
             }
-        
-            if(countPions(particles) == 2){
-                pionPairCounter++;
-            }
-            if(countPions(particles) == 4){
-                counter4Pions++;
-            }
-
-            if(countNonzeroEntries(particles) == 4){
-                arr_vec.push_back(particles);
-            }
-        
-        
-        }
-
-        int poscounter=0;
-        int negcounter=0;
-        int trkpos=6;
-        int trkneg=6;
-        // Pairing the particles
-        if(countPions(particles) == 2){
-            for(int itrk=0; itrk<ntrk; itrk++){
-                if(particles[itrk][0][0]!=0){
-                    trkneg = itrk;
-                    negcounter++;
-                }else if(particles[itrk][1][0]!=0){
-                    trkpos = itrk;
-                    poscounter++;
-                }
-            }
-            // std::cout<<"Pi- track: "<<trkneg<<std::endl;
-            // std::cout<<"Pi+ track: "<<trkpos<<std::endl;
-            // std::cout<<"# of Pi+: "<<poscounter<<std::endl;
-            // std::cout<<"# of Pi-: "<<negcounter<<std::endl;
-        }
-        if(poscounter==1 && negcounter==1){
-            hist1->Fill(abs(trk_p[trkpos] + trk_p[trkneg])/massPi);
-        }
+        } 
     }
-
-    int pions = 0;
-    int kaons = 0;
-    int protons = 0;
-    for(std::array<std::array<std::array<int, 3>, 2>, 4> val : arr_vec){
-        pions+=countPions(val);
-        kaons+=countKaons(val);
-        protons+=countProtons(val);
-    }
-    int all4identified = arr_vec.size();
-
-    // std::cout<<"Selecting events with all 4 tracks identified as Pi, K or p"<<std::endl;
-    // std::cout<<"Total # of selected events: " << all4identified<<std::endl;
-    // std::cout<<"Total # of Pions in selected events: "<<pions<<std::endl;
-    // std::cout<<"Total # of Kaons in selected events: "<<kaons<<std::endl;
-    // std::cout<<"Total # of Protons in selected events: "<<protons<<std::endl;
-    hist1->Draw();
-    c1->SaveAs(("plots/pion_loopers/Pionloopers_loose_" + filebasename + ".png").c_str());
 }
 
 void loopers_2trks(TTree *tree, std::string filebasename){
