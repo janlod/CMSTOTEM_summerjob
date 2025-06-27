@@ -576,7 +576,6 @@ void loopers(TTree *tree, std::string filebasename){
         
         }
 
-        
         int poscounter=0;
         int negcounter=0;
         int trkpos=6;
@@ -612,13 +611,13 @@ void loopers(TTree *tree, std::string filebasename){
     }
     int all4identified = arr_vec.size();
 
-    std::cout<<"Selecting events with all 4 tracks identified as Pi, K or p"<<std::endl;
-    std::cout<<"Total # of selected events: " << all4identified<<std::endl;
-    std::cout<<"Total # of Pions in selected events: "<<pions<<std::endl;
-    std::cout<<"Total # of Kaons in selected events: "<<kaons<<std::endl;
-    std::cout<<"Total # of Protons in selected events: "<<protons<<std::endl;
-    // hist1->Draw();
-    // c1->SaveAs(("plots/pion_loopers/Pionloopers_" + filebasename + ".png").c_str());
+    // std::cout<<"Selecting events with all 4 tracks identified as Pi, K or p"<<std::endl;
+    // std::cout<<"Total # of selected events: " << all4identified<<std::endl;
+    // std::cout<<"Total # of Pions in selected events: "<<pions<<std::endl;
+    // std::cout<<"Total # of Kaons in selected events: "<<kaons<<std::endl;
+    // std::cout<<"Total # of Protons in selected events: "<<protons<<std::endl;
+    hist1->Draw();
+    c1->SaveAs(("plots/pion_loopers/Pionloopers_loose_" + filebasename + ".png").c_str());
 }
 
 
