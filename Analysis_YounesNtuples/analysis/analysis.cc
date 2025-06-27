@@ -65,9 +65,10 @@ void analysis(){
 
         //primVertex_dist(tree, filebasename, 3);
         //dxy_dist(tree, filebasename);
-        //dz_dist(tree, filebasename);
+        dz_dist(tree, filebasename);
         //p_dist(tree, filebasename);
-        loopers(tree, filebasename);
+        //loopers_2trks(tree, filebasename);
+        //pt_eta_correl(tree, filebasename);
         }
     }
 

@@ -5,80 +5,80 @@ g++ -O2 -Wall -std=c++17 analysis.o -o exe_ana -L/usr/lib64/root -lGui -lCore -l
 Fit for TOTEM20.root
 ****************************************
 Minimizer is Minuit2 / Migrad
-Chi2                      =      43586.5
-NDf                       =          397
-Edm                       =  2.25014e-06
-NCalls                    =           73
-Constant                  =       8494.4   +/-   13.2822     
-Mean                      =  -2.0423e-05   +/-   0.00086546  
-Sigma                     =       0.7974   +/-   0.000897323  	 (limited)
+Chi2                      =      2391.03
+NDf                       =           97
+Edm                       =   2.8562e-08
+NCalls                    =           78
+Constant                  =      9797.97   +/-   16.5105     
+Mean                      =  0.000813516   +/-   0.000998618 
+Sigma                     =      0.63614   +/-   0.00127702   	 (limited)
 Fit for TOTEM21.root
 ****************************************
 Minimizer is Minuit2 / Migrad
-Chi2                      =      44277.2
-NDf                       =          397
-Edm                       =  3.01811e-08
-NCalls                    =           74
-Constant                  =      8609.72   +/-   13.3756     
-Mean                      = -0.000360567   +/-   0.000859052 
-Sigma                     =     0.796305   +/-   0.00088996   	 (limited)
+Chi2                      =      2421.26
+NDf                       =           97
+Edm                       =  3.67461e-07
+NCalls                    =           82
+Constant                  =      9929.91   +/-   16.6103     
+Mean                      = -0.000394472   +/-   0.000990584 
+Sigma                     =     0.635496   +/-   0.00126342   	 (limited)
 Fit for TOTEM22.root
 ****************************************
 Minimizer is Minuit2 / Migrad
-Chi2                      =      43790.1
-NDf                       =          397
-Edm                       =   1.4002e-09
-NCalls                    =           76
-Constant                  =      8458.23   +/-   13.2736     
-Mean                      =  0.000397761   +/-   0.000868464 
-Sigma                     =     0.799533   +/-   0.000905346  	 (limited)
+Chi2                      =      2298.16
+NDf                       =           97
+Edm                       =  4.06774e-06
+NCalls                    =           79
+Constant                  =      9786.57   +/-   16.5013     
+Mean                      =  7.08333e-05   +/-   0.000996683 
+Sigma                     =     0.634969   +/-   0.00127166   	 (limited)
 Fit for TOTEM23.root
 ****************************************
 Minimizer is Minuit2 / Migrad
-Chi2                      =      43207.6
-NDf                       =          397
-Edm                       =  1.24516e-09
-NCalls                    =           76
-Constant                  =      8420.06   +/-   13.2111     
-Mean                      = -0.000935783   +/-   0.000870278 
-Sigma                     =     0.799253   +/-   0.000902649  	 (limited)
+Chi2                      =      2252.54
+NDf                       =           97
+Edm                       =  3.18358e-07
+NCalls                    =           79
+Constant                  =      9733.48   +/-   16.4523     
+Mean                      = -0.000962935   +/-   0.000999594 
+Sigma                     =     0.635055   +/-   0.00127491   	 (limited)
 Fit for TOTEM40.root
 ****************************************
 Minimizer is Minuit2 / Migrad
-Chi2                      =      42881.9
-NDf                       =          397
-Edm                       =   1.5196e-06
-NCalls                    =           73
-Constant                  =      8982.87   +/-   13.6462     
-Mean                      =   0.00024006   +/-   0.000839059 
-Sigma                     =     0.792596   +/-   0.00086334   	 (limited)
+Chi2                      =      2117.85
+NDf                       =           97
+Edm                       =  1.35756e-06
+NCalls                    =           81
+Constant                  =        10331   +/-   16.9192     
+Mean                      =  0.000297679   +/-   0.000970132 
+Sigma                     =     0.635002   +/-   0.00123265   	 (limited)
 Fit for TOTEM41.root
 ****************************************
 Minimizer is Minuit2 / Migrad
-Chi2                      =      41613.1
-NDf                       =          397
-Edm                       =  2.19422e-08
-NCalls                    =           74
-Constant                  =      8982.14   +/-   13.5582     
-Mean                      = -0.000668658   +/-   0.000839985 
-Sigma                     =     0.794287   +/-   0.00085529   	 (limited)
+Chi2                      =      2157.47
+NDf                       =           97
+Edm                       =  4.82279e-07
+NCalls                    =           82
+Constant                  =      10284.4   +/-   16.8646     
+Mean                      =  -0.00047037   +/-   0.000982689 
+Sigma                     =     0.639933   +/-   0.00125836   	 (limited)
 Fit for TOTEM42.root
 ****************************************
 Minimizer is Minuit2 / Migrad
-Chi2                      =      42374.9
-NDf                       =          397
-Edm                       =  5.25864e-09
-NCalls                    =           76
-Constant                  =      8991.81   +/-   13.6272     
-Mean                      =  0.000561334   +/-   0.000837995 
-Sigma                     =     0.791376   +/-   0.000857788  	 (limited)
+Chi2                      =      2198.59
+NDf                       =           97
+Edm                       =  3.38341e-06
+NCalls                    =           81
+Constant                  =      10298.3   +/-   16.8912     
+Mean                      =  -0.00105365   +/-   0.0009785   
+Sigma                     =     0.638262   +/-   0.00125117   	 (limited)
 Fit for TOTEM43.root
 ****************************************
 Minimizer is Minuit2 / Migrad
-Chi2                      =      42615.1
-NDf                       =          397
-Edm                       =  4.82821e-09
-NCalls                    =           76
-Constant                  =      8988.08   +/-   13.6514     
-Mean                      = -0.000150191   +/-   0.000837684 
-Sigma                     =     0.790437   +/-   0.00085979   	 (limited)
+Chi2                      =      2136.59
+NDf                       =           97
+Edm                       =  3.94127e-06
+NCalls                    =           79
+Constant                  =        10315   +/-   16.9013     
+Mean                      =  0.000976779   +/-   0.000972037 
+Sigma                     =     0.635555   +/-   0.00123572   	 (limited)

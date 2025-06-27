@@ -59,7 +59,7 @@ void primVertex_dist(TTree *tree, std::string filebasename, int option){
         }
         std::cout<< counter4 << std::endl;
          
-        TF1* gausFit = new TF1("gausFit", "gaus", -15.0, 15.0);
+        TF1* gausFit = new TF1("gausFit", "gaus", -5.0, 5.0);
         std::cout << "Fit for " << filebasename << ".root" <<std::endl;
         hist1d->Fit(gausFit, "R");
 
@@ -239,7 +239,7 @@ void dz_dist(TTree *tree, std::string filebasename){
         }
     }
     //std::cout<< counter4 << std::endl;
-    TF1* gausFit = new TF1("gausFit", "gaus", -4, 4);
+    TF1* gausFit = new TF1("gausFit", "gaus", -1, 1);
     std::cout << "Fit for " << filebasename << ".root" <<std::endl;
     hist1d->Fit(gausFit, "R");
 
@@ -432,6 +432,37 @@ void p_dist(TTree *tree, std::string filebasename){
     delete c1;
 }
 
+
+void pt_eta_correl(TTree *tree, std::string filebasename){
+    Float_t trk_pt[1000], trk_eta[1000];
+    Int_t ntrk;
+
+    tree->SetBranchAddress("trk_pt", trk_pt);
+    tree->SetBranchAddress("trk_eta", trk_eta);
+    tree->SetBranchAddress("ntrk", &ntrk);
+        
+    TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
+    TH2F* hist2d = new TH2F(("pt vs eta from " + filebasename).c_str(), "pt eta correl", 400, 0, 3.0, 400, 0, 3);
+    hist2d->GetXaxis()->SetTitle("pt");
+    hist2d->GetYaxis()->SetTitle("eta");
+    //c1->SetLogy();
+
+    Long64_t nentries = tree->GetEntries();
+    Int_t counter4 = 0;
+    for (Int_t i = 0; i < nentries; i++) {
+        tree->GetEntry(i);
+        if(ntrk == 4){
+            for(Int_t i_trk = 0; i_trk < ntrk; i_trk++){
+                hist2d->Fill(trk_pt[i_trk], trk_eta[i_trk]);
+            }
+        }
+    }
+    std::cout<< counter4 << std::endl;
+    hist2d->Draw();                
+    c1->SaveAs(("plots/pt_dedx_correl/pt_eta_" + filebasename + ".png").c_str());
+    delete hist2d;
+    delete c1;
+}
 //Printing array for testing purposes
 void print(std::array<std::array<std::array<int, 3>, 2>, 4> arr){ 
     for(int i=0; i<4; i++){
@@ -493,7 +524,7 @@ int countProtons(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
 using Array3D = std::array<std::array<std::array<int, 3>, 2>, 4>;
 std::vector<Array3D> arr_vec;
 
-void loopers(TTree *tree, std::string filebasename){
+void loopers_4trks(TTree *tree, std::string filebasename){
     arr_vec.clear();
     Float_t trk_p[1000];
     Int_t ntrk;
@@ -618,6 +649,36 @@ void loopers(TTree *tree, std::string filebasename){
     // std::cout<<"Total # of Protons in selected events: "<<protons<<std::endl;
     hist1->Draw();
     c1->SaveAs(("plots/pion_loopers/Pionloopers_loose_" + filebasename + ".png").c_str());
+}
+
+void loopers_2trks(TTree *tree, std::string filebasename){
+    
+    Float_t trk_p[1000];
+    Int_t ntrk;
+    Int_t trk_q[1000], trk_isK[1000], trk_isPi[1000], trk_isP[1000];
+
+    tree->SetBranchAddress("trk_p", trk_p);
+    tree->SetBranchAddress("trk_q", trk_q);
+    tree->SetBranchAddress("ntrk", &ntrk);
+
+    TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
+    TH1F* hist1 = new TH1F(("2 trk selection from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 5);
+    hist1->GetXaxis()->SetTitle("|p3+p4|/m");
+
+    // Mass of possible particles in Mev taken from particle data group
+    Float_t massPi = 139.570; 
+    Float_t massK = 493.677;
+    Float_t massP = 938.272;
+
+    Long64_t nentries = tree->GetEntries();
+    for (int event=0; event<nentries; event++){
+        tree->GetEntry(event);
+        if(ntrk == 2){
+            hist1->Fill(abs(trk_p[0]+trk_p[1]/massPi));
+        }
+    }
+    hist1->Draw();
+    c1->SaveAs(("plots/loopers_2trks_loose/2trksloopers" + filebasename + ".png").c_str());
 }
 
 

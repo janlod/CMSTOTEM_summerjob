@@ -14,3 +14,6 @@
 
 - June 25 16:50:
     Worked on analysis for loopers
+
+- June 26 17:08:
+    countinued on loopers
