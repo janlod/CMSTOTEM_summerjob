@@ -109,7 +109,7 @@ void cut_dzdzerr(TTree* tree, std::string filebasename){
     double mean = gausFit->GetParameter(1);
     double sigma = gausFit->GetParameter(2);
 
-    Float_t dzcut, dzerrcut;
+    Float_t dzcut[4], dzerrcut[4];
     TFile* outfile = TFile::Open(("cutted_data/dz/dzcutted"+filebasename+".root").c_str(), "RECREATE");
     TTree* outtree = new TTree("tree", "cutted dz and dzerr");
     outtree->Branch("dz", &dzcut, "dz/F");
@@ -119,10 +119,11 @@ void cut_dzdzerr(TTree* tree, std::string filebasename){
         tree->GetEntry(i);
         if(ntrk==4){
             for(int itrk=0; itrk<ntrk; itrk++){
-                if(trk_dz[itrk]/trk_dzerr[itrk] <= mean+3*sigma && trk_dz[itrk]/trk_dzerr[itrk]>= mean-3*sigma);
-                outtree->Fill();
+                if(trk_dz[itrk]/trk_dzerr[itrk] <= mean+3*sigma && trk_dz[itrk]/trk_dzerr[itrk]>= mean-3*sigma){
+                    // incomplete Pay attention to tree structure
+                }
             }
-            
+            outtree->Fill();
         }
     }
     outtree->Write();

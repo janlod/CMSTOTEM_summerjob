@@ -73,12 +73,3 @@ Constant                  =      1704.02   +/-   5.65303
 Mean                      =    -0.338252   +/-   0.0164116   
 Sigma                     =      4.26541   +/-   0.0265084    	 (limited)
 Fit for TOTEM43.root
-****************************************
-Minimizer is Minuit2 / Migrad
-Chi2                      =       2910.9
-NDf                       =          131
-Edm                       =  8.93007e-08
-NCalls                    =           89
-Constant                  =      1694.68   +/-   5.63565     
-Mean                      =    -0.315895   +/-   0.016737    
-Sigma                     =       4.3179   +/-   0.0274929    	 (limited)
