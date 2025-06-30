@@ -517,58 +517,7 @@ void print(std::array<std::array<std::array<int, 3>, 2>, 4> arr){
     }
 }
 
-int countNonzeroEntries(std::array<std::array<std::array<int, 3>, 2>, 4> arr){
-    int* flat = &arr[0][0][0];
-    int entrycounter = 0;
-    for (int i = 0; i < 4 * 2 * 3; ++i) {
-        if (flat[i] != 0) entrycounter++;
-    }
-    return entrycounter;
-}
-
-
-int countPions(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
-    int count = 0;
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 2; ++j) {
-            if (arr[i][j][0] != 0) {
-                ++count;
-            }
-        }
-    }
-    return count;
-}
-
-int countKaons(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
-    int count = 0;
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 2; ++j) {
-            if (arr[i][j][1] != 0) {
-                ++count;
-            }
-        }
-    }
-    return count;
-}
-
-int countProtons(std::array<std::array<std::array<int, 3>, 2>, 4> arr) {
-    int count = 0;
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 2; ++j) {
-            if (arr[i][j][2] != 0) {
-                ++count;
-            }
-        }
-    }
-    return count;
-}
-
-
-using Array3D = std::array<std::array<std::array<int, 3>, 2>, 4>;
-std::vector<Array3D> arr_vec;
-
 void loopers_4trks(TTree *tree, std::string filebasename){
-    arr_vec.clear();
     Float_t trk_p[1000];
     Int_t ntrk;
     Int_t trk_q[1000];
@@ -577,9 +526,47 @@ void loopers_4trks(TTree *tree, std::string filebasename){
     tree->SetBranchAddress("trk_q", trk_q);
     tree->SetBranchAddress("ntrk", &ntrk);
 
+
+    float minbin = 0;
+    float maxbin = 0.1;
+    int nbin = 400;
     TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
-    TH1F* hist1 = new TH1F(("Pairing 1 from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 0.05);
+    TH1F* hist1 = new TH1F(("Pairing 1 from" + filebasename).c_str(), "|p3+p4|/m", nbin, minbin, maxbin);
+    TH1F* hist2 = new TH1F(("Pairing 2 from" + filebasename).c_str(), "|p3+p4|/m", nbin, minbin, maxbin);
+    TH1F* hist3 = new TH1F(("Pairing 3 from" + filebasename).c_str(), "|p3+p4|/m", nbin, minbin, maxbin);
+    TH1F* hist4 = new TH1F(("Pairing 4 from" + filebasename).c_str(), "|p3+p4|/m", nbin, minbin, maxbin);
+    TH1F* hist5 = new TH1F(("Pairing 5 from" + filebasename).c_str(), "|p3+p4|/m", nbin, minbin, maxbin);
+    TH1F* hist6 = new TH1F(("Pairing 6 from" + filebasename).c_str(), "|p3+p4|/m", nbin, minbin, maxbin);
+    
     hist1->GetXaxis()->SetTitle("|p3+p4|/m");
+    hist1->SetMaximum(1.3e3);
+
+    hist2->GetXaxis()->SetTitle("|p3+p4|/m");
+    hist2->SetLineColor(kRed);
+    
+    hist3->GetXaxis()->SetTitle("|p3+p4|/m");
+    hist3->SetLineColor(kGreen);
+    
+    hist4->GetXaxis()->SetTitle("|p3+p4|/m");
+    hist4->SetLineColor(kViolet);
+    
+    hist5->GetXaxis()->SetTitle("|p3+p4|/m");
+    hist5->SetLineColor(kCyan);
+    
+    hist6->GetXaxis()->SetTitle("|p3+p4|/m");
+    hist6->SetLineColor(kOrange);
+
+    TLegend *legend = new TLegend(0.45, 0.7, 0.55, 0.88);
+    legend->SetBorderSize(0);
+    legend->SetFillStyle(0);
+
+    legend->AddEntry(hist1, "Pairing 1", "l");
+    legend->AddEntry(hist2, "Pairing 2", "l");
+    legend->AddEntry(hist3, "Pairing 3", "l");
+    legend->AddEntry(hist4, "Pairing 4", "l");
+    legend->AddEntry(hist5, "Pairing 5", "l");
+    legend->AddEntry(hist6, "Pairing 6", "l");
+
 
     // Mass of possible particles in Mev taken from particle data group
     Float_t massPi = 139.570; 
@@ -607,15 +594,75 @@ void loopers_4trks(TTree *tree, std::string filebasename){
                 posPart_trk.push_back(itrk);
                 //std::cout<<"Neg"<<std::endl;
                }
-               if(negPart_trk.size() > ntrk/2 + 1 || posPart_trk.size() > ntrk/2 + 1){
-                    continue;
-               }
-               if(negPart_trk.size() < posPart_trk.size()){
-                    // TBC
-               }
             }
+
+            if(negPart_trk.size() > ntrk/2 + 1 || posPart_trk.size() > ntrk/2 + 1){
+                continue;
+            }
+            if(negPart_trk.size() < posPart_trk.size()){
+                Float_t p3 = trk_p[negPart_trk.at(0)];
+                Float_t p4 = trk_p[posPart_trk.at(0)];
+                hist1->Fill(abs(p3+p4)/massPi);
+
+                p3 = trk_p[negPart_trk.at(0)];
+                p4 = trk_p[posPart_trk.at(1)];
+                hist2->Fill(abs(p3+p4)/massPi);
+                
+                p3 = trk_p[negPart_trk.at(0)];
+                p4 = trk_p[posPart_trk.at(2)];
+                hist3->Fill(abs(p3+p4)/massPi);
+
+                p3 = trk_p[negPart_trk.at(1)];
+                p4 = trk_p[posPart_trk.at(0)];
+                hist4->Fill(abs(p3+p4)/massPi);
+
+                p3 = trk_p[negPart_trk.at(1)];
+                p4 = trk_p[posPart_trk.at(1)];
+                hist5->Fill(abs(p3+p4)/massPi);
+
+                p3 = trk_p[negPart_trk.at(1)];
+                p4 = trk_p[posPart_trk.at(2)];
+                hist6->Fill(abs(p3+p4)/massPi);
+            }else if(negPart_trk.size() > posPart_trk.size()){
+                Float_t p3 = trk_p[posPart_trk.at(0)];
+                Float_t p4 = trk_p[negPart_trk.at(0)];
+                hist1->Fill(abs(p3+p4)/massPi);
+
+                p3 = trk_p[posPart_trk.at(0)];
+                p4 = trk_p[negPart_trk.at(1)];
+                hist2->Fill(abs(p3+p4)/massPi);
+                
+                p3 = trk_p[posPart_trk.at(0)];
+                p4 = trk_p[negPart_trk.at(2)];
+                hist3->Fill(abs(p3+p4)/massPi);
+
+                p3 = trk_p[posPart_trk.at(1)];
+                p4 = trk_p[negPart_trk.at(0)];
+                hist4->Fill(abs(p3+p4)/massPi);
+
+                p3 = trk_p[posPart_trk.at(1)];
+                p4 = trk_p[negPart_trk.at(1)];
+                hist5->Fill(abs(p3+p4)/massPi);
+
+                p3 = trk_p[posPart_trk.at(1)];
+                p4 = trk_p[negPart_trk.at(2)];
+                hist6->Fill(abs(p3+p4)/massPi);
+            }else{
+            std::cout<<"Logic incomplete"<<std::endl;
+            }
+            
         } 
     }
+    hist1->Draw();
+    hist2->Draw("same");
+    hist3->Draw("same");
+    hist4->Draw("same");
+    hist5->Draw("same");
+    hist6->Draw("same");
+    
+    legend->Draw();
+
+    c1->SaveAs(("plots/loopers_4trks/4trksloopers" + filebasename + ".png").c_str());
 }
 
 void loopers_2trks(TTree *tree, std::string filebasename){
@@ -629,8 +676,18 @@ void loopers_2trks(TTree *tree, std::string filebasename){
     tree->SetBranchAddress("ntrk", &ntrk);
 
     TCanvas *c1 = new TCanvas("Figure","Figure",1000,800);
-    TH1F* hist1 = new TH1F(("2 trk selection from" + filebasename).c_str(), "|p3+p4|/m", 400, 0, 5);
+    TH1F* hist1 = new TH1F((" " + filebasename).c_str(), "|p3+p4|/m", 400, 0, 5);
+    TH1F* hist2 = new TH1F(("Pairing 2 " + filebasename).c_str(), "|p3+p4|/m", 400, 0, 5);
+
+    TLegend *legend = new TLegend(0.45, 0.7, 0.55, 0.88);
+    legend->SetBorderSize(0);
+    legend->SetFillStyle(0);
+
     hist1->GetXaxis()->SetTitle("|p3+p4|/m");
+    hist2->SetLineColor(kRed);
+
+    legend->AddEntry(hist1, "Pairing 1", "l");
+    legend->AddEntry(hist2, "Pairing 2", "l");
 
     // Mass of possible particles in Mev taken from particle data group
     Float_t massPi = 139.570; 
@@ -638,14 +695,54 @@ void loopers_2trks(TTree *tree, std::string filebasename){
     Float_t massP = 938.272;
 
     Long64_t nentries = tree->GetEntries();
+    int counter3 = 0;
     for (int event=0; event<nentries; event++){
+        
         tree->GetEntry(event);
-        if(ntrk == 2){
-            hist1->Fill(abs(trk_p[0]+trk_p[1]/massPi));
+        std::vector<int> negPart_trk;
+        std::vector<int> posPart_trk;
+        if(ntrk == 3){
+            counter3++;
+            for(int itrk=0; itrk<ntrk; itrk++){
+               if(trk_q[itrk] == -1){
+                negPart_trk.push_back(itrk);
+                //std::cout<<"Pos"<<std::endl;
+               } else if(trk_q[itrk] == 1){
+                posPart_trk.push_back(itrk);
+                //std::cout<<"Neg"<<std::endl;
+               }
+            }
+            std::cout<<"HALLOOO"<<negPart_trk.size()<<std::endl;
+            if(negPart_trk.size() < posPart_trk.size()){
+                Float_t p3 = trk_p[negPart_trk.at(0)];
+                Float_t p4 = trk_p[posPart_trk.at(0)];
+                std::cout<< abs(p3+p4)/massPi <<std::endl;
+                hist1->Fill(abs(p3+p4)/massPi);
+
+                p3 = trk_p[negPart_trk.at(0)];
+                p4 = trk_p[posPart_trk.at(1)];
+                hist2->Fill(abs(p3+p4)/massPi);
+            }else if(negPart_trk.size() > posPart_trk.size()){
+                Float_t p3 = trk_p[posPart_trk.at(0)];
+                Float_t p4 = trk_p[negPart_trk.at(0)];
+                hist1->Fill(abs(p3+p4)/massPi);
+                std::cout<< abs(p3+p4)/massPi <<std::endl;
+
+                p3 = trk_p[posPart_trk.at(0)];
+                p4 = trk_p[negPart_trk.at(1)];
+                hist2->Fill(abs(p3+p4)/massPi);
+            }else{
+                std::cerr<<"Logic incomplete"<<std::endl;
+                continue;
+            }
+        
         }
     }
+    std::cout<<"Number of events with 3 tracks: "<<counter3<<std::endl;
     hist1->Draw();
-    c1->SaveAs(("plots/loopers_2trks_loose/2trksloopers" + filebasename + ".png").c_str());
+    hist2->Draw("same");
+    legend->Draw();
+    c1->SaveAs(("plots/loopers_2trks_alt/2trksloopers" + filebasename + ".png").c_str());
 }
 
 

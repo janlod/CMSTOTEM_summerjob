@@ -70,7 +70,9 @@ void analysis(){
         //loopers_2trks(tree, filebasename);
         //pt_eta_correl(tree, filebasename);
         //loopers_4trks(tree, filebasename);
-        dxy_phi_correl(tree, filebasename, true);
+        //dxy_phi_correl(tree, filebasename, true);
+        //loopers_4trks(tree, filebasename);
+        loopers_2trks(tree, filebasename);
         }
     }
 
