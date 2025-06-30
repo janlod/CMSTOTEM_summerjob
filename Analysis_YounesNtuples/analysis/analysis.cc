@@ -74,7 +74,8 @@ void analysis(){
         //dxy_phi_correl(tree, filebasename, true);
         //loopers_4trks(tree, filebasename);
         //loopers_2trks(tree, filebasename);
-        cutZPV(tree, filebasename);
+
+        cut_zPV(tree, filebasename);
         }
     }
 
