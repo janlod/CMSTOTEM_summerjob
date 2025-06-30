@@ -33,6 +33,7 @@
 #include "math.h"
 #include "stdlib.h"
 #include "tools.cc"
+#include "cuts.cc"
 
 
 
@@ -72,7 +73,8 @@ void analysis(){
         //loopers_4trks(tree, filebasename);
         //dxy_phi_correl(tree, filebasename, true);
         //loopers_4trks(tree, filebasename);
-        loopers_2trks(tree, filebasename);
+        //loopers_2trks(tree, filebasename);
+        cutZPV(tree, filebasename);
         }
     }
 
