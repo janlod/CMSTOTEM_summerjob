@@ -78,7 +78,7 @@ void cut_zPV(TTree* tree, std::string filebasename){
 
 
 void cut_dzdzerr(TTree* tree, std::string filebasename){
-    Float_t trk_dz[100], trk_dzerr[100];
+    Float_t trk_dz[1000], trk_dzerr[1000];
     Int_t ntrk;
 
     tree->SetBranchAddress("trk_dz", trk_dz);
@@ -95,7 +95,7 @@ void cut_dzdzerr(TTree* tree, std::string filebasename){
         if(ntrk == 4){
             for(int itrk=0; itrk<ntrk; itrk++){
                 Float_t dz = trk_dz[itrk];
-                Float_t dzerr = trk_dz[itrk];
+                Float_t dzerr = trk_dzerr[itrk];
                 hist1d->Fill(dz/dzerr);
             }
         }
@@ -109,7 +109,8 @@ void cut_dzdzerr(TTree* tree, std::string filebasename){
     double mean = gausFit->GetParameter(1);
     double sigma = gausFit->GetParameter(2);
 
-    Float_t dzcut[4], dzerrcut[4];
+    Float_t dzcut;
+    Float_t dzerrcut;
     TFile* outfile = TFile::Open(("cutted_data/dz/dzcutted"+filebasename+".root").c_str(), "RECREATE");
     TTree* outtree = new TTree("tree", "cutted dz and dzerr");
     outtree->Branch("dz", &dzcut, "dz/F");
@@ -120,12 +121,14 @@ void cut_dzdzerr(TTree* tree, std::string filebasename){
         if(ntrk==4){
             for(int itrk=0; itrk<ntrk; itrk++){
                 if(trk_dz[itrk]/trk_dzerr[itrk] <= mean+3*sigma && trk_dz[itrk]/trk_dzerr[itrk]>= mean-3*sigma){
-                    // incomplete Pay attention to tree structure
+                    dzcut = trk_dz[itrk];
+                    dzerrcut = trk_dzerr[itrk];
+                    outtree->Fill();
                 }
-            }
-            outtree->Fill();
+            }   
         }
     }
     outtree->Write();
     outfile->Close();
+    delete outfile;
 }

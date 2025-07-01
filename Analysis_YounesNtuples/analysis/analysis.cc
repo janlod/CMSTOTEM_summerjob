@@ -75,7 +75,8 @@ void analysis(){
         //loopers_4trks(tree, filebasename);
         //loopers_2trks(tree, filebasename);
 
-        cut_zPV(tree, filebasename);
+        //cut_zPV(tree, filebasename);
+        cut_dzdzerr(tree, filebasename);
         }
     }
 
