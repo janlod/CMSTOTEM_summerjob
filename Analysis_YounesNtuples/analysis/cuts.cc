@@ -158,13 +158,14 @@ void gaussian_3sigma_cut(TTree* tree, std::string filebasename){
 
     TF1* fit_zPV = new TF1("fit_zPV", "gaus", -5, 5);
     TF1* fit_dz = new TF1("fit_dz", "gaus", -1, 1);
+    TF1* fit_dxy = new TF1("fit_dxy", "gaus", -1, 1);
     TF1* fit_dxy_phi = new TF1("fit_dxy_phi", "gaus", -0.1, 0.1);
     TF1* fit_dz_eta = new TF1("fit_dz_eta", "gaus", -0.1, 0.1);
 
     TH1F* hist_zPV = new TH1F("zPV", "zPV", 400, -15, 15);
     TH1F* hist_dzBydzerr = new TH1F("dz/dzerr", "dz/dzerr", 400, -3, 3);
     TH1F* hist_dxyBydxyerr = new TH1F("dxy/dxyerr", "dxy/dxyerr", 400, -3, 3);
-    TH2F* hist_dxy_phi = new TH2F("dxy vs. phi", "dxy vs. phi", 400, -0.3, 0.3, 400, -3.14, 3.14);
+    TH2F* hist_dxy_phi = new TH2F("dxy vs. phi", "dxy vs. phi",400, -0.3, 0.3, 400, -3.14, 3.14);
     TH2F* hist_dz_eta = new TH2F("dz vs. eta", "dz vs. eta", 400, -0.5, 0.5, 400, -3.0, 3.0);
 
     Long64_t nentries = tree->GetEntries();
@@ -194,6 +195,73 @@ void gaussian_3sigma_cut(TTree* tree, std::string filebasename){
     hist_dxyBydxyerr->Fit(fit_dxy, "R");
     mean_dxyBydxyerr = fit_dxy->GetParameter(1);
     sigma_dxyBydxyerr = fit_dxy->GetParameter(2);
+
+    std::map<int, std::vector<double>> dxy_fitParams_map;
+    std::map<int, std::vector<double>> dz_fitParams_map;
+
+    int dxy_nbinsY = hist_dxy_phi->GetNbinsY();
+    int dz_nbinsY = hist_dz_eta->GetNbinsY();
+    int dxy_nbinsX = hist_dxy_phi->GetNbinsX();
+    int dz_nbinsX = hist_dz_eta->GetNbinsX();
+	
+    // Routine for dxy_phi
+    std::vector<int> invalidFit_bins_dxy;
+    std::vector<int> invalidFit_bins_dz;
+    for(int ybin=1; ybin<=dxy_nbinsY; ybin++){
+        std::vector<double> fitParams; //Always (mean, sigma)
+	TH1F* projx = new TH1F("hist", "hist", dxy_nbinsX, hist_dxy_phi->GetXaxis()->GetXmin(), hist_dxy_phi->GetXaxis()->GetXmax());
+
+	for(int xbin=1; xbin<=dxy_nbinsX; xbin++){
+      		projx->Fill(hist_dxy_phi->GetBinContent(xbin, ybin));
+	}
+ 	Int_t fitResult = projx->Fit(fit_dxy_phi, "R");
+	
+	if(fitResult==2){
+		invalidFit_bins_dxy.push_back(ybin);
+	}
+
+	fitParams.push_back(fit_dxy_phi->GetParameter(1));
+	fitParams.push_back(fit_dxy_phi->GetParameter(2));
+	dxy_fitParams_map.insert({ybin, fitParams});
+	delete projx;
+    }
+    
+    // Routine for dz_eta
+    for(int ybin=1; ybin<=dz_nbinsY; ybin++){
+        std::vector<double> fitParams; //Always (mean, sigma)
+	TH1F* projx = new TH1F("hist", "hist", dxy_nbinsX, hist_dxy_phi->GetXaxis()->GetXmin(), hist_dxy_phi->GetXaxis()->GetXmax());
+
+	for(int xbin=1; xbin<=dz_nbinsX; xbin++){
+      		projx->Fill(hist_dz_eta->GetBinContent(xbin, ybin));
+	}
+ 	Int_t fitResult = projx->Fit(fit_dz_eta, "R");
+	
+
+	if(fitResult==2){
+		invalidFit_bins_dz.push_back(ybin);
+	}
+
+	fitParams.push_back(fit_dz_eta->GetParameter(1));
+	fitParams.push_back(fit_dz_eta->GetParameter(2));
+	dz_fitParams_map.insert({ybin, fitParams});
+	delete projx;
+    } 
+ 
+
+   std::cout<<dxy_fitParams_map.size()<<std::endl;
+   std::cout<<dz_fitParams_map.size()<<std::endl;
+  
+   std::vector<double> mapTest = dxy_fitParams_map.at(237);
+   for (auto it = invalidFit_bins_dxy.begin(); it != invalidFit_bins_dxy.end(); ++it) {
+        std::cout << *it << std::endl;
+    }
+
+   std::cout<<"\n\n\n"<<std::endl;
+   for (auto  it = invalidFit_bins_dz.begin(); it != invalidFit_bins_dz.end(); ++it) {
+        std::cout << *it << std::endl;
+    }
+
+   // Fits on 2d plots often diverge, improve initial guesses maybe?
 
     //Figure out what to do about 2d plots and fits and then loop through tree and do something along the lines:
     /**TFile* inputFile = TFile::Open("input.root");

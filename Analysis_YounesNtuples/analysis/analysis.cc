@@ -55,7 +55,7 @@ void analysis(){
 
 
     int listSize = fileList.size();
-    for (int ifile=0; ifile<listSize; ifile++){
+    for (int ifile=0; ifile<listSize-7; ifile++){
         std::string filename = fileList.at(ifile);
         TFile *rootfile = new TFile(("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/" + filename).c_str(), "read");
         TTree *tree = (TTree*)rootfile->Get("tree");
@@ -76,7 +76,8 @@ void analysis(){
         //loopers_2trks(tree, filebasename);
 
         //cut_zPV(tree, filebasename);
-        cut_dzdzerr(tree, filebasename);
+        //cut_dzdzerr(tree, filebasename);
+	gaussian_3sigma_cut(tree, filebasename);
         }
     }
 

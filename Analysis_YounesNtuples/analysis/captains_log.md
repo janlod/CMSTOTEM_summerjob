@@ -23,4 +23,7 @@
     - There also seem to be no loopers for 4trk events (if I implemented the analysis correctly). We have no peaks around zero in the |p3+p4|/m
     distribution for any of the 6 possible pairings
     - Working on cuts 2-3
-    
+
+- July 2 17:48:
+    - Worked on cuts, becasue I realised yesterday that I need to do all cuts simultaneously so I can check range for all variables of events at the same time
+    - Problem now is that the Fits on the 2d plots often get invalid fit results because root fit does not converge for some reason    
