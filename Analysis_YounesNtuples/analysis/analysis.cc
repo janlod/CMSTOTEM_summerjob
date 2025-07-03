@@ -77,7 +77,9 @@ void analysis(){
 
         //cut_zPV(tree, filebasename);
         //cut_dzdzerr(tree, filebasename);
-	gaussian_3sigma_cut(tree, filebasename);
+	//gaussian_3sigma_cut(tree, filebasename);
+	
+	test_moduls(tree);
         }
     }
 

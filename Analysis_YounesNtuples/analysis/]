@@ -203,53 +203,29 @@ TH2F* get2D_hist(TTree* tree, std::string svarX, std::string svarY, int nbinX, f
 
 
 //Returned as [ampl, mean, sigma]
-std::array<double,3> fitParams1D_gausfit(TH1F* hist, float fitrangeMin, float fitrangeMax){ 
+double[3] fitParams1D_gausfit(TH1F* hist, float fitrangeMin, float fitrangeMax){ 
    TF1* gausfit = new TF1("gausfit", "gaus", fitrangeMin, fitrangeMax);
-   hist->Fit(gausfit, "R");
+   hist->fit(gausfit, "R");
 
-   double ampl = gausfit->GetParameter(0); 
-   double mean = gausfit->GetParameter(1); 
-   double sigma = gausfit->GetParameter(2); 
+   double fitParams[3];
+   fitParams[0] = gausfit->GetParameter(0); 
+   fitParams[1] = gausfit->GetParameter(1); 
+   fitParams[2] = gausfit->GetParameter(2); 
 
-   return {ampl, mean, sigma};
-}
-
-
-std::map<int, std::array<double, 3>> fitParams2D_gausfit_allSlices(TH2F* hist, float fitrangeMin, float fitrangeMax){
-    std::map<int, std::array<double, 3>> fitParams_map;  
-    int nbinsY = hist->GetNbinsY();
-    int nbinsX = hist->GetNbinsX();
-    
-    for(int ybin=1; ybin<=nbinsY; ybin++){
-	TH1F* projx = new TH1F("projx", hist->GetName(), nbinsX, hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
-
-    	for(int xbin=1; xbin<nbinsX; xbin++){
-		projx->Fill(hist->GetBinContent(xbin, ybin));
-	}
-
-	std::array<double, 3> fitParams = fitParams1D_gausfit(projx, fitrangeMin, fitrangeMax);
-	fitParams_map.insert({ybin, fitParams});
-	delete projx;
-    }
-    return fitParams_map;
+   return fitParams;
 }
 
 
 //1D histos ok
 //2D histos ok
-//1D fit ok
 void test_moduls(TTree* tree){
    TCanvas* c1 = new TCanvas("fig", "fig", 1000, 800);
-   TH2F* testhist = get2D_hist(tree, "trk_dxy", "trk_phi", 400, -0.3, 0.3, 400, -3.1, 3.1);
-   std::map<int, std::array<double,3>> fitmap = fitParams2D_gausfit_allSlices(testhist, -0.7, 0.7);
-   
-   auto fitpars = fitmap.at(1);
-   for(int i=0; i<3; i++){
-	   std::cout<<fitpars.at(i)<<std::endl;
-   }
+   TH1F* testhist = get1D_hist_eventvar(tree, "zPV", "trk_phi", 400, -15, 15);
+   std::cout<< fitParams1D_gausfit(testhist, -5, 5);
+
 }
 
-// Modulisation worked but still issues with 2D fits
+
 
 void gaussian_3sigma_cut(TTree* tree, std::string filebasename){
     Float_t zPV;
