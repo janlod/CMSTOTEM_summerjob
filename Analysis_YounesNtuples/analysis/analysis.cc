@@ -79,13 +79,17 @@ void analysis(){
         //cut_dzdzerr(tree, filebasename);
 	//gaussian_3sigma_cut(tree, filebasename);
 	
-	test_moduls(tree);
+	//test_moduls(tree);
+	cut_3sigma(tree, filebasename);
         }
     }
 
 
 int main() {
-    analysis();
+    //analysis();
+    
+    quick2Dplot("TOTEM20cutted.root", "trk_dxy", "trk_phi", 400, -0.3, 0.3, 400, -3.1, 3.1);
+
     return 0;
 }
 

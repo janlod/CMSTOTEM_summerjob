@@ -133,9 +133,15 @@ void cut_dzdzerr(TTree* tree, std::string filebasename){
     delete outfile;
 }
 
-bool isin_3sigma(Float_t val, Float_t mean, Float_t sigma){
+bool isin_3sigma(Float_t val, std::array<double,3> fitparams){
+	Float_t mean =(Float_t)fitparams.at(1);
+	Float_t sigma =(Float_t)fitparams.at(2);
    return (val <= mean + 3*sigma && val >= mean - 3*sigma);
 }
+
+
+
+
 
 
 TH1F* get1D_hist_eventvar(TTree* tree, std::string svar, float nbin, float minbin, float maxbin){
@@ -144,7 +150,7 @@ TH1F* get1D_hist_eventvar(TTree* tree, std::string svar, float nbin, float minbi
     tree->SetBranchAddress(svar.c_str(), &var);
     tree->SetBranchAddress("ntrk", &ntrk);
 
-    TH1F* hist = new TH1F("1d histogram",svar.c_str(), nbin, minbin, maxbin);
+    TH1F* hist = new TH1F(svar.c_str(), svar.c_str(), nbin, minbin, maxbin);
     
     Long64_t nentries = tree->GetEntries();
     for(int event=0; event<nentries; event++){
@@ -164,7 +170,7 @@ TH1F* get1D_hist_trkvar(TTree* tree, std::string svar, std::string svarerr, int 
     tree->SetBranchAddress(svarerr.c_str(), varerr); 
     tree->SetBranchAddress("ntrk", &ntrk);
 
-    TH1F* hist = new TH1F("1d histogram", svar.c_str(), nbin, minbin, maxbin);
+    TH1F* hist = new TH1F(svar.c_str(), svar.c_str(), nbin, minbin, maxbin);
     
     Long64_t nentries = tree->GetEntries();
     for(int event=0; event<nentries; event++){
@@ -178,6 +184,9 @@ TH1F* get1D_hist_trkvar(TTree* tree, std::string svar, std::string svarerr, int 
    return hist;
 }
 
+   
+
+
 
 TH2F* get2D_hist(TTree* tree, std::string svarX, std::string svarY, int nbinX, float minbinX, float maxbinX, float nbinY, float minbinY, float maxbinY){
    Float_t varX[1000];
@@ -187,7 +196,7 @@ TH2F* get2D_hist(TTree* tree, std::string svarX, std::string svarY, int nbinX, f
    tree->SetBranchAddress(svarY.c_str(), varY);
    tree->SetBranchAddress("ntrk", &ntrk);
 
-   TH2F* hist = new TH2F("2d histo",(svarX + " vs. " + svarY).c_str(), nbinX, minbinX, maxbinX, nbinY, minbinY, maxbinY);
+   TH2F* hist = new TH2F((svarX + " vs. " + svarY).c_str(), (svarX + " vs. " + svarY).c_str(), nbinX, minbinX, maxbinX, nbinY, minbinY, maxbinY);
 
    Long64_t nentries = tree->GetEntries();
    for(int event=0; event<nentries; event++){
@@ -198,7 +207,9 @@ TH2F* get2D_hist(TTree* tree, std::string svarX, std::string svarY, int nbinX, f
 		}
 	}
    }
-   return hist;
+   hist->GetXaxis()->SetTitle(svarX.c_str());
+   hist->GetYaxis()->SetTitle(svarY.c_str());
+  return hist;
 }
 
 
@@ -221,14 +232,38 @@ std::map<int, std::array<double, 3>> fitParams2D_gausfit_allSlices(TH2F* hist, f
     int nbinsX = hist->GetNbinsX();
     
     for(int ybin=1; ybin<=nbinsY; ybin++){
-	TH1F* projx = new TH1F("projx", hist->GetName(), nbinsX, hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
+	TH1F* projx = new TH1F("projx", "Slice along x-axis", nbinsX, hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
 
-    	for(int xbin=1; xbin<nbinsX; xbin++){
-		projx->Fill(hist->GetBinContent(xbin, ybin));
+    	for(int xbin=1; xbin<=nbinsX; xbin++){
+		projx->SetBinContent(xbin, (Float_t)hist->GetBinContent(xbin, ybin));
 	}
-
+	
 	std::array<double, 3> fitParams = fitParams1D_gausfit(projx, fitrangeMin, fitrangeMax);
 	fitParams_map.insert({ybin, fitParams});
+	
+	// Save apicture for every 20th slice with the fit
+	/**
+	if(ybin%20==0){
+		TCanvas* c1 = new TCanvas("slicetest", "slicetest", 1000, 800);
+		TF1* gaus = new TF1("gaus", "[0]*exp(-0.5*((x-[1])/[2])**2)", fitrangeMin, fitrangeMax);
+		gaus->SetParameters(fitParams.at(0), fitParams.at(1), fitParams.at(2));
+		projx->GetXaxis()->SetTitle(hist->GetXaxis()->GetTitle());
+		projx->Draw();
+		gaus->SetLineColor(kRed);
+		gaus->Draw("same");
+		auto pave = new TPaveText(0.15,0.75,0.4,0.9,"NDC");
+		pave->SetFillColor(0);
+		pave->SetBorderSize(1);
+		pave->SetTextAlign(12);
+		pave->SetTextSize(0.03);
+		pave->AddText(Form("Mean = %.3f", fitParams.at(1)));
+		pave->AddText(Form("Sigma = %.3f", fitParams.at(2)));
+		pave->AddText(Form("Amplitude = %.1f",fitParams.at(0)));
+		pave->Draw();
+		gPad->Update();
+		std::string filename = "sliceplots/dz_eta/sliceat" + std::to_string(ybin) + ".png";
+		c1->SaveAs(filename.c_str());
+	}*/
 	delete projx;
     }
     return fitParams_map;
@@ -237,11 +272,13 @@ std::map<int, std::array<double, 3>> fitParams2D_gausfit_allSlices(TH2F* hist, f
 
 //1D histos ok
 //2D histos ok
-//1D fit ok
+//1D fits ok
+//2d fit dxy_phi ok
+//2d fit dz_eta ok in centre but not for high and low end ybins
 void test_moduls(TTree* tree){
    TCanvas* c1 = new TCanvas("fig", "fig", 1000, 800);
-   TH2F* testhist = get2D_hist(tree, "trk_dxy", "trk_phi", 400, -0.3, 0.3, 400, -3.1, 3.1);
-   std::map<int, std::array<double,3>> fitmap = fitParams2D_gausfit_allSlices(testhist, -0.7, 0.7);
+   TH2F* testhist = get2D_hist(tree, "trk_dz", "trk_eta", 400, -0.5, 0.5, 400, -3.0, 3.0);
+   std::map<int, std::array<double,3>> fitmap = fitParams2D_gausfit_allSlices(testhist, -0.05, 0.05);
    
    auto fitpars = fitmap.at(1);
    for(int i=0; i<3; i++){
@@ -249,143 +286,164 @@ void test_moduls(TTree* tree){
    }
 }
 
-// Modulisation worked but still issues with 2D fits
 
-void gaussian_3sigma_cut(TTree* tree, std::string filebasename){
-    Float_t zPV;
-    Int_t ntrk;
-    Float_t trk_dz[1000];
-    Float_t trk_dzerr[1000];
-    Float_t trk_dxy[1000];
-    Float_t trk_dxyerr[1000];
-    Float_t trk_eta[1000];
-    Float_t trk_phi[100];
+void cut_3sigma(TTree* tree, std::string filebasename){	
+   TFile* outfile = TFile::Open((filebasename + "cutted.root").c_str(), "RECREATE");
+   TTree* cuttedTree = tree->CloneTree(0);
 
-    tree->SetBranchAddress("zPV", &zPV);
-    tree->SetBranchAddress("ntrk", &ntrk);
-    tree->SetBranchAddress("trk_dz", trk_dz);
-    tree->SetBranchAddress("trk_dzerr", trk_dzerr);
-    tree->SetBranchAddress("trk_dxy", trk_dxy);
-    tree->SetBranchAddress("trk_dxyerr", trk_dxyerr);
-    tree->SetBranchAddress("trk_eta", trk_eta);
-    tree->SetBranchAddress("trk_phi", trk_phi);
+   TH1F* zPV_hist = get1D_hist_eventvar(tree, "zPV", 400, -15, 15);
+   TH1F* dxy_hist = get1D_hist_trkvar(tree, "trk_dxy", "trk_dxyerr", 400, -4, 4);
+   TH1F* dz_hist = get1D_hist_trkvar(tree, "trk_dz", "trk_dzerr", 400, -4, 4);
 
-    TF1* fit_zPV = new TF1("fit_zPV", "gaus", -5, 5);
-    TF1* fit_dz = new TF1("fit_dz", "gaus", -1, 1);
-    TF1* fit_dxy = new TF1("fit_dxy", "gaus", -1, 1);
-    TF1* fit_dxy_phi = new TF1("fit_dxy_phi", "gaus", -0.1, 0.1);
-    TF1* fit_dz_eta = new TF1("fit_dz_eta", "gaus", -0.1, 0.1);
+   // You need to choose y range such that all data is included otherwise you get an outof bounds error
+   // range for phi and eta is -pi to pi
+   TH2F* dxy_phi_hist = get2D_hist(tree, "trk_dxy", "trk_phi", 400, -.3, .3, 400, -3.2, 3.2);
+   TH2F* dz_eta_hist = get2D_hist(tree, "trk_dz", "trk_eta", 400, -.5, .5, 400, -3.2, 3.2);
 
-    TH1F* hist_zPV = new TH1F("zPV", "zPV", 400, -15, 15);
-    TH1F* hist_dzBydzerr = new TH1F("dz/dzerr", "dz/dzerr", 400, -3, 3);
-    TH1F* hist_dxyBydxyerr = new TH1F("dxy/dxyerr", "dxy/dxyerr", 400, -3, 3);
-    TH2F* hist_dxy_phi = new TH2F("dxy vs. phi", "dxy vs. phi",400, -0.3, 0.3, 400, -3.14, 3.14);
-    TH2F* hist_dz_eta = new TH2F("dz vs. eta", "dz vs. eta", 400, -0.5, 0.5, 400, -3.0, 3.0);
+   auto zPV_fitParams = fitParams1D_gausfit(zPV_hist, -1, 1);
+   auto dxy_fitParams = fitParams1D_gausfit(dxy_hist, -1, 1);
+   auto dz_fitParams = fitParams1D_gausfit(dz_hist, -1, 1);
+   auto dxy_phi_fitParams_map = fitParams2D_gausfit_allSlices(dxy_phi_hist, -0.05, 0.05);
+   auto dz_eta_fitParams_map = fitParams2D_gausfit_allSlices(dz_eta_hist, -0.05, 0.05);
 
-    Long64_t nentries = tree->GetEntries();
-    double sigma_zPV, mean_zPV;
-    double sigma_dzBydzerr, mean_dzBydzerr;
-    double sigma_dxyBydxyerr, mean_dxyBydxyerr;
-    for(int i=0; i<nentries; i++){
-        tree->GetEntry(i);
-        if(ntrk == 4){
-            hist_zPV->Fill(zPV);
-            for(int itrk=0; itrk<ntrk; itrk++){
-                hist_dzBydzerr->Fill(trk_dz[itrk]/trk_dzerr[itrk]);
-                hist_dxyBydxyerr->Fill(trk_dxy[itrk]/trk_dxyerr[itrk]);
-                hist_dxy_phi->Fill(trk_dxy[itrk], trk_phi[itrk]);
-                hist_dz_eta->Fill(trk_dz[itrk], trk_eta[itrk]);
-            }
-        }
-    }
-    hist_zPV->Fit(fit_zPV, "R");
-    mean_zPV = fit_zPV->GetParameter(1);
-    sigma_zPV = fit_zPV->GetParameter(2);
+   Long64_t nentries = tree->GetEntries();
+   // Scalars
+	Int_t ntrk, trk_q[1000], trk_isPi[1000], trk_isK[1000], trk_isP[1000];
+	ULong64_t EventNum, tree_prot_EventNum;
+	UInt_t Run, LumiSection, tree_prot_Run;
+	Float_t zPV, xPV, yPV;
+	Float_t alltrk_mass, alltrk_pt;
+	Float_t ThxR, ThyR, ThxL, ThyL;
 
-    hist_dzBydzerr->Fit(fit_dz, "R");
-    mean_dzBydzerr = fit_dz->GetParameter(1);
-    sigma_dzBydzerr = fit_dz->GetParameter(2);
+	// Float arrays
+	Float_t trk_p[1000], trk_pt[1000], trk_eta[1000], trk_phi[1000];
+	Float_t trk_dz[1000], trk_dxy[1000];
+	Float_t trk_dedx[1000], trk_dedxerr[1000];
+	Float_t trk_dxyerr[1000], trk_dzerr[1000], trk_pterr[1000];
+	Int_t trk_nSaturMeasure[1000], trk_nMeasure[1000], trk_nMeasureLayer[1000];
 
-    hist_dxyBydxyerr->Fit(fit_dxy, "R");
-    mean_dxyBydxyerr = fit_dxy->GetParameter(1);
-    sigma_dxyBydxyerr = fit_dxy->GetParameter(2);
+	// Double (for prot branches)
+	Double_t pr_px_a, pr_px_b, pr_py_a, pr_py_b, pr_pz_a, pr_pz_b;
+	Double_t pr_ptx_a, pr_ptx_b, pr_pty_a, pr_pty_b;
+	Double_t pr_ptx_sigma_a, pr_ptx_sigma_b, pr_pty_sigma_a, pr_pty_sigma_b;
+	Double_t pr_posx_a, pr_posx_b, pr_posy_a, pr_posy_b;
+	Double_t pr_posx_sigma_a, pr_posx_sigma_b, pr_posy_sigma_a, pr_posy_sigma_b;
 
-    std::map<int, std::vector<double>> dxy_fitParams_map;
-    std::map<int, std::vector<double>> dz_fitParams_map;
+  	tree->SetBranchAddress("Run", &Run);
+	tree->SetBranchAddress("EventNum", &EventNum);
+	tree->SetBranchAddress("LumiSection", &LumiSection);
+	tree->SetBranchAddress("zPV", &zPV);
+	tree->SetBranchAddress("xPV", &xPV);
+	tree->SetBranchAddress("yPV", &yPV);
+	tree->SetBranchAddress("ntrk", &ntrk);
+	tree->SetBranchAddress("trk_p", trk_p);
+	tree->SetBranchAddress("trk_pt", trk_pt);
+	tree->SetBranchAddress("trk_eta", trk_eta);
+	tree->SetBranchAddress("trk_phi", trk_phi);
+	tree->SetBranchAddress("trk_q", trk_q);
+	tree->SetBranchAddress("alltrk_mass", &alltrk_mass);
+	tree->SetBranchAddress("alltrk_pt", &alltrk_pt);
+	tree->SetBranchAddress("trk_isPi", trk_isPi);
+	tree->SetBranchAddress("trk_isK", trk_isK);
+	tree->SetBranchAddress("trk_isP", trk_isP);
+	tree->SetBranchAddress("trk_dz", trk_dz);
+	tree->SetBranchAddress("trk_dxy", trk_dxy);
+	tree->SetBranchAddress("trk_dedx", trk_dedx);
+	tree->SetBranchAddress("trk_dedxerr", trk_dedxerr);
+	tree->SetBranchAddress("trk_nSaturMeasure", trk_nSaturMeasure);
+	tree->SetBranchAddress("trk_nMeasure", trk_nMeasure);
+	tree->SetBranchAddress("trk_nMeasureLayer", trk_nMeasureLayer);
+	tree->SetBranchAddress("trk_dxyerr", trk_dxyerr);
+	tree->SetBranchAddress("trk_dzerr", trk_dzerr);
+	tree->SetBranchAddress("trk_pterr", trk_pterr);
+	tree->SetBranchAddress("ThxR", &ThxR);
+	tree->SetBranchAddress("ThyR", &ThyR);
+	tree->SetBranchAddress("ThxL", &ThxL);
+	tree->SetBranchAddress("ThyL", &ThyL);
+	tree->SetBranchAddress("tree_prot_Run", &tree_prot_Run);
+	tree->SetBranchAddress("tree_prot_EventNum", &tree_prot_EventNum);
+	tree->SetBranchAddress("pr_px_a", &pr_px_a);
+	tree->SetBranchAddress("pr_px_b", &pr_px_b);
+	tree->SetBranchAddress("pr_py_a", &pr_py_a);
+	tree->SetBranchAddress("pr_py_b", &pr_py_b);
+	tree->SetBranchAddress("pr_pz_a", &pr_pz_a);
+	tree->SetBranchAddress("pr_pz_b", &pr_pz_b);
+	tree->SetBranchAddress("pr_ptx_a", &pr_ptx_a);
+	tree->SetBranchAddress("pr_ptx_b", &pr_ptx_b);
+	tree->SetBranchAddress("pr_pty_a", &pr_pty_a);
+	tree->SetBranchAddress("pr_pty_b", &pr_pty_b);
+	tree->SetBranchAddress("pr_ptx_sigma_a", &pr_ptx_sigma_a);
+	tree->SetBranchAddress("pr_ptx_sigma_b", &pr_ptx_sigma_b);
+	tree->SetBranchAddress("pr_pty_sigma_a", &pr_pty_sigma_a);
+	tree->SetBranchAddress("pr_pty_sigma_b", &pr_pty_sigma_b);
+	tree->SetBranchAddress("pr_posx_a", &pr_posx_a);
+	tree->SetBranchAddress("pr_posx_b", &pr_posx_b);
+	tree->SetBranchAddress("pr_posy_a", &pr_posy_a);
+	tree->SetBranchAddress("pr_posy_b", &pr_posy_b);
+	tree->SetBranchAddress("pr_posx_sigma_a", &pr_posx_sigma_a);
+	tree->SetBranchAddress("pr_posx_sigma_b", &pr_posx_sigma_b);
+	tree->SetBranchAddress("pr_posy_sigma_a", &pr_posy_sigma_a);
+	tree->SetBranchAddress("pr_posy_sigma_b", &pr_posy_sigma_b);
 
-    int dxy_nbinsY = hist_dxy_phi->GetNbinsY();
-    int dz_nbinsY = hist_dz_eta->GetNbinsY();
-    int dxy_nbinsX = hist_dxy_phi->GetNbinsX();
-    int dz_nbinsX = hist_dz_eta->GetNbinsX();
+
+
+   for(int event=0; event<nentries; event++){
+         tree->GetEntry(event); 
+	 bool zPV_cut = isin_3sigma(zPV, zPV_fitParams);
+
+	 if(ntrk==4){
+		int dxy_good = 0;
+		int dz_good = 0;
+		int dxy_phi_good = 0;
+		int dz_eta_good =0;
+	 	for(int itrk=0; itrk<ntrk; itrk++){
+			if(abs(trk_eta[itrk])<1.5){
+				if(isin_3sigma(trk_dxy[itrk]/trk_dxyerr[itrk], dxy_fitParams)){
+				dxy_good++;
+				}
+				if(isin_3sigma(trk_dz[itrk]/trk_dzerr[itrk], dz_fitParams)){
+					dz_good++;
+				}
+				Float_t phi = trk_phi[itrk];
+				Float_t eta = trk_eta[itrk];
+				Float_t dxy = trk_dxy[itrk];
+				Float_t dz = trk_dz[itrk];
+				int phi_bin = dxy_phi_hist->GetYaxis()->FindBin(phi);
+				int eta_bin = dz_eta_hist->GetYaxis()->FindBin(eta);
+				//std::cout<<phi_bin<<std::endl;
+				//std::cout<<eta_bin<<std::endl;
+				//std::cout<<"\n\n";
+				if(isin_3sigma(dxy, dxy_phi_fitParams_map.at(phi_bin))){
+					dxy_phi_good++;
+				}
+				if(isin_3sigma(dz, dz_eta_fitParams_map.at(eta_bin))){
+					dz_eta_good++;
+				}
+
+			}
+		}
+		//std::cout<<zPV_cut<<std::endl;
+		//std::cout<<dxy_good<<std::endl;
+		//std::cout<<dz_good<<std::endl;
+		//std::cout<<dxy_phi_good<<std::endl;
+		//std::cout<<dz_eta_good<<std::endl;
+		//std::cout<<"\n\n";
+		//
+		//Requiring all goods ==4 is too strict, no events pass at all
+		if(zPV_cut && dxy_good!=0 && dz_good!=0 && dxy_phi_good!=0 && dz_eta_good!=0){
+			std::cout<<"Cuts passed"<<std::endl;
+			tree->GetEntry(event);
+			cuttedTree->Fill();		
+		}
+	 }
 	
-    // Routine for dxy_phi
-    std::vector<int> invalidFit_bins_dxy;
-    std::vector<int> invalidFit_bins_dz;
-    for(int ybin=1; ybin<=dxy_nbinsY; ybin++){
-        std::vector<double> fitParams; //Always (mean, sigma)
-	TH1F* projx = new TH1F("hist", "hist", dxy_nbinsX, hist_dxy_phi->GetXaxis()->GetXmin(), hist_dxy_phi->GetXaxis()->GetXmax());
+   }
 
-	for(int xbin=1; xbin<=dxy_nbinsX; xbin++){
-      		projx->Fill(hist_dxy_phi->GetBinContent(xbin, ybin));
-	}
- 	Int_t fitResult = projx->Fit(fit_dxy_phi, "R");
-	
-	if(fitResult==2){
-		invalidFit_bins_dxy.push_back(ybin);
-	}
-
-	fitParams.push_back(fit_dxy_phi->GetParameter(1));
-	fitParams.push_back(fit_dxy_phi->GetParameter(2));
-	dxy_fitParams_map.insert({ybin, fitParams});
-	delete projx;
-    }
-    
-    // Routine for dz_eta
-    for(int ybin=1; ybin<=dz_nbinsY; ybin++){
-        std::vector<double> fitParams; //Always (mean, sigma)
-	TH1F* projx = new TH1F("hist", "hist", dxy_nbinsX, hist_dxy_phi->GetXaxis()->GetXmin(), hist_dxy_phi->GetXaxis()->GetXmax());
-
-	for(int xbin=1; xbin<=dz_nbinsX; xbin++){
-      		projx->Fill(hist_dz_eta->GetBinContent(xbin, ybin));
-	}
- 	Int_t fitResult = projx->Fit(fit_dz_eta, "R");
-	
-
-	if(fitResult==2){
-		invalidFit_bins_dz.push_back(ybin);
-	}
-
-	fitParams.push_back(fit_dz_eta->GetParameter(1));
-	fitParams.push_back(fit_dz_eta->GetParameter(2));
-	dz_fitParams_map.insert({ybin, fitParams});
-	delete projx;
-    } 
- 
-
-   std::cout<<dxy_fitParams_map.size()<<std::endl;
-   std::cout<<dz_fitParams_map.size()<<std::endl;
-  
-   std::vector<double> mapTest = dxy_fitParams_map.at(237);
-   for (auto it = invalidFit_bins_dxy.begin(); it != invalidFit_bins_dxy.end(); ++it) {
-        std::cout << *it << std::endl;
-    }
-
-   std::cout<<"\n\n\n"<<std::endl;
-   for (auto  it = invalidFit_bins_dz.begin(); it != invalidFit_bins_dz.end(); ++it) {
-        std::cout << *it << std::endl;
-    }
-
-  // Make empty copy of old tree to fill
-  TFile* outfile = TFile::Open((filebasename + "cutted.root").c_str(), "RECREATE");
-  TTree* cuttedTree = tree->CloneTree(0);
-  
-  for(int event=0; event<nentries; event++){
-  	tree->GetEntry(event);
-  }
+   cuttedTree->Write();
+   outfile->Close();
+}
 
 
-  cuttedTree->Write();
-  outfile->Close();
 
    // Fits on 2d plots often diverge, improve initial guesses maybe?
 
@@ -405,4 +463,29 @@ inputFile->Close();
 
      */
 
+void quick2Dplot(std::string filename, std::string svarX, std::string svarY, int nbinX, float minbinX, float maxbinX, float nbinY, float minbinY, float maxbinY){
+        TFile* file = new TFile(filename.c_str(), "read");
+       	TTree* tree = (TTree*)file->Get("tree");	
+	TCanvas* c1 = new TCanvas("fig", "fig", 1000, 800);
+	TH2F* hist = get2D_hist(tree, svarX, svarY, nbinX, minbinX, maxbinX, nbinY, minbinY, maxbinY);
+       	hist->Draw();
+	c1->SaveAs("quick2D.png");
+
+	file->Close();
+}
+
+
+void quick1Dplot(std::string filename, std::string svar, std::string svarerr, int nbin, float minbin, float maxbin, int trkvar){
+        TFile* file = new TFile(filename.c_str(), "read");
+       	TTree* tree = (TTree*)file->Get("tree");	
+	TCanvas* c1 = new TCanvas("fig", "fig", 1000, 800);
+	TH1F* hist;
+	if(trkvar==0){
+		 hist = get1D_hist_eventvar(tree, svar, nbin, minbin, maxbin);
+	}else{
+		 hist = get1D_hist_trkvar(tree, svar, svarerr, nbin, minbin, maxbin);
+	}
+       	hist->Draw();
+	c1->SaveAs("quick1D.png");
+	file->Close();
 }
