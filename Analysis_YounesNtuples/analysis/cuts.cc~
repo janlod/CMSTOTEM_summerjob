@@ -441,7 +441,7 @@ void cut_3sigma(TTree* tree, std::string filebasename){
 		//std::cout<<"\n\n";
 		//
 		//Requiring all goods ==4 is too strict, no events pass at all
-		if(zPV_cut && dxy_good<5 && dz_good<5 && dxy_phi_good<5  && dz_eta_good<5){
+		if(zPV_cut && dxy_good==4 && dz_good==4 && dxy_phi_good==4  && dz_eta_good==4){
 			//std::cout<<"Cuts passed"<<std::endl;
 			tree->GetEntry(event);
 			cuttedTree->Fill();		
@@ -479,7 +479,10 @@ void quick2Dplot(std::string filename, std::string svarX, std::string svarY, int
 	TCanvas* c1 = new TCanvas("fig", "fig", 1000, 800);
 	TH2F* hist = get2D_hist(tree, svarX, svarY, nbinX, minbinX, maxbinX, nbinY, minbinY, maxbinY);
        	hist->Draw();
-c1->SaveAs("all4.png");
+
+	std::string filebasename = filename.erase(filename.size() - 5);
+	filebasename = filebasename.erase(0,12);
+	c1->SaveAs(("cutted_data/plots/dxy_phi/dxy_phi_correl" + filebasename + ".png").c_str());
 
 	file->Close();
 }
@@ -487,6 +490,9 @@ c1->SaveAs("all4.png");
 
 void quick1Dplot(std::string filename, std::string svar, std::string svarerr, int nbin, float minbin, float maxbin, int trkvar){
         TFile* file = new TFile(filename.c_str(), "read");
+	 std::string filebasename = filename.erase(filename.size() - 5);
+         filebasename = filebasename.erase(0,12);
+
        	TTree* tree = (TTree*)file->Get("tree");	
 	TCanvas* c1 = new TCanvas("fig", "fig", 1000, 800);
 	TH1F* hist;
@@ -494,8 +500,9 @@ void quick1Dplot(std::string filename, std::string svar, std::string svarerr, in
 		 hist = get1D_hist_eventvar(tree, svar, nbin, minbin, maxbin);
 	}else{
 		 hist = get1D_hist_trkvar(tree, svar, svarerr, nbin, minbin, maxbin);
+		 hist->GetXaxis()->SetTitle((svar + "/" + svarerr).c_str());
 	}
        	hist->Draw();
-	c1->SaveAs("zPV_cuttest/TOTEM20cut1.png");
+	c1->SaveAs(("cutted_data/plots/dxy_dist/dxyBydxyerr" + filebasename + ".png").c_str());
 	file->Close();
 }
