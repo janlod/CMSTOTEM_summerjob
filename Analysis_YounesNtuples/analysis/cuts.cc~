@@ -441,7 +441,7 @@ void cut_3sigma(TTree* tree, std::string filebasename){
 		//std::cout<<"\n\n";
 		//
 		//Requiring all goods ==4 is too strict, no events pass at all
-		if(true && dxy_good<5 && dz_good<5 && dxy_phi_good<5  && dz_eta_good<5){
+		if(zPV_cut && dxy_good<5 && dz_good<5 && dxy_phi_good<5  && dz_eta_good<5){
 			//std::cout<<"Cuts passed"<<std::endl;
 			tree->GetEntry(event);
 			cuttedTree->Fill();		
@@ -496,6 +496,6 @@ void quick1Dplot(std::string filename, std::string svar, std::string svarerr, in
 		 hist = get1D_hist_trkvar(tree, svar, svarerr, nbin, minbin, maxbin);
 	}
        	hist->Draw();
-	c1->SaveAs("zPV_cuttest/TOTEM20cut0.png");
+	c1->SaveAs("zPV_cuttest/TOTEM20cut1.png");
 	file->Close();
 }

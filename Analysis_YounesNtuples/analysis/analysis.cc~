@@ -90,7 +90,7 @@ int main() {
     
   // quick2Dplot("TOTEM20cutted.root", "trk_dxy", "trk_phi", 400, -0.3, 0.3, 400, -3.0, 3.0);
 
-   quick1Dplot("TOTEM20cutted.root", "zPV", "trk_dzerr", 400, -15,15, 0);
+   quick1Dplot("TOTEM20cutted.root", "zPV", "trk_dzerr", 400, -4,4, 0);
 
     return 0;
 }

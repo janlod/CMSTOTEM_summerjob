@@ -1,4 +1,6 @@
-CXXFLAGS = -O2 -Wall -std=c++17
+#CXXFLAGS = -O2 -Wall -std=c++17
+CXXFLAGS = -g -O0 -Wall
+
 
 ROOTCFLAGS := $(shell root-config --cflags)
 ROOTLIBS := $(shell root-config --glibs)
@@ -10,7 +12,7 @@ OBJS = $(SRCS:.cc=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $@ $(ROOTLIBS)
+	$(CXX) $(CXXFLAGS) $(OBJS) -g -o $@ $(ROOTLIBS)
 
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) $(ROOTCFLAGS) -c $< -o $@
