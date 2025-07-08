@@ -242,7 +242,7 @@ std::map<int, std::array<double, 3>> fitParams2D_gausfit_allSlices(TH2F* hist, f
 	fitParams_map.insert({ybin, fitParams});
 	
 	// Save apicture for every 20th slice with the fit
-	/**
+	
 	if(ybin%20==0){
 		TCanvas* c1 = new TCanvas("slicetest", "slicetest", 1000, 800);
 		TF1* gaus = new TF1("gaus", "[0]*exp(-0.5*((x-[1])/[2])**2)", fitrangeMin, fitrangeMax);
@@ -261,9 +261,14 @@ std::map<int, std::array<double, 3>> fitParams2D_gausfit_allSlices(TH2F* hist, f
 		pave->AddText(Form("Amplitude = %.1f",fitParams.at(0)));
 		pave->Draw();
 		gPad->Update();
-		std::string filename = "sliceplots/dz_eta/sliceat" + std::to_string(ybin) + ".png";
+
+		std::string xvar = hist->GetXaxis()->GetTitle();
+		std::string yvar = hist->GetYaxis()->GetTitle();
+		xvar = xvar.erase(0,4);
+	        yvar = yvar.erase(0,4);	
+		std::string filename = "sliceplots/" + xvar + "_" + yvar + "/sliceat" + std::to_string(ybin) + ".png";
 		c1->SaveAs(filename.c_str());
-	}*/
+	}
 	delete projx;
     }
     return fitParams_map;
@@ -288,7 +293,7 @@ void test_moduls(TTree* tree){
 
 
 void cut_3sigma(TTree* tree, std::string filebasename){	
-   TFile* outfile = TFile::Open((filebasename + "cutted.root").c_str(), "RECREATE");
+   TFile* outfile = TFile::Open(("cutted_data/" + filebasename + "cutted.root").c_str(), "RECREATE");
    TTree* cuttedTree = tree->CloneTree(0);
 
    TH1F* zPV_hist = get1D_hist_eventvar(tree, "zPV", 400, -15, 15);

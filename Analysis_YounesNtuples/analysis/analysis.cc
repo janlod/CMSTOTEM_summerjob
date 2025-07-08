@@ -58,11 +58,14 @@ void analysis(){
     for (int ifile=0; ifile<listSize; ifile++){
         std::string filename = fileList.at(ifile);
         std::string filebasename = filename.erase(filename.size() - 5);
-      //  TFile *rootfile = new TFile(("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/" + filename).c_str(), "read");
 
-        TFile *rootfile = new TFile(("cutted_data/" + filebasename + "cutted.root").c_str(), "read");
-        TTree *tree = (TTree*)rootfile->Get("tree");
+        TFile *cutfile = new TFile(("cutted_data/" + filebasename + "cutted.root").c_str(), "read");
+        TTree *cuttree = (TTree*)cutfile->Get("tree");
 
+
+       TFile *uncutfile = new TFile(("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/" + filename+".root").c_str(), "read");
+
+        TTree *uncuttree = (TTree*)uncutfile->Get("tree");
         
         // Put the analysis tool here that you want to use
 
@@ -79,17 +82,16 @@ void analysis(){
 
         //cut_zPV(tree, filebasename);
         //cut_dzdzerr(tree, filebasename);
-	//gaussian_3sigma_cut(tree, filebasename);
+	cut_3sigma(tree, filebasename);
 	
-//	quick2Dplot(("cutted_data/" + filebasename + "cutted.root").c_str(), "trk_dxy", "trk_phi", 400, -.3, .3, 400, -3, 3 );
 
+	//plot_invar_mass(tree, filebasename, 139.57);
 
-quick1Dplot(("cutted_data/" + filebasename + "cutted.root").c_str(), "trk_dz", "trk_dzerr", 400, -4, 4, 1); 
-	//test_moduls(tree);
-	
-//	std::cout<<"Performing cuts on file "<<filebasename<<".root \n"<<std::endl;
-//	cut_3sigma(tree, filebasename);
-//	std::cout<<"\n\n\n";
+	//plot_invar_mass(tree, filebasename, 0.13957);
+
+	//std::cout<<"Performing cuts on file "<<filebasename<<".root \n"<<std::endl;
+	//cut_3sigma(tree, filebasename);
+	//std::cout<<"\n\n\n";
         }
     }
 
@@ -99,7 +101,7 @@ int main() {
     
   // quick2Dplot("TOTEM20cutted.root", "trk_dxy", "trk_phi", 400, -0.3, 0.3, 400, -3.0, 3.0);
 
-  // quick1Dplot("TOTEM20cutted.root", "zPV", "trk_dzerr", 400, -15,15, 0);
+ // quick1Dplot("TOTEM20cutted.root", "zPV", "trk_dzerr", 400, -15,15, 0);
 
     return 0;
 }

@@ -1,4 +1,0 @@
-rm -f analysis.o exe_ana
-g++ -O2 -Wall -std=c++17 -pthread -std=c++17 -m64 -I/usr/include/root -c analysis.cc -o analysis.o
-g++ -O2 -Wall -std=c++17 analysis.o -g -o exe_ana -L/usr/lib64/root -lGui -lCore -lImt -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lROOTVecOps -lTree -lTreePlayer -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lROOTNTuple -lMultiProc -lROOTDataFrame -lROOTNTupleUtil -pthread -lm -ldl -rdynamic
-./exe_ana

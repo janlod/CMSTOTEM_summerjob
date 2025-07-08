@@ -1,0 +1,7 @@
+For cutting the data:
+* All events with ntrk=4
+* All events with |eta|<1.5
+* All events within 3 sigma of zPV, dxy/dxyerr, dz/dzerr distribution
+* For dxy_phi and dz_eta for each slice we make a fit and then also only if within 3 sigma
+
+Reduced total number of events roughly from 1 million to 250,000
