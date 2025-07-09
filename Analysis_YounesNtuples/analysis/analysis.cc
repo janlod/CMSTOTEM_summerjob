@@ -21,6 +21,7 @@
 #include "TMarker.h"
 #include "TRandom3.h"
 #include "TMultiGraph.h"
+#include <ROOT/RDataFrame.hxx>
 
 #include <iostream>
 #include <vector>
@@ -35,14 +36,15 @@
 #include <cstdlib>  
 #include "tools.cc"
 #include "cuts.cc"
-
+#include "simplecuts.cc"
 
 
 namespace fs = std::filesystem;
 
-void analysis(){
 
-    //Reading in filenames from dataList.txt
+int main(){
+
+    //First we read in all filenames from a text file to a list to loop over them
     std::string line;
     std::ifstream file;
     std::vector<std::string> fileList;
@@ -83,19 +85,15 @@ void analysis(){
 	
 	//loopers_2trks(uncuttree, filebasename);
 
-	plot_invar_mass(cuttree, filebasename, 0.13957);
+	//plot_invar_mass(cuttree, filebasename, 0.13957);
 
 	//std::cout<<"Performing cuts on file "<<filebasename<<".root \n"<<std::endl;
 	//cut_3sigma(cuttree, filebasename);
 	//std::cout<<"\n\n\n";
+    //simpleCut("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename);
+    plot_rho_inv_mass("tree",("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename, 0.139);
         }
-    }
 
+    return 0;
 
-int main() {
-	analysis();//BREAKPOINT
-
-
-    	return 0;
 }
-

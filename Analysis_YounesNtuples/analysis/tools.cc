@@ -1,4 +1,4 @@
-
+#include <TLorentzVector.h>
 
 void primVertex_dist(TTree *tree, std::string filebasename, int option){
 	   
@@ -704,5 +704,58 @@ void plot_invar_mass(TTree* tree, std::string filebasename, float massparam){
 
 
 
-            
-        
+using RVecF = ROOT::VecOps::RVec<float>;
+using RVecI = ROOT::VecOps::RVec<int>;
+void plot_rho_inv_mass(std::string treename, std::string filepath, std::string filename, float massRho){
+	auto tree = treename.c_str();
+	auto file = filepath.c_str();
+
+	ROOT::RDataFrame df(tree, file);
+
+	TCanvas* c1 = new TCanvas("Figure", "Figure", 1000, 800);
+	TH2F* hist = new TH2F(("rec. inv. mass from "+filename).c_str(), "Reconstruncted invariant mass in GeV", 100, 0.24, 2, 100, 0.24, 2);
+
+	float mass = massRho;
+
+	auto fillhisto = [mass, hist] (RVecF pt, RVecF eta, RVecF phi, RVecI q, Int_t ntrk){
+		TLorentzVector pos0, pos1, neg0, neg1;
+		
+		std::vector<Int_t> trk_pos {};
+		std::vector<Int_t> trk_neg {};
+		if(ntrk==4){
+			for(int itrk=0; itrk<ntrk; itrk++){
+				if(q.at(itrk) == -1){
+					trk_neg.push_back(itrk);
+				}else if(q.at(itrk) == 1){
+					trk_pos.push_back(itrk);
+				}
+			}
+		
+			if(trk_neg.size() == 2 && trk_pos.size() == 2){
+				std::array<Float_t, 2> pt_pair1, pt_pair2, eta_pair1, eta_pair2, phi_pair1, phi_pair2 {};
+
+				int p0 = trk_pos.at(0);
+				int p1 = trk_pos.at(1);
+				int n0 = trk_neg.at(0);
+				int n1 = trk_neg.at(1);
+
+			        pos0.SetPtEtaPhiM(pt.at(p0) + pt.at(n0), eta.at(p0) + eta.at(n0), phi.at(p0) + phi.at(n0), mass);
+			        pos1.SetPtEtaPhiM(pt.at(p0) + pt.at(n1), eta.at(p0) + eta.at(n1), phi.at(p0) + phi.at(n1), mass);
+			        neg0.SetPtEtaPhiM(pt.at(p1) + pt.at(n1), eta.at(p1) + eta.at(n1), phi.at(p1) + phi.at(n1), mass);
+				neg1.SetPtEtaPhiM(pt.at(p1) + pt.at(n0), eta.at(p1) + eta.at(n0), phi.at(p1) + phi.at(n0), mass);
+
+			}
+			TLorentzVector pair1 = pos0 + neg0;
+			TLorentzVector pair2 = pos1 + neg1;
+			//std::cout<< pair1.M() << std::endl;
+			hist->Fill(pair1.M(), pair2.M());
+		}
+		
+			
+	};
+
+	df.Foreach(fillhisto, {"trk_pt", "trk_eta", "trk_phi", "trk_q", "ntrk"});	
+	
+	hist->Draw();
+	c1->SaveAs(("Invariant_rho"+filename+".png").c_str());
+}        

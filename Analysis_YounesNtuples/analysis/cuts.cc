@@ -413,7 +413,8 @@ void quick2Dplot(std::string filename, std::string svarX, std::string svarY, int
 
 	std::string filebasename = filename.erase(filename.size() - 5);
 	filebasename = filebasename.erase(0,12);
-	c1->SaveAs(("cutted_data/plots/dxy_phi/dxy_phi_correl" + filebasename + ".png").c_str());
+	c1->SaveAs("testitest.png");
+	//c1->SaveAs(("cutted_data/plots/dxy_phi/dxy_phi_correl" + filebasename + ".png").c_str());
 
 	file->Close();
 }
