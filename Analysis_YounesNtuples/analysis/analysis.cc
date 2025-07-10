@@ -91,8 +91,11 @@ int main(){
 	//cut_3sigma(cuttree, filebasename);
 	//std::cout<<"\n\n\n";
     //simpleCut("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename);
-    plot_rho_inv_mass("tree",("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename, 0.139);
+    plot_rho_inv_mass("tree",("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename, 0.13957);
+    //plot_rho_inv_mass("tree",("simple_cutted_data/"+filename+"simplecut.root").c_str(), filename, 0.139);
         }
+//simpleCut("tree", "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM20.root", "TOTEM20");
+ 
 
     return 0;
 

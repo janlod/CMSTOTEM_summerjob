@@ -713,12 +713,12 @@ void plot_rho_inv_mass(std::string treename, std::string filepath, std::string f
 	ROOT::RDataFrame df(tree, file);
 
 	TCanvas* c1 = new TCanvas("Figure", "Figure", 1000, 800);
-	TH2F* hist = new TH2F(("rec. inv. mass from "+filename).c_str(), "Reconstruncted invariant mass in GeV", 100, 0.24, 2, 100, 0.24, 2);
+	TH2F* hist = new TH2F(("rec. inv. mass from "+filename).c_str(), "Reconstruncted invariant mass in MeV", 90, 0.3*1e3, 1.6*1e3, 90, 0.3*1e3, 1.6*1e3);
 
 	float mass = massRho;
 
 	auto fillhisto = [mass, hist] (RVecF pt, RVecF eta, RVecF phi, RVecI q, Int_t ntrk){
-		TLorentzVector pos0, pos1, neg0, neg1;
+		TLorentzVector par0, par1, cross0, cross1;
 		
 		std::vector<Int_t> trk_pos {};
 		std::vector<Int_t> trk_neg {};
@@ -728,6 +728,10 @@ void plot_rho_inv_mass(std::string treename, std::string filepath, std::string f
 					trk_neg.push_back(itrk);
 				}else if(q.at(itrk) == 1){
 					trk_pos.push_back(itrk);
+				}else if(q.at(itrk) == 0){
+					std::cout<<"Neutral particle"<<std::endl;
+				}else{
+					std::cout<<"Irregular charge"<<std::endl;
 				}
 			}
 		
@@ -738,17 +742,20 @@ void plot_rho_inv_mass(std::string treename, std::string filepath, std::string f
 				int p1 = trk_pos.at(1);
 				int n0 = trk_neg.at(0);
 				int n1 = trk_neg.at(1);
+				
+				//combination 1: p0n0 and p1n1, call it "par"
+			        par0.SetPtEtaPhiM(pt.at(p0) + pt.at(n0), eta.at(p0) + eta.at(n0), phi.at(p0) + phi.at(n0), mass);
+			        par1.SetPtEtaPhiM(pt.at(p1) + pt.at(n1), eta.at(p1) + eta.at(n1), phi.at(p1) + phi.at(n1), mass);
 
-			        pos0.SetPtEtaPhiM(pt.at(p0) + pt.at(n0), eta.at(p0) + eta.at(n0), phi.at(p0) + phi.at(n0), mass);
-			        pos1.SetPtEtaPhiM(pt.at(p0) + pt.at(n1), eta.at(p0) + eta.at(n1), phi.at(p0) + phi.at(n1), mass);
-			        neg0.SetPtEtaPhiM(pt.at(p1) + pt.at(n1), eta.at(p1) + eta.at(n1), phi.at(p1) + phi.at(n1), mass);
-				neg1.SetPtEtaPhiM(pt.at(p1) + pt.at(n0), eta.at(p1) + eta.at(n0), phi.at(p1) + phi.at(n0), mass);
+				// combination 2: p0n1 and p1n0, call it "cross"
+			        cross0.SetPtEtaPhiM(pt.at(p0) + pt.at(n1), eta.at(p0) + eta.at(n1), phi.at(p0) + phi.at(n1), mass);
+				cross1.SetPtEtaPhiM(pt.at(p1) + pt.at(n0), eta.at(p1) + eta.at(n0), phi.at(p1) + phi.at(n0), mass);
 
 			}
-			TLorentzVector pair1 = pos0 + neg0;
-			TLorentzVector pair2 = pos1 + neg1;
+			TLorentzVector parpair = par0 + par1;
+			TLorentzVector crosspair = cross0 + cross1;
 			//std::cout<< pair1.M() << std::endl;
-			hist->Fill(pair1.M(), pair2.M());
+			hist->Fill(parpair.M()*1e3, crosspair.M()*1e3);
 		}
 		
 			
@@ -756,6 +763,6 @@ void plot_rho_inv_mass(std::string treename, std::string filepath, std::string f
 
 	df.Foreach(fillhisto, {"trk_pt", "trk_eta", "trk_phi", "trk_q", "ntrk"});	
 	
-	hist->Draw();
+	hist->Draw("COLZ");
 	c1->SaveAs(("Invariant_rho"+filename+".png").c_str());
 }        
