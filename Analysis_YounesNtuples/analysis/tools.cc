@@ -711,17 +711,21 @@ void plot_rho_inv_mass(std::string treename, std::string filepath, std::string f
 	auto file = filepath.c_str();
 
 	ROOT::RDataFrame df(tree, file);
+	float min = 240.0;
+	float max = 1200.0;
+	int nbin = 100;
 
-	TCanvas* c1 = new TCanvas("Figure", "Figure", 1000, 800);
-	TH2F* hist = new TH2F(("rec. inv. mass from "+filename).c_str(), "Reconstruncted invariant mass in MeV", 90, 0.3*1e3, 1.6*1e3, 90, 0.3*1e3, 1.6*1e3);
+	TCanvas* c1 = new TCanvas("Figure", "Figure", 1200, 800);
+	TH2F* hist = new TH2F(("rec. inv. mass from "+filename).c_str(), "Reconstruncted invariant mass in MeV", nbin, min, max, nbin, min, max);
 
 	float mass = massRho;
 
 	auto fillhisto = [mass, hist] (RVecF pt, RVecF eta, RVecF phi, RVecI q, Int_t ntrk){
-		TLorentzVector par0, par1, cross0, cross1;
+		TLorentzVector pos0, pos1, neg0, neg1;
 		
 		std::vector<Int_t> trk_pos {};
 		std::vector<Int_t> trk_neg {};
+		int netcharge = 0;
 		if(ntrk==4){
 			for(int itrk=0; itrk<ntrk; itrk++){
 				if(q.at(itrk) == -1){
@@ -733,8 +737,7 @@ void plot_rho_inv_mass(std::string treename, std::string filepath, std::string f
 				}else{
 					std::cout<<"Irregular charge"<<std::endl;
 				}
-			}
-		
+			}	
 			if(trk_neg.size() == 2 && trk_pos.size() == 2){
 				std::array<Float_t, 2> pt_pair1, pt_pair2, eta_pair1, eta_pair2, phi_pair1, phi_pair2 {};
 
@@ -744,25 +747,100 @@ void plot_rho_inv_mass(std::string treename, std::string filepath, std::string f
 				int n1 = trk_neg.at(1);
 				
 				//combination 1: p0n0 and p1n1, call it "par"
-			        par0.SetPtEtaPhiM(pt.at(p0) + pt.at(n0), eta.at(p0) + eta.at(n0), phi.at(p0) + phi.at(n0), mass);
-			        par1.SetPtEtaPhiM(pt.at(p1) + pt.at(n1), eta.at(p1) + eta.at(n1), phi.at(p1) + phi.at(n1), mass);
+			        pos0.SetPtEtaPhiM(pt.at(p0), eta.at(p0), phi.at(p0), mass);
+			        pos1.SetPtEtaPhiM(pt.at(p1), eta.at(p1), phi.at(p1), mass);
 
 				// combination 2: p0n1 and p1n0, call it "cross"
-			        cross0.SetPtEtaPhiM(pt.at(p0) + pt.at(n1), eta.at(p0) + eta.at(n1), phi.at(p0) + phi.at(n1), mass);
-				cross1.SetPtEtaPhiM(pt.at(p1) + pt.at(n0), eta.at(p1) + eta.at(n0), phi.at(p1) + phi.at(n0), mass);
+			        neg0.SetPtEtaPhiM(pt.at(n0), eta.at(n0), phi.at(n0), mass);
+				neg1.SetPtEtaPhiM(pt.at(n1), eta.at(n1), phi.at(n1), mass);
 
 			}
-			TLorentzVector parpair = par0 + par1;
-			TLorentzVector crosspair = cross0 + cross1;
-			//std::cout<< pair1.M() << std::endl;
-			hist->Fill(parpair.M()*1e3, crosspair.M()*1e3);
+			TLorentzVector pair00 = pos0 + neg0;
+			TLorentzVector pair11 = pos1 + neg1;
+			TLorentzVector pair01 = pos0 + neg1;
+			TLorentzVector pair10 = pos1 + neg0;
+			
+			// LEave it in GeV here so it is in GeV in the tree
+			float rho_inv00 = pair00.M();
+			float rho_inv11 = pair11.M();
+			float rho_inv01 = pair01.M();
+			float rho_inv10 = pair10.M();
+
+			hist->Fill(rho_inv00*1e3, rho_inv11.M()*1e3);
+			hist->Fill(rho_inv01.M()*1e3, rho_inv10.M()*1e3);
+
+			auto df2 = df
+				.Define("inv_mass_pair1", [](rho_inv00, rho_inv11) { RVecF v{rho_inv00, rho_inv11};return v; }, {});
+				.Define("inv_mass_pair2", [](rho_inv01, rho_inv10) { RVecF v{rho_inv01, rho_inv10};return v; }, {});
 		}
 		
 			
 	};
 
 	df.Foreach(fillhisto, {"trk_pt", "trk_eta", "trk_phi", "trk_q", "ntrk"});	
-	
+
+	int minbinx = hist->GetXaxis()->FindBin(450);	
+	int maxbinx = hist->GetXaxis()->FindBin(550);
+	int minbiny = hist->GetYaxis()->FindBin(450);
+	int maxbiny = hist->GetYaxis()->FindBin(550);	
+
+
+	TH1D* projx = hist->ProjectionX("xprojection", minbinx, maxbinx);	
+	TH1D* projy = hist->ProjectionY("yprojection", minbiny, maxbiny);	
+	//c1->SetLogz();
 	hist->Draw("COLZ");
-	c1->SaveAs(("Invariant_rho"+filename+".png").c_str());
+	c1->SaveAs(("Invariant_rho_"+filename+".png").c_str());
+	c1->Clear();
+
+	TF1 *bw = new TF1("bw", "TMath::BreitWigner(x, [0], [1])", 480, 520);
+    	bw->SetParameters(497, 10);   // Initial values for mean and gamma
+    	bw->SetParNames("Mean", "Gamma");
+    	bw->SetLineColor(kRed);	
+
+	TF1* gausfitx = new TF1("gausfitx", "gaus", 480, 510);
+	TF1* gausfity = new TF1("gausfity", "gaus", 480, 510);
+
+	gausfitx->SetParameters(1400, 5000, 10);
+	projx->Fit(gausfitx, "R");
+	
+	c1->cd();
+	projx->Draw();
+	//gausfitx->Draw("same");
+	
+
+	TPad *pad_projx = new TPad("pad_projx", "Zoom inset", 0.35, 0.55, 0.68, 0.88);
+	pad_projx->SetFillStyle(0);  // transparent
+	pad_projx->SetLineColor(kGray + 1);
+	pad_projx->Draw();
+	pad_projx->cd();
+
+	TH1D* zoom_projx = (TH1D*)projx->Clone("zoom_projx");
+	zoom_projx->GetXaxis()->SetRangeUser(450, 550);
+	zoom_projx->Draw();
+	gausfitx->Draw("same");
+
+	c1->cd();
+	c1->SaveAs(("Invariant_rho_projx"+filename+".png").c_str());
+	c1->Clear();
+
+
+	gausfity->SetParameters(1400, 5000, 10);
+	projy->Fit(gausfity, "R");
+	c1->cd();
+	projy->Draw();
+	gausfity->Draw("same");
+
+	TPad *pad_projy = new TPad("pad_projy", "Zoom inset", 0.35, 0.55, 0.68, 0.88);
+	pad_projy->SetFillStyle(0);  // transparent
+	pad_projy->SetLineColor(kGray + 1);
+	pad_projy->Draw();
+	pad_projy->cd();
+
+	TH1D* zoom_projy = (TH1D*)projy->Clone("zoom_projy");
+	zoom_projy->GetXaxis()->SetRangeUser(450, 550);
+	zoom_projy->Draw();
+	gausfity->Draw("same");
+	
+	c1->cd();
+	c1->SaveAs(("Invariant_rho_projy"+filename+".png").c_str());
 }        

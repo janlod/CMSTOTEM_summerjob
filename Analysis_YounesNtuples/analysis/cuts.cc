@@ -165,8 +165,8 @@ TH2F* get2D_hist(TTree* tree, std::string svarX, std::string svarY, int nbinX, f
 
 	   TH2F* hist = new TH2F((svarX + " vs. " + svarY).c_str(), (svarX + " vs. " + svarY).c_str(), nbinX, minbinX, maxbinX, nbinY, minbinY, maxbinY);
 
-	   Long64_t nentries = tree->GetEntries();
-	   for(int event=0; event<nentries; event++){
+	 Long64_t nentries = tree->GetEntries();
+	for(int event=0; event<nentries; event++){
 		tree->GetEvent(event);
 		if(ntrk==4){
 			for(int itrk=0; itrk<ntrk; itrk++){

@@ -20,13 +20,13 @@ void simpleCut(std::string treename, std::string fileloc, std::string filename){
 	ROOT::RDataFrame df(tree, file);
 
 	int ntrk = 4;	
-	float pt_min = 0.0;
-	float eta_max = 1.5;
-	float zPV_max = 13.0;
-	float dxy_max = 0.09;
-	float dz_max = 0.65;
-	float dxydxyerr_max = 2.5;
-	float dzdzerr_max = 1.2;
+	float pt_min = 0.25;
+	float eta_max = 2.5;  //1.5
+	float zPV_max = 15.0; //13
+	float dxy_max = 0.15; //0.09
+	float dz_max = 1.0; // 0.65
+	float dxydxyerr_max = 5.0; //2.5
+	float dzdzerr_max = 2.0; //1.2
 
 
 	auto trk4_cut = df.Filter([ntrk](int x) { return x==ntrk; }, {"ntrk"});

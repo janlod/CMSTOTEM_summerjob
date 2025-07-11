@@ -1,6 +1,7 @@
 #include "TMath.h"
 #include "TTree.h"
 #include "TF1.h"
+#include "TPad.h"
 #include "TH2F.h"
 #include "TH1F.h"
 #include "TGraph.h"
@@ -22,6 +23,7 @@
 #include "TRandom3.h"
 #include "TMultiGraph.h"
 #include <ROOT/RDataFrame.hxx>
+#include "TPaletteAxis.h"
 
 #include <iostream>
 #include <vector>
@@ -58,7 +60,7 @@ int main(){
 
 
     int listSize = fileList.size();
-    for (int ifile=0; ifile<listSize; ifile++){
+    for (int ifile=0; ifile<listSize-7; ifile++){
         std::string filename = fileList.at(ifile);
         std::string filebasename = filename.erase(filename.size() - 5);
 
@@ -90,9 +92,9 @@ int main(){
 	//std::cout<<"Performing cuts on file "<<filebasename<<".root \n"<<std::endl;
 	//cut_3sigma(cuttree, filebasename);
 	//std::cout<<"\n\n\n";
-    //simpleCut("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename);
+   // simpleCut("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename);
     plot_rho_inv_mass("tree",("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename, 0.13957);
-    //plot_rho_inv_mass("tree",("simple_cutted_data/"+filename+"simplecut.root").c_str(), filename, 0.139);
+    //plot_rho_inv_mass("tree",("simple_cutted_data/"+filename+"simplecut.root").c_str(), filename, 0.13957);
         }
 //simpleCut("tree", "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM20.root", "TOTEM20");
  
