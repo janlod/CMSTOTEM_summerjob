@@ -775,22 +775,18 @@ void add_inv_massBranches(std::string treename, std::string filepath, std::strin
 		.Define("inv_mass_pair2", [=](RVecF pt, RVecF eta, RVecF phi, RVecI q, int ntrk) {
 		return calcInvMassPairs(pt, eta, phi, q, ntrk).second; }, {"trk_pt", "trk_eta", "trk_phi", "trk_q", "ntrk"});
 
-	df2.Snapshot("tree", "../data/newfile.root");
+	df2.Snapshot("tree", ("../data/inv_mass_data/" + filename + ".root").c_str());
 	
 }
 
 
 
-void plot_rho_inv_mass(std::string treename, std::string filepath, std::string filename, std::string option=""){
+TH2F* get2D_inv_mass_hist(std::string treename, std::string filepath, std::string filename, int nbin, float min, float max){
 	auto tree = treename.c_str();
 	auto file = filepath.c_str();
 
 	ROOT::RDataFrame df(tree, file);
-	float min = 240.0;
-	float max = 1200.0;
-	int nbin = 200;
 
-	TCanvas* c1 = new TCanvas("Figure", "Figure", 1200, 800);
 	TH2F* hist = new TH2F(("rec. inv. mass from "+filename).c_str(), "Reconstruncted invariant mass in MeV", nbin, min, max, nbin, min, max);
 
 	
@@ -810,159 +806,99 @@ void plot_rho_inv_mass(std::string treename, std::string filepath, std::string f
 			
 	};
 
-	df.Foreach(fillhisto, {"inv_mass_pair1", "inv_mass_pair2", "ntrk"});	
+	df.Foreach(fillhisto, {"inv_mass_pair1", "inv_mass_pair2", "ntrk"});
 
-	int minbinx = hist->GetXaxis()->FindBin(450);	
-	int maxbinx = hist->GetXaxis()->FindBin(550);
-	int minbiny = hist->GetYaxis()->FindBin(450);
-	int maxbiny = hist->GetYaxis()->FindBin(550);	
+return hist;
+}
 
 
-	TH1D* projx = hist->ProjectionX("xprojection", minbinx, maxbinx);	
-	TH1D* projy = hist->ProjectionY("yprojection", minbiny, maxbiny);	
+void plot_2D_inv_mass_hist(TH2F* hist, std::string filename){
+	TCanvas* c1 = new TCanvas("Figure","Fig", 1200, 1000);
 	c1->SetLogz();
 	hist->Draw("COLZ");
 	c1->SaveAs(("../plots/Invariant_rho_"+filename+".png").c_str());
+	TFile* outfile = new TFile(("../plots/Invariant_rho_"+filename+".png").c_str(),"RECREATE");
+	c1->Write();
 	c1->Clear();
-	
-	TF1* gausfity = new TF1("gausfity", "gaus", 480, 510);
-
-	c1->cd();
-	//c1->SetLogy();
-	projx->Draw();
+	outfile->Close();
+}
 
 
-	
-	
-	TF1* gausfitx = new TF1("gausfitx", "gaus", 480, 510);
-	if(option=="fit"){
-		float amp = 1600.0;
-		float mean = 498.0;
-		float sigma = 19.0;
-		for (int i=0; i<10; i++){
-			std::string projname = "xprojection_it" + std::to_string(i);
-		  	TH1D* projx = hist->ProjectionX(projname.c_str(), minbinx, maxbinx);
-			gausfitx->SetParameters(amp, mean, sigma);
-			projx->Fit(gausfitx,"R", "",  mean - 1.2* sigma, mean + 1.2*sigma);
-			gausfitx->SetRange(mean - 1.2*sigma, mean + 1.2*sigma);
-			
-
-			if(abs(amp - gausfitx->GetParameter(0))<0.0001 && abs(mean - gausfitx->GetParameter(1))<0.0001 && abs(sigma - gausfitx->GetParameter(2))<0.0001){
-				projx->Draw();
-				gausfitx->Draw("same");
-				TPad *pad_projx = new TPad("pad_projx", "Zoom inset", 0.35, 0.55, 0.68, 0.88);
-				pad_projx->SetFillStyle(0);  // transparent
-				pad_projx->SetLineColor(kGray + 1);
-				pad_projx->Draw();
-				pad_projx->cd();
-
-				TH1D* zoom_projx = (TH1D*)projx->Clone("zoom_projx");
-				zoom_projx->GetXaxis()->SetRangeUser(450, 550);
-				zoom_projx->Draw("same");
-				gausfitx->Draw("same");
-
-				TFile* outFile = new TFile(("../plots/kaon_mass_fits/inv_mass_rho_projx" + filename +".root").c_str(), "RECREATE");
-				c1->Write();  // writes the canvas into the file
-				outFile->Close();
-				c1->Clear();
-				std::cout<<"\n"<<std::endl;
-				std::cout <<filename<< " xproj Amplitude: " << gausfitx->GetParameter(0) << " ± " << gausfitx->GetParError(0) << std::endl;
-				std::cout <<filename<<  " xproj Mean:      " << gausfitx->GetParameter(1) << " ± " << gausfitx->GetParError(1) << std::endl;
-				std::cout <<filename<< " xproj Sigma:     " << gausfitx->GetParameter(2) << " ± " << gausfitx->GetParError(2) << std::endl;
-				std::cout <<filename<< " xproj FWHM:     " << 2.35482*gausfitx->GetParameter(2) << " ± " << 2.35482*gausfitx->GetParError(2) << std::endl;
-				std::cout<<"\n"<<std::endl;
-
-				break;
-			}	
-
-
-			amp = gausfitx->GetParameter(0);
-			mean = gausfitx->GetParameter(1);
-			sigma = gausfitx->GetParameter(2);
-			
-			minbinx = hist->GetYaxis()->FindBin(mean - 3*sigma);
-			maxbinx = hist->GetYaxis()->FindBin(mean + 3*sigma);
-
-		
-		}
-	
-	
-		TF1 *bw = new TF1("bw", "TMath::BreitWigner(x, [0], [1])", 480,520);
-		bw->SetParameters(497, 15);   // Initial values for mean and gamma
-		bw->SetParNames("Mean", "Gamma");
-		bw->SetLineColor(kRed);	
-		projx->Fit(bw, "R");
-		c1->cd();
-		projx->Draw();
-		bw->Draw("same");	
-		TPad *pad_projx = new TPad("pad_projx", "Zoom inset", 0.35, 0.55, 0.68, 0.88);
-		pad_projx->SetFillStyle(0);  // transparent
-		pad_projx->SetLineColor(kGray + 1);
-		pad_projx->Draw();
-		pad_projx->cd();
-
-		TH1D* zoom_projx = (TH1D*)projx->Clone("zoom_projx");
-		zoom_projx->GetXaxis()->SetRangeUser(450, 550);
-		zoom_projx->Draw("same");
-		bw->Draw("same");
-		TFile* outFile = new TFile(("../plots/bw_test" + filename +".root").c_str(), "RECREATE");
-		c1->Write();  // writes the canvas into the file
-		outFile->Close();
-		c1->Clear();
-
+TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, std::string option){
+	TCanvas* c1 = new TCanvas("Figure", "Fig", 1200, 1000);
+	TH1D* proj;
+	if(option=="x"){	
+		int minbin = hist->GetYaxis()->FindBin(projmin);	
+		int maxbin = hist->GetYaxis()->FindBin(projmax);
+		proj = hist->ProjectionX("xprojection", minbin, maxbin);
+	}else if(option=="y"){	
+		int minbin = hist->GetXaxis()->FindBin(projmin);
+		int maxbin = hist->GetXaxis()->FindBin(projmax);	
+		proj = hist->ProjectionY("yprojection", minbin, maxbin);
+	}else{
+		std::cerr<<"Invalid option! Chose \"x\" or \"y\"."<<std::endl;
 	}
+	
+	std::string name = option + "projection_ " + filename;
+	TFile* outfile = new TFile(name.c_str(), "RECREATE");
+	proj->Draw();
+	c1->Write();
+	outfile->Close();
 
-	c1->cd();
-	//c1->SetLogy();
-	projy->Draw();
-	if(option=="fit"){
-		float amp = 1600.0;
-		float mean = 498.0;
-		float sigma = 19.0;
-		for (int i=0; i<10; i++){
-			std::string projname = "yprojection_it" + std::to_string(i);
-		  	TH1D* projy = hist->ProjectionY(projname.c_str(), minbiny, maxbiny);
-			gausfity->SetParameters(amp, mean, sigma);
-			projy->Fit(gausfity,"R", "", mean - sigma, mean + sigma);
-			gausfity->SetRange(mean - sigma, mean + sigma);
+	return proj;
+}
+
+
+void gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> initial_guess, std::string option){
+	
+	float amp = initial_guess[0];
+	float mean = initial_guess[1];
+	float sigma = initial_guess[2];
+
+	TCanvas* c1 = new TCanvas("Figure", "Fig", 1200, 1000);
+	TF1* gausfit = new TF1("gausfit", "gaus", mean - 1.2*sigma, mean + 1.2*sigma);	
+	
+	for (int i=0; i<10; i++){
+		std::string projname = option + "projection_it" + std::to_string(i);
+		TH1D* proj = getProj(hist, mean - 3*sigma, mean + 3*sigma, filename, option);
+		gausfit->SetParameters(amp, mean, sigma);
+		proj->Fit(gausfit,"R", "",  mean - 1.2* sigma, mean + 1.2*sigma);
+		gausfit->SetRange(mean - 1.2*sigma, mean + 1.2*sigma);
 		
-			if(abs(amp - gausfity->GetParameter(0))<0.0001 && abs(mean - gausfity->GetParameter(1))<0.0001 && abs(sigma - gausfity->GetParameter(2))<0.0001){
-				projy->Draw();
-				gausfity->Draw("same");
-				TPad *pad_projy = new TPad("pad_projy", "Zoom inset", 0.35, 0.55, 0.68, 0.88);
-				pad_projy->SetFillStyle(0);  // transparent
-				pad_projy->SetLineColor(kGray + 1);
-				pad_projy->Draw();
-				pad_projy->cd();
+		if(abs(amp - gausfit->GetParameter(0))<0.0001 && abs(mean - gausfit->GetParameter(1))<0.0001 && abs(sigma - gausfit->GetParameter(2))<0.0001){
+			proj->Draw();
+			gausfit->Draw("same");
+			TPad *pad_proj = new TPad(("pad_proj"+option).c_str(), "Zoom inset", 0.35, 0.55, 0.68, 0.88);
+			pad_proj->SetFillStyle(0);  // transparent
+			pad_proj->SetLineColor(kGray + 1);
+			pad_proj->Draw();
+			pad_proj->cd();
 
-				TH1D* zoom_projy = (TH1D*)projy->Clone("zoom_projy");
-				zoom_projy->GetXaxis()->SetRangeUser(450, 550);
-				zoom_projy->Draw("same");
-				gausfity->Draw("same");
+			TH1D* zoom_proj = (TH1D*)proj->Clone(("zoom_proj"+option).c_str());
+			zoom_proj->GetXaxis()->SetRangeUser(450, 550);
+			zoom_proj->Draw("same");
+			gausfit->Draw("same");
 
+			TFile* outFile = new TFile(("../plots/kaon_mass_fits/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
+			c1->Write();  // writes the canvas into the file
+			outFile->Close();
+			c1->Clear();
+			std::cout<<"\n"<<std::endl;
+			std::cout <<filename<< option + " proj Amplitude: " << gausfit->GetParameter(0) << " ± " << gausfit->GetParError(0) << std::endl;
+			std::cout <<filename<< option +  " proj Mean:      " << gausfit->GetParameter(1) << " ± " << gausfit->GetParError(1) << std::endl;
+			std::cout <<filename<< option + " proj Sigma:     " << gausfit->GetParameter(2) << " ± " << gausfit->GetParError(2) << std::endl;
+			std::cout <<filename<< option + " proj FWHM:     " << 2.35482*gausfit->GetParameter(2) << " ± " << 2.35482*gausfit->GetParError(2) << std::endl;
+			std::cout<<"\n"<<std::endl;
 
-				TFile* outFile = new TFile(("../plots/kaon_mass_fits/inv_mass_rho_projy" + filename +".root").c_str(), "RECREATE");
-				c1->Write();  // writes the canvas into the file
-				outFile->Close();
-				c1->Clear();
-				std::cout<<"\n"<<std::endl;
-				std::cout <<filename<< " yproj Amplitude: " << gausfity->GetParameter(0) << " ± " << gausfity->GetParError(0) << std::endl;
-				std::cout <<filename<< " yproj Mean:      " << gausfity->GetParameter(1) << " ± " << gausfity->GetParError(1) << std::endl;
-				std::cout <<filename<< " yproj Sigma:     " << gausfity->GetParameter(2) << " ± " << gausfity->GetParError(2) << std::endl;
-				std::cout <<filename<< " yproj FWHM:     " << 2.35482*gausfity->GetParameter(2) << " ± " << 2.35482*gausfity->GetParError(2) << std::endl;
-				std::cout<<"\n"<<std::endl;
-
-				break;
-			}	
-			amp = gausfity->GetParameter(0);
-			mean = gausfity->GetParameter(1);
-			sigma = gausfity->GetParameter(2);
-
-			minbiny = hist->GetXaxis()->FindBin(mean - 3*sigma);
-			maxbiny = hist->GetXaxis()->FindBin(mean + 3*sigma);
-
-						
-		}
-
+			break;
+		}	
+		amp = gausfit->GetParameter(0);
+		mean = gausfit->GetParameter(1);
+		sigma = gausfit->GetParameter(2);
+		
+	
 	}
-}        
+}	
+	
+
+       
