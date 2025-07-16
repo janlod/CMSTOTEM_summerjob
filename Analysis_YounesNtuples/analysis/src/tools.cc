@@ -817,7 +817,7 @@ void plot_2D_inv_mass_hist(TH2F* hist, std::string filename){
 	c1->SetLogz();
 	hist->Draw("COLZ");
 	c1->SaveAs(("../plots/Invariant_rho_"+filename+".png").c_str());
-	TFile* outfile = new TFile(("../plots/Invariant_rho_"+filename+".png").c_str(),"RECREATE");
+	TFile* outfile = new TFile(("../plots/Invariant_rho_"+filename+".root").c_str(),"RECREATE");
 	c1->Write();
 	c1->Clear();
 	outfile->Close();
@@ -830,20 +830,24 @@ TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, st
 	if(option=="x"){	
 		int minbin = hist->GetYaxis()->FindBin(projmin);	
 		int maxbin = hist->GetYaxis()->FindBin(projmax);
-		proj = hist->ProjectionX("xprojection", minbin, maxbin);
+		proj = hist->ProjectionX(("xprojection" + filename).c_str(), minbin, maxbin);
 	}else if(option=="y"){	
 		int minbin = hist->GetXaxis()->FindBin(projmin);
 		int maxbin = hist->GetXaxis()->FindBin(projmax);	
-		proj = hist->ProjectionY("yprojection", minbin, maxbin);
+		proj = hist->ProjectionY(("yprojection" + filename).c_str(), minbin, maxbin);
 	}else{
 		std::cerr<<"Invalid option! Chose \"x\" or \"y\"."<<std::endl;
 	}
 	
-	std::string name = option + "projection_ " + filename;
+	std::string name = "../plots/kaon_mass_fits/" + option + "projection_" + filename + ".root";
 	TFile* outfile = new TFile(name.c_str(), "RECREATE");
+	proj->Sumw2();
+	proj->SetMarkerStyle(21); 
 	proj->Draw();
 	c1->Write();
 	outfile->Close();
+	delete c1;
+	delete outfile;
 
 	return proj;
 }
@@ -855,15 +859,14 @@ void gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> in
 	float mean = initial_guess[1];
 	float sigma = initial_guess[2];
 
-	TCanvas* c1 = new TCanvas("Figure", "Fig", 1200, 1000);
 	TF1* gausfit = new TF1("gausfit", "gaus", mean - 1.2*sigma, mean + 1.2*sigma);	
-	
+	TCanvas* c2 = new TCanvas("Fig1", "Fig1", 1200, 1000);
 	for (int i=0; i<10; i++){
 		std::string projname = option + "projection_it" + std::to_string(i);
 		TH1D* proj = getProj(hist, mean - 3*sigma, mean + 3*sigma, filename, option);
 		gausfit->SetParameters(amp, mean, sigma);
-		proj->Fit(gausfit,"R", "",  mean - 1.2* sigma, mean + 1.2*sigma);
-		gausfit->SetRange(mean - 1.2*sigma, mean + 1.2*sigma);
+		gausfit->SetRange(mean - 1.0*sigma, mean + 1.0*sigma);
+		proj->Fit(gausfit,"R", "",  mean - 1.0* sigma, mean + 1.0*sigma);
 		
 		if(abs(amp - gausfit->GetParameter(0))<0.0001 && abs(mean - gausfit->GetParameter(1))<0.0001 && abs(sigma - gausfit->GetParameter(2))<0.0001){
 			proj->Draw();
@@ -879,24 +882,23 @@ void gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> in
 			zoom_proj->Draw("same");
 			gausfit->Draw("same");
 
-			TFile* outFile = new TFile(("../plots/kaon_mass_fits/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
-			c1->Write();  // writes the canvas into the file
+			TFile* outFile = new TFile(("../plots/kaon_mass_fits/refined_gaussian/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
+			c2->Write();  // writes the canvas into the file
 			outFile->Close();
-			c1->Clear();
+			c2->Clear();
 			std::cout<<"\n"<<std::endl;
 			std::cout <<filename<< option + " proj Amplitude: " << gausfit->GetParameter(0) << " ± " << gausfit->GetParError(0) << std::endl;
 			std::cout <<filename<< option +  " proj Mean:      " << gausfit->GetParameter(1) << " ± " << gausfit->GetParError(1) << std::endl;
 			std::cout <<filename<< option + " proj Sigma:     " << gausfit->GetParameter(2) << " ± " << gausfit->GetParError(2) << std::endl;
 			std::cout <<filename<< option + " proj FWHM:     " << 2.35482*gausfit->GetParameter(2) << " ± " << 2.35482*gausfit->GetParError(2) << std::endl;
 			std::cout<<"\n"<<std::endl;
-
+			
 			break;
 		}	
 		amp = gausfit->GetParameter(0);
 		mean = gausfit->GetParameter(1);
 		sigma = gausfit->GetParameter(2);
 		
-	
 	}
 }	
 	

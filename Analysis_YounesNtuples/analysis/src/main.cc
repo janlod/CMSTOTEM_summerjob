@@ -39,7 +39,7 @@
 #include "tools.cc"
 #include "cuts.cc"
 #include "simplecuts.cc"
-
+#include "dataCombiner.cc"
 
 namespace fs = std::filesystem;
 
@@ -58,6 +58,13 @@ int main(){
         file.close();
     }
 
+    std::string folderpath = "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"; 
+    std::vector<std::string> files = { "TOTEM40.root", "TOTEM41.root", "TOTEM42.root", "TOTEM43.root" };
+    for(std::string& file : files){
+    	file = folderpath + file;
+    }
+    std::cout<<files.at(0)<<std::endl;
+    combineTrees(files, "4");
 
     int listSize = fileList.size();
     for (int ifile=0; ifile<listSize; ifile++){
@@ -95,9 +102,19 @@ int main(){
    // simpleCut("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename);
     //plot_rho_inv_mass("tree",("../data/simple_cutted_data/"+filename+"simplecut.root").c_str(), filename, 0.13957);
    
-add_inv_massBranches("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename, 0.13957);	
-  
-       TH2F* inv_mass_hist2D = get2D_inv_mass_hist("tree",)	
+//add_inv_massBranches("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename, 0.13957);	
+
+	//TH2F* inv_mass_hist2D = get2D_inv_mass_hist("tree",("../data/inv_mass_data/"+filename + ".root").c_str(), filename, 400, 300, 1200);
+	//plot_2D_inv_mass_hist(inv_mass_hist2D, filename);
+	//plot_2D_inv_mass_hist(inv_mass_hist2D, filename);	 
+	//TH1D* projx = getProj(inv_mass_hist2D, 470, 530, filename, "x");	
+	//TH1D* projy = getProj(inv_mass_hist2D, 470, 530, filename, "y");
+	
+	//std::array<float, 3> gauss_guess = {1000, 500, 20};
+	//gaussfit_kaon_mass(inv_mass_hist2D, filename, gauss_guess, "y");
+	//gaussfit_kaon_mass(inv_mass_hist2D, filename, gauss_guess, "x");
+
+       	
     }
 //simpleCut("tree", "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM20.root", "TOTEM20");
  
