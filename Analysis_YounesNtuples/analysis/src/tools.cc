@@ -723,8 +723,11 @@ auto calcInvMassPairs = [massPi](RVecF pt, RVecF eta, RVecF phi, RVecI q, Int_t 
 			}else{
 				std::cout<<"Irregular charge"<<std::endl;
 			}
-		}	
-		if(trk_neg.size() == 2 && trk_pos.size() == 2){
+		}
+		int pos_charge = trk_pos.size();
+		int neg_charge = trk_neg.size();
+	//	std::cout<<pos_charge-neg_charge<<std::endl;
+		if(pos_charge - neg_charge == 0){
 			std::array<Float_t, 2> pt_pair1, pt_pair2, eta_pair1, eta_pair2, phi_pair1, phi_pair2 {};
 
 			int p0 = trk_pos.at(0);
@@ -740,7 +743,8 @@ auto calcInvMassPairs = [massPi](RVecF pt, RVecF eta, RVecF phi, RVecI q, Int_t 
 			neg0.SetPtEtaPhiM(pt.at(n0), eta.at(n0), phi.at(n0), massPi);
 			neg1.SetPtEtaPhiM(pt.at(n1), eta.at(n1), phi.at(n1), massPi);
 
-		}
+		
+		
 		TLorentzVector pair00 = pos0 + neg0;
 		TLorentzVector pair11 = pos1 + neg1;
 		TLorentzVector pair01 = pos0 + neg1;
@@ -757,9 +761,9 @@ auto calcInvMassPairs = [massPi](RVecF pt, RVecF eta, RVecF phi, RVecI q, Int_t 
 
 
 	return std::make_pair(rho_inv_mass_pair1, rho_inv_mass_pair2);
+		}
 	}
-
-	return std::make_pair(RVecF{}, RVecF{});
+	return std::make_pair(RVecF{0,0}, RVecF{0,0});
 };
 
 
@@ -790,24 +794,29 @@ TH2F* get2D_inv_mass_hist(std::string treename, std::string filepath, std::strin
 	TH2F* hist = new TH2F(("rec. inv. mass from "+filename).c_str(), "Reconstruncted invariant mass in MeV", nbin, min, max, nbin, min, max);
 
 	
-
-	auto fillhisto = [hist] (RVecF pair1, RVecF pair2, Int_t ntrk){
+	int eventnumber = 0;
+	int empty_count = 0;
+	auto fillhisto = [hist, &eventnumber, &empty_count] (RVecF pair1, RVecF pair2, Int_t ntrk){
 		if(ntrk==4){
+			       	eventnumber++;	
 			float rho_inv00 = pair1.at(0);
 			float rho_inv11 = pair1.at(1);
 			float rho_inv01 = pair2.at(0);
 			float rho_inv10 = pair2.at(1);
-
-			hist->Fill(rho_inv00*1e3, rho_inv11*1e3);
-			hist->Fill(rho_inv01*1e3, rho_inv10*1e3);
-		}
-
-		
+			if(abs(rho_inv00-0.0)<1e-8 && abs(rho_inv01-0.0)<1e-8 && abs(rho_inv11-0.0)<1e-8 && abs(rho_inv10-0.0)<1e-8){
+			empty_count++;
+			}else{
+				hist->Fill(rho_inv00*1e3, rho_inv11*1e3);
+				hist->Fill(rho_inv01*1e3, rho_inv10*1e3);
+			}	
 			
+
+		}	
 	};
 
 	df.Foreach(fillhisto, {"inv_mass_pair1", "inv_mass_pair2", "ntrk"});
-
+	std::cout<<"Total number of 4-trks events: "<<eventnumber<<std::endl;
+	std::cout<<"Number of charge zero 4-trks events: "<<eventnumber-empty_count<<std::endl;
 return hist;
 }
 

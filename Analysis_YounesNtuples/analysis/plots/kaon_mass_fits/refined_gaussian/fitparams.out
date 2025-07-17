@@ -2,6 +2,9 @@ rm -f main.o exe_ana
 g++ -g -O0 -Wall -pthread -std=c++17 -m64 -I/usr/include/root -c main.cc -o main.o
 g++ -g -O0 -Wall main.o -g -o exe_ana -L/usr/lib64/root -lGui -lCore -lImt -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lROOTVecOps -lTree -lTreePlayer -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lROOTNTuple -lMultiProc -lROOTDataFrame -lROOTNTupleUtil -pthread -lm -ldl -rdynamic
 ./exe_ana
+/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM40.root
+Total number of 4-trks events: 243764
+Number of charge zero 4-trks events: 214979
 ****************************************
 Minimizer is Minuit2 / Migrad
 Chi2                      =      28.3145
@@ -135,6 +138,8 @@ TOTEM20x proj Sigma:     8.21639 ± 0.491915
 TOTEM20x proj FWHM:     19.3481 ± 1.15837
 
 
+Total number of 4-trks events: 246803
+Number of charge zero 4-trks events: 217548
 ****************************************
 Minimizer is Minuit2 / Migrad
 Chi2                      =      35.1734
@@ -259,6 +264,8 @@ TOTEM21x proj Sigma:     10.7671 ± 0.61519
 TOTEM21x proj FWHM:     25.3546 ± 1.44866
 
 
+Total number of 4-trks events: 243589
+Number of charge zero 4-trks events: 214701
 ****************************************
 Minimizer is Minuit2 / Migrad
 Chi2                      =      55.6012
@@ -392,6 +399,8 @@ TOTEM22x proj Sigma:     10.9952 ± 0.662614
 TOTEM22x proj FWHM:     25.8918 ± 1.56034
 
 
+Total number of 4-trks events: 242283
+Number of charge zero 4-trks events: 213590
 ****************************************
 Minimizer is Minuit2 / Migrad
 Chi2                      =      51.4612
@@ -516,6 +525,8 @@ TOTEM23x proj Sigma:     9.60974 ± 0.578209
 TOTEM23x proj FWHM:     22.6292 ± 1.36158
 
 
+Total number of 4-trks events: 252983
+Number of charge zero 4-trks events: 237804
 ****************************************
 Minimizer is Minuit2 / Migrad
 Chi2                      =      43.4429
@@ -659,6 +670,8 @@ NCalls                    =           83
 Constant                  =      496.751   +/-   11.1988     
 Mean                      =      497.831   +/-   0.279549    
 Sigma                     =      10.3577   +/-   0.507957     	 (limited)
+Total number of 4-trks events: 253022
+Number of charge zero 4-trks events: 238059
 ****************************************
 Minimizer is Minuit2 / Migrad
 Chi2                      =      39.0036
@@ -756,6 +769,8 @@ TOTEM41x proj Sigma:     12.2859 ± 0.642303
 TOTEM41x proj FWHM:     28.931 ± 1.51251
 
 
+Total number of 4-trks events: 252665
+Number of charge zero 4-trks events: 237149
 ****************************************
 Minimizer is Minuit2 / Migrad
 Chi2                      =      36.5486
@@ -871,6 +886,8 @@ TOTEM42x proj Sigma:     11.4756 ± 0.667558
 TOTEM42x proj FWHM:     27.0231 ± 1.57198
 
 
+Total number of 4-trks events: 252624
+Number of charge zero 4-trks events: 237285
 ****************************************
 Minimizer is Minuit2 / Migrad
 Chi2                      =      32.1163
