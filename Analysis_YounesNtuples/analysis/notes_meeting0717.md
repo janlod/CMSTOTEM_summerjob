@@ -6,7 +6,7 @@
 - Do not do any pt cuts 
 - Valid to combine data of all TOTEM20s with each other and then also combine TOTEM40s among themselves
 - Next general idea: Introduce $\chi^2$-like variable
-	- $ \chi^2 = \sum_\text{trks}(x_{\text{mean}} - x_{\text{trk}})^2$, where $x_{\text{mean}$ is from gaussian fits from uncutted $x$ distribution and $x_{\text{trk}$ is the value of some trks
+	- $\chi^2 = \sum_\text{trks}(x_{\text{mean}} - x_{\text{trk}})^2$, where $x_{\text{mean}}$ is from gaussian fits from uncutted $x$ distribution and $x_{\text{trk}}$ is the value of some trks
 	- Then you can look at $\chi^2$ distribution and cut that to avoid to uch loss of events
 	- Idea: It doesn't matter if one trk is poorly reconstructed, rather the average of all reconstructions should decide whether event is "good" or "bad"
 	- Do this for all $x$ : dxy/sigma\_dxy, dz/sigma\_dz, zPV, dxy (from 2d correl plot), dz (from 2d correl plot), kaon mass and eventually rho mass
