@@ -833,7 +833,7 @@ void plot_2D_inv_mass_hist(TH2F* hist, std::string filename){
 }
 
 
-TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, std::string option){
+TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, std::string option, bool save=true){
 	TCanvas* c1 = new TCanvas("Figure", "Fig", 1200, 1000);
 	TH1D* proj;
 	if(option=="x"){	
@@ -847,22 +847,25 @@ TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, st
 	}else{
 		std::cerr<<"Invalid option! Chose \"x\" or \"y\"."<<std::endl;
 	}
-	
-	std::string name = "../plots/kaon_mass_fits/" + option + "projection_" + filename + ".root";
-	TFile* outfile = new TFile(name.c_str(), "RECREATE");
+
 	proj->Sumw2();
 	proj->SetMarkerStyle(21); 
 	proj->Draw();
+
+	if(save==true){
+	std::string name = "../plots/kaon_mass_fits/" + option + "projection_" + filename + ".root";
+	TFile* outfile = new TFile(name.c_str(), "RECREATE");
 	c1->Write();
 	outfile->Close();
 	delete c1;
 	delete outfile;
+	}
 
 	return proj;
 }
 
 
-void gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> initial_guess, std::string option){
+TF1* gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> initial_guess, std::string option){
 	
 	float amp = initial_guess[0];
 	float mean = initial_guess[1];
@@ -891,7 +894,7 @@ void gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> in
 			zoom_proj->Draw("same");
 			gausfit->Draw("same");
 
-			TFile* outFile = new TFile(("../plots/kaon_mass_fits/refined_gaussian/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
+			TFile* outFile = new TFile(("../plots/kaon_mass_fits/combined_data/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
 			c2->Write();  // writes the canvas into the file
 			outFile->Close();
 			c2->Clear();
@@ -909,7 +912,22 @@ void gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> in
 		sigma = gausfit->GetParameter(2);
 		
 	}
-}	
+return gausfit;
+}
+
+
+
+void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename, bool saveplots=false){
+	TCanvas* c2 = new TCanvas("Canvas", "Figure", 1200, 1000);
+	TH1D* projx = getProj(hist, 300, 1200, filename.c_str(), "x");
+	TH1D* projy = getProj(hist, 300, 1200, filename.c_str(), "y");
+	
+	gausfitx
+
+	
+
+
+}
 	
 
        

@@ -1,0 +1,292 @@
+rm -f main.o exe_ana
+g++ -g -O0 -Wall -pthread -std=c++17 -m64 -I/usr/include/root -c main.cc -o main.o
+g++ -g -O0 -Wall main.o -g -o exe_ana -L/usr/lib64/root -lGui -lCore -lImt -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lROOTVecOps -lTree -lTreePlayer -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lROOTNTuple -lMultiProc -lROOTDataFrame -lROOTNTupleUtil -pthread -lm -ldl -rdynamic
+./exe_ana
+Total number of 4-trks events: 976439
+Number of charge zero 4-trks events: 860818
+Total number of 4-trks events: 1011294
+Number of charge zero 4-trks events: 950297
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      210.956
+NDf                       =           24
+Edm                       =  2.06111e-07
+NCalls                    =           88
+Constant                  =      1312.45   +/-   11.5132     
+Mean                      =       498.47   +/-   0.140911    
+Sigma                     =      15.4261   +/-   0.217206     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      52.3224
+NDf                       =           18
+Edm                       =  1.52535e-08
+NCalls                    =           67
+Constant                  =      1229.08   +/-   12.3215     
+Mean                      =      498.112   +/-   0.134398    
+Sigma                     =      12.4682   +/-   0.209453     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      10.4488
+NDf                       =           13
+Edm                       =  1.28683e-05
+NCalls                    =           60
+Constant                  =      1155.34   +/-   13.4483     
+Mean                      =      498.001   +/-   0.0927371   
+Sigma                     =      10.6904   +/-   0.2516       	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      8.44822
+NDf                       =           11
+Edm                       =  8.88164e-08
+NCalls                    =           74
+Constant                  =      1085.54   +/-   13.8126     
+Mean                      =      498.119   +/-   0.163674    
+Sigma                     =      10.2385   +/-   0.312697     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      8.17265
+NDf                       =           11
+Edm                       =  6.74022e-09
+NCalls                    =           77
+Constant                  =      1063.33   +/-   13.6975     
+Mean                      =      498.114   +/-   0.164441    
+Sigma                     =       10.205   +/-   0.312352     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      8.17265
+NDf                       =           11
+Edm                       =  6.74022e-09
+NCalls                    =           77
+Constant                  =      1063.33   +/-   13.6975     
+Mean                      =      498.114   +/-   0.164441    
+Sigma                     =       10.205   +/-   0.312352     	 (limited)
+
+
+TOTEM2x proj Amplitude: 1063.33 ± 13.6975
+TOTEM2x proj Mean:      498.114 ± 0.164441
+TOTEM2x proj Sigma:     10.205 ± 0.312352
+TOTEM2x proj FWHM:     24.031 ± 0.735532
+
+
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      138.037
+NDf                       =           24
+Edm                       =  1.09617e-06
+NCalls                    =           88
+Constant                  =      1275.29   +/-   11.1378     
+Mean                      =      498.128   +/-   0.156917    
+Sigma                     =      16.1905   +/-   0.244243     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      60.1538
+NDf                       =           19
+Edm                       =  1.10621e-06
+NCalls                    =           69
+Constant                  =      1193.87   +/-   11.8526     
+Mean                      =      497.886   +/-   0.150469    
+Sigma                     =      13.7405   +/-   0.2473       	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      22.4961
+NDf                       =           15
+Edm                       =  1.43007e-05
+NCalls                    =           69
+Constant                  =      1130.89   +/-   12.5852     
+Mean                      =      497.721   +/-   0.159092    
+Sigma                     =      12.1629   +/-   0.275874     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      14.3197
+NDf                       =           13
+Edm                       =  7.30507e-08
+NCalls                    =           92
+Constant                  =      1082.02   +/-   12.9293     
+Mean                      =       497.76   +/-   0.170288    
+Sigma                     =      11.4902   +/-   0.316926     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      13.0863
+NDf                       =           13
+Edm                       =  2.32712e-09
+NCalls                    =           77
+Constant                  =      1050.95   +/-   12.7288     
+Mean                      =       497.77   +/-   0.171075    
+Sigma                     =      11.4286   +/-   0.316393     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      12.4152
+NDf                       =           12
+Edm                       =  5.32836e-08
+NCalls                    =           79
+Constant                  =      1053.45   +/-   13.0691     
+Mean                      =      497.711   +/-   0.181733    
+Sigma                     =      11.2822   +/-   0.351374     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      13.1041
+NDf                       =           12
+Edm                       =  4.69053e-08
+NCalls                    =           79
+Constant                  =      1043.79   +/-   13.018      
+Mean                      =      497.692   +/-   0.181455    
+Sigma                     =      11.2464   +/-   0.350139     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      13.1041
+NDf                       =           12
+Edm                       =  4.69053e-08
+NCalls                    =           79
+Constant                  =      1043.79   +/-   13.018      
+Mean                      =      497.692   +/-   0.181455    
+Sigma                     =      11.2464   +/-   0.350139     	 (limited)
+
+
+TOTEM2y proj Amplitude: 1043.79 ± 13.018
+TOTEM2y proj Mean:      497.692 ± 0.181455
+TOTEM2y proj Sigma:     11.2464 ± 0.350139
+TOTEM2y proj FWHM:     26.4832 ± 0.824514
+
+
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      160.187
+NDf                       =           24
+Edm                       =  3.16628e-08
+NCalls                    =           72
+Constant                  =      1536.21   +/-   12.3565     
+Mean                      =      498.428   +/-   0.126819    
+Sigma                     =      15.1268   +/-   0.187703     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      48.1926
+NDf                       =           17
+Edm                       =  3.00277e-06
+NCalls                    =           84
+Constant                  =      1430.03   +/-   13.5827     
+Mean                      =      498.056   +/-   0.129976    
+Sigma                     =      12.4231   +/-   0.213063     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      18.4559
+NDf                       =           13
+Edm                       =  5.83705e-08
+NCalls                    =           92
+Constant                  =      1347.32   +/-   14.4403     
+Mean                      =      498.033   +/-   0.146242    
+Sigma                     =      11.2226   +/-   0.265825     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      21.5496
+NDf                       =           12
+Edm                       =  4.88557e-08
+NCalls                    =           95
+Constant                  =      1301.06   +/-   14.6043     
+Mean                      =      498.037   +/-   0.162257    
+Sigma                     =      11.1116   +/-   0.306428     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =       19.711
+NDf                       =           11
+Edm                       =  8.04123e-07
+NCalls                    =           79
+Constant                  =      1306.27   +/-   15.0577     
+Mean                      =      497.965   +/-   0.16561     
+Sigma                     =      10.8749   +/-   0.333845     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      18.8999
+NDf                       =           11
+Edm                       =  3.03135e-07
+NCalls                    =           79
+Constant                  =       1281.2   +/-   14.9105     
+Mean                      =      497.965   +/-   0.165968    
+Sigma                     =      10.8269   +/-   0.332382     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      18.8999
+NDf                       =           11
+Edm                       =  3.03135e-07
+NCalls                    =           79
+Constant                  =       1281.2   +/-   14.9105     
+Mean                      =      497.965   +/-   0.165968    
+Sigma                     =      10.8269   +/-   0.332382     	 (limited)
+
+
+TOTEM4x proj Amplitude: 1281.2 ± 14.9105
+TOTEM4x proj Mean:      497.965 ± 0.165968
+TOTEM4x proj Sigma:     10.8269 ± 0.332382
+TOTEM4x proj FWHM:     25.4954 ± 0.7827
+
+
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      129.729
+NDf                       =           24
+Edm                       =  3.98596e-07
+NCalls                    =           88
+Constant                  =      1486.79   +/-   12.0359     
+Mean                      =      498.011   +/-   0.142513    
+Sigma                     =      15.9499   +/-   0.217697     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =       44.246
+NDf                       =           19
+Edm                       =  3.30486e-06
+NCalls                    =           85
+Constant                  =       1373.8   +/-   12.6599     
+Mean                      =      497.635   +/-   0.145321    
+Sigma                     =      14.0199   +/-   0.243799     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =       31.698
+NDf                       =           16
+Edm                       =  2.11211e-09
+NCalls                    =           77
+Constant                  =      1321.59   +/-   13.2203     
+Mean                      =       497.55   +/-   0.15688     
+Sigma                     =      13.1206   +/-   0.284029     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      19.5332
+NDf                       =           14
+Edm                       =  1.40098e-08
+NCalls                    =           77
+Constant                  =      1298.76   +/-   13.7342     
+Mean                      =        497.6   +/-   0.161112    
+Sigma                     =      12.2539   +/-   0.301418     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      9.74384
+NDf                       =           13
+Edm                       =  2.00613e-08
+NCalls                    =           79
+Constant                  =      1277.65   +/-   13.9656     
+Mean                      =      497.799   +/-   0.161907    
+Sigma                     =      11.7244   +/-   0.305863     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      9.67556
+NDf                       =           13
+Edm                       =  1.54584e-08
+NCalls                    =           77
+Constant                  =      1255.09   +/-   13.8395     
+Mean                      =      497.765   +/-   0.162206    
+Sigma                     =      11.6714   +/-   0.304602     	 (limited)
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      9.67556
+NDf                       =           13
+Edm                       =  1.54584e-08
+NCalls                    =           77
+Constant                  =      1255.09   +/-   13.8395     
+Mean                      =      497.765   +/-   0.162206    
+Sigma                     =      11.6714   +/-   0.304602     	 (limited)
+
+
+TOTEM4y proj Amplitude: 1255.09 ± 13.8395
+TOTEM4y proj Mean:      497.765 ± 0.162206
+TOTEM4y proj Sigma:     11.6714 ± 0.304602
+TOTEM4y proj FWHM:     27.4841 ± 0.717284
+
+
