@@ -266,28 +266,6 @@ void dz_eta_correl(TTree *tree, std::string filebasename){
 	    delete c1;
 }
 
-TH1D* CropHistogram(TH1D* h_original, double x_min, double x_max) {
-	    // Get bin range corresponding to x_min and x_max
-	    int bin_min = h_original->FindBin(x_min);
-	    int bin_max = h_original->FindBin(x_max);
-
-	    int new_nbins = bin_max - bin_min + 1;
-	    double new_xmin = h_original->GetBinLowEdge(bin_min);
-	    double new_xmax = h_original->GetBinLowEdge(bin_max + 1); // upper edge
-
-	    // Create cropped histogram
-	    TH1D* h_cropped = new TH1D("h_cropped", "Cropped Histogram;X;Entries", new_nbins, new_xmin, new_xmax);
-
-	    for (int i = 1; i <= new_nbins; ++i) {
-		int original_bin = bin_min + i - 1;
-		double content = h_original->GetBinContent(original_bin);
-		double error = h_original->GetBinError(original_bin);
-		h_cropped->SetBinContent(i, content);
-		h_cropped->SetBinError(i, error);
-	    }
-
-    	    return h_cropped;
-}
 
 
 void dxy_phi_correl(TTree *tree, std::string filebasename, bool cut){
@@ -840,16 +818,22 @@ TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, st
 		int minbin = hist->GetYaxis()->FindBin(projmin);	
 		int maxbin = hist->GetYaxis()->FindBin(projmax);
 		proj = hist->ProjectionX(("xprojection" + filename).c_str(), minbin, maxbin);
+		proj->SetMarkerStyle(4);
+       		proj->SetMarkerColor(kBlue+3);
+		proj->SetLineColor(kBlue+3);	
+		proj->Sumw2();
 	}else if(option=="y"){	
 		int minbin = hist->GetXaxis()->FindBin(projmin);
 		int maxbin = hist->GetXaxis()->FindBin(projmax);	
 		proj = hist->ProjectionY(("yprojection" + filename).c_str(), minbin, maxbin);
+		proj->SetMarkerStyle(26);
+       		proj->SetMarkerColor(kRed+2);
+		proj->SetLineColor(kRed+2);	
+		proj->Sumw2();
 	}else{
 		std::cerr<<"Invalid option! Chose \"x\" or \"y\"."<<std::endl;
 	}
 
-	proj->Sumw2();
-	proj->SetMarkerStyle(21); 
 	proj->Draw();
 
 	if(save==true){
@@ -882,6 +866,7 @@ TF1* gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> in
 		
 		if(abs(amp - gausfit->GetParameter(0))<0.0001 && abs(mean - gausfit->GetParameter(1))<0.0001 && abs(sigma - gausfit->GetParameter(2))<0.0001){
 			proj->Draw();
+			gausfit->SetLineColor(proj->GetLineColor()-2);
 			gausfit->Draw("same");
 			TPad *pad_proj = new TPad(("pad_proj"+option).c_str(), "Zoom inset", 0.35, 0.55, 0.68, 0.88);
 			pad_proj->SetFillStyle(0);  // transparent
@@ -917,16 +902,79 @@ return gausfit;
 
 
 
-void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename, bool saveplots=false){
+void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename, bool saveplot=false){
 	TCanvas* c2 = new TCanvas("Canvas", "Figure", 1200, 1000);
-	TH1D* projx = getProj(hist, 300, 1200, filename.c_str(), "x");
-	TH1D* projy = getProj(hist, 300, 1200, filename.c_str(), "y");
+	float sigmax = gausfitx->GetParameter(2);
+	float sigmay = gausfity->GetParameter(2);
+	float meanx = gausfitx->GetParameter(1);
+	float meany = gausfity->GetParameter(1);
+	float sigmaxerr = gausfitx->GetParError(2);
+	float sigmayerr = gausfity->GetParError(2);
+	float meanxerr = gausfitx->GetParError(1);
+	float meanyerr = gausfity->GetParError(1);
+
+
+	TH1D* projx = getProj(hist, meanx - 3*sigmax, meanx + 3*sigmax, filename.c_str(), "x", saveplot);
+	TH1D* projy = getProj(hist, meany - 3*sigmay, meany + 3*sigmay, filename.c_str(), "y", saveplot);
+
+	c2->cd();
+	projx->SetLineColor(kBlue+3);
+	projx->SetTitle("Reconstructed invariant mass");
+	projx->SetName(("Projections " + filename).c_str());
+	projx->GetXaxis()->SetTitle("Energy [MeV]");
+	projy->SetLineColor(kRed+2);	
+	projx->Draw();
+	projy->Draw("same");
+
+	gausfitx->SetLineColor(kBlue);
+	gausfity->SetLineColor(kRed);
+	gausfitx->Draw("same");
+	gausfity->Draw("same");
+
+	TLegend* legend = new TLegend(0.35, 0.7, 0.45, 0.89);
+	legend->SetBorderSize(0);
+	legend->SetFillStyle(0);
+	legend->AddEntry(projx, "x-projection", "l");
+	legend->AddEntry(projy, "y-projection", "l");
+	legend->AddEntry(gausfitx, "Gaussian fit x", "l");
+	legend->AddEntry(gausfity, "Gaussian fit y", "l");
+	legend->Draw();
 	
-	gausfitx
-
+	TPaveText* box = new TPaveText(0.55, 0.7, 0.70, 0.90, "NDC");
+	box->SetFillColor(0);
+	box->SetBorderSize(1);
+	box->SetTextFont(42);     
+	box->SetTextSize(0.05);
+	box->SetTextAlign(12);
+	box->AddText(Form("#mu_{x} =( %.3f #pm %.3f) MeV", meanx, meanxerr));
+	box->AddText(Form("#sigma_{x} =( %.3f #pm %.3f) MeV", sigmax, sigmaxerr));
+	box->AddText(Form("#mu_{y} =( %.3f #pm %.3f) MeV", meany, meanyerr));
+	box->AddText(Form("#sigma_{y} =( %.3f #pm %.3f) MeV", sigmay, sigmayerr));
+	box->Draw("same");
 	
+	TPad *pad_proj = new TPad("Zoom", "Zoom inset", 0.45, 0.38, 0.9, 0.68);
+	pad_proj->SetFillStyle(0);  // transparent
+	pad_proj->SetLineColor(kGray + 1);
+	pad_proj->Draw();
+	pad_proj->cd();
 
+	TH1D* zoom_projx = (TH1D*)projx->Clone("zoom");
+	zoom_projx->GetXaxis()->SetRangeUser(480, 520);
+	zoom_projx->Draw("same");
+	gausfitx->Draw("same");
 
+	TH1D* zoom_projy = (TH1D*)projy->Clone("zoom_projy");
+	zoom_projy->GetXaxis()->SetRangeUser(480, 520);
+	zoom_projy->Draw("same");
+	gausfity->Draw("same");
+
+	c2->Update();
+
+	TFile* outfile = new TFile(("../plots/kaon_mass_fits/combined_data/overlay"+filename+".root").c_str(), "RECREATE");
+	c2->SaveAs("Combined_Canvas.png");
+	c2->Write();
+	outfile->Close();
+	
 }
 	
 
