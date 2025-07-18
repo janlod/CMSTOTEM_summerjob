@@ -1,9 +1,11 @@
+#include "invMass_analysis/analysis_inv_mass_hist.h"
+
 void plot_2D_inv_mass_hist(TH2F* hist, std::string filename){
 	TCanvas* c1 = new TCanvas("Figure","Fig", 1200, 1000);
 	c1->SetLogz();
 	hist->Draw("COLZ");
-	c1->SaveAs(("../plots/Invariant_rho_"+filename+".png").c_str());
-	TFile* outfile = new TFile(("../plots/Invariant_rho_"+filename+".root").c_str(),"RECREATE");
+	c1->SaveAs(("../../plots/Invariant_rho_"+filename+".png").c_str());
+	TFile* outfile = new TFile(("../../plots/Invariant_rho_"+filename+".root").c_str(),"RECREATE");
 	c1->Write();
 	c1->Clear();
 	outfile->Close();
@@ -36,7 +38,7 @@ TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, st
 	proj->Draw();
 
 	if(save==true){
-	std::string name = "../plots/kaon_mass_fits/" + option + "projection_" + filename + ".root";
+	std::string name = "../../plots/kaon_mass_fits/" + option + "projection_" + filename + ".root";
 	TFile* outfile = new TFile(name.c_str(), "RECREATE");
 	c1->Write();
 	outfile->Close();
@@ -78,7 +80,7 @@ TF1* gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> in
 			zoom_proj->Draw("same");
 			gausfit->Draw("same");
 
-			TFile* outFile = new TFile(("../plots/kaon_mass_fits/combined_data/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
+			TFile* outFile = new TFile(("../../plots/kaon_mass_fits/combined_data/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
 			c2->Write();  // writes the canvas into the file
 			outFile->Close();
 			c2->Clear();
@@ -169,8 +171,7 @@ void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename
 
 	c2->Update();
 
-	TFile* outfile = new TFile(("../plots/kaon_mass_fits/combined_data/overlay"+filename+".root").c_str(), "RECREATE");
-	c2->SaveAs("Combined_Canvas.png");
+	TFile* outfile = new TFile(("../../plots/kaon_mass_fits/combined_data/overlay"+filename+".root").c_str(), "RECREATE");
 	c2->Write();
 	outfile->Close();
 	

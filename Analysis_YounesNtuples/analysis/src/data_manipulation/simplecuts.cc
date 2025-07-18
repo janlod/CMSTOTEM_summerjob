@@ -1,3 +1,5 @@
+#include "data_manipulation/simplecuts.h"
+
 using RVecF = ROOT::VecOps::RVec<float>;
 
 
@@ -55,6 +57,6 @@ void simpleCut(std::string treename, std::string fileloc, std::string filename){
 				}
 			return all4Good(dxdxerr, dzdzerr_max); }, {"trk_dz", "trk_dzerr"});
 
-	dzdzerr_cut.Snapshot("tree", ("simple_cutted_data/"+filename+"simplecut.root").c_str());
+	dzdzerr_cut.Snapshot("tree", ("../../data/simple_cutted_data/"+filename+"simplecut.root").c_str());
 
 }

@@ -1,3 +1,5 @@
+#include "tree_analysis/dz_sigmadz.h"
+
 void dz_dist(TTree *tree, std::string filebasename){
 	    Float_t trk_dz[1000], trk_dzerr[1000];
 	    Int_t ntrk;
@@ -52,7 +54,7 @@ void dz_dist(TTree *tree, std::string filebasename){
 	    hist1d->Draw("E1");   
 	    gausFit->Draw("same");   
 	    pave->Draw();          
-	    c1->SaveAs(("../plots/dz_dist/dz_" + filebasename + ".png").c_str());
+	    c1->SaveAs(("../../plots/dz_dist/dz_" + filebasename + ".png").c_str());
 	    delete hist1d;
 	    delete c1;
 }

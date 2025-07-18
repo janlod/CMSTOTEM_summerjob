@@ -1,3 +1,5 @@
+#include "tree_analysis/pt_eta_correl.h"
+
 void pt_eta_correl(TTree *tree, std::string filebasename){
 	    Float_t trk_pt[1000], trk_eta[1000];
 	    Int_t ntrk;
@@ -24,7 +26,7 @@ void pt_eta_correl(TTree *tree, std::string filebasename){
 	    }
 	    std::cout<< counter4 << std::endl;
 	    hist2d->Draw();                
-	    c1->SaveAs(("../plots/pt_dedx_correl/pt_eta_" + filebasename + ".png").c_str());
+	    c1->SaveAs(("../../plots/pt_dedx_correl/pt_eta_" + filebasename + ".png").c_str());
 	    delete hist2d;
 	    delete c1;
 }

@@ -5,18 +5,27 @@ CXXFLAGS = -g -O0 -Wall
 ROOTCFLAGS := $(shell root-config --cflags)
 ROOTLIBS := $(shell root-config --glibs)
 
+# Include directory for your headers
+INCLUDE_DIR = include
+
 SRC_DIR = src
-TARGET = exe_ana
-SRCS = $(wildcard $(SRC_DIR)/*.cc)  main.cc
+SRCS = $(shell find $(SRC_DIR) -name '*.cc') main.cc
 OBJS = $(SRCS:.cc=.o)
+
+TARGET = exe_ana
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -g -o $@ $(ROOTLIBS)
 
-%.o: %.cc
-	$(CXX) $(CXXFLAGS) $(ROOTCFLAGS) -c $< -o $@
+# Rule to compile main.cc (in current dir)
+main.o: main.cc
+	$(CXX) $(CXXFLAGS) $(ROOTCFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
+
+# Rule to compile .cc files inside src/
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.cc
+	$(CXX) $(CXXFLAGS) $(ROOTCFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
 
 run: $(TARGET)
 	./$(TARGET)

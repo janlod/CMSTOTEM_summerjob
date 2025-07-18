@@ -1,3 +1,5 @@
+#include "tree_analysis/dxy_phi_correl.h"
+
 void dxy_phi_correl(TTree *tree, std::string filebasename, bool cut){
 	    Float_t trk_dxy[1000], trk_phi[1000];
 	    Int_t ntrk;
@@ -29,7 +31,7 @@ void dxy_phi_correl(TTree *tree, std::string filebasename, bool cut){
 	    }
 	    std::cout<< counter4 << std::endl;
 	    //hist2d->Draw();              
-	    //c1->SaveAs(("../plots/dxy_phi_correl/dxy_phi_" + filebasename + ".png").c_str());
+	    //c1->SaveAs(("../../plots/dxy_phi_correl/dxy_phi_" + filebasename + ".png").c_str());
 	     if(cut){
 		    TH1D *histslice = hist2d->ProjectionX("slice");
 		    histslice->Fit(gausFit, "R");
@@ -46,7 +48,7 @@ void dxy_phi_correl(TTree *tree, std::string filebasename, bool cut){
 		    cuttedHisto->Draw();
 
 		}
-	    c1->SaveAs("../plots/test.png");
+	    c1->SaveAs("../../plots/test.png");
 	    delete hist2d;
 	    delete c1;
 }

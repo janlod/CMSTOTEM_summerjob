@@ -1,4 +1,4 @@
-
+#include "data_manipulation/complicated_cuts.h"
 
 void cut_zPV(TTree* tree, std::string filebasename){
             Float_t zPV;
@@ -27,7 +27,7 @@ void cut_zPV(TTree* tree, std::string filebasename){
 	    double sigma = gausFit->GetParameter(2);
 
 
-	   TFile* outfile = TFile::Open(("cutted_data/zPV/zPVcutted"+filebasename+".root").c_str(), "RECREATE");
+	   TFile* outfile = TFile::Open(("../../data/cutted_data/zPV/zPVcutted"+filebasename+".root").c_str(), "RECREATE");
 	   TTree* outtree = new TTree("tree", "cutted ZPV");
 	   outtree->Branch("zPV", &zPV, "zPV/F");
 
@@ -76,7 +76,7 @@ void cut_dzdzerr(TTree* tree, std::string filebasename){
 
 	    Float_t dzcut;
 	    Float_t dzerrcut;
-	    TFile* outfile = TFile::Open(("cutted_data/dz/dzcutted"+filebasename+".root").c_str(), "RECREATE");
+	    TFile* outfile = TFile::Open(("../../data/cutted_data/dz/dzcutted"+filebasename+".root").c_str(), "RECREATE");
 	    TTree* outtree = new TTree("tree", "cutted dz and dzerr");
 	    outtree->Branch("dz", &dzcut, "dz/F");
 	    outtree->Branch("dzerr", &dzerrcut, "dzerr/F");
@@ -234,7 +234,7 @@ std::map<int, std::array<double, 3>> fitParams2D_gausfit_allSlices(TH2F* hist, f
 			std::string yvar = hist->GetYaxis()->GetTitle();
 			xvar = xvar.erase(0,4);
 			yvar = yvar.erase(0,4);	
-			std::string filename = "sliceplots/" + xvar + "_" + yvar + "/sliceat" + std::to_string(ybin) + ".png";
+			std::string filename = "../../plots/sliceplots/" + xvar + "_" + yvar + "/sliceat" + std::to_string(ybin) + ".png";
 			c1->SaveAs(filename.c_str());
 		}
 		delete projx;

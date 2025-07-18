@@ -1,3 +1,5 @@
+#include "tree_analysis/dxy_sigmadxy.h"
+
 void dxy_dist(TTree *tree, std::string filebasename){
 	    Float_t trk_dxy[1000], trk_dxyerr[1000];
 	    Int_t ntrk;
@@ -53,7 +55,7 @@ void dxy_dist(TTree *tree, std::string filebasename){
 	    hist1d->Draw("E1");  
 	    gausFit->Draw("same"); 
 	    pave->Draw();             
-	    c1->SaveAs(("../plots/dxy_dist/dxy_" + filebasename + ".png").c_str());
+	    c1->SaveAs(("../../plots/dxy_dist/dxy_" + filebasename + ".png").c_str());
 	    delete hist1d;
 	    delete c1;
 }

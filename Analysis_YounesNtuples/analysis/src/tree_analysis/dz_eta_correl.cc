@@ -1,3 +1,5 @@
+#include "tree_analysis/dz_eta_correl.h"
+
 void dz_eta_correl(TTree *tree, std::string filebasename){
 	    Float_t trk_dz[1000], trk_eta[1000];
 	    Int_t ntrk;
@@ -26,7 +28,7 @@ void dz_eta_correl(TTree *tree, std::string filebasename){
 	    }
 	    std::cout<< counter4 << std::endl;
 	    hist2d->Draw();                
-	    c1->SaveAs(("../plots/dz_eta_correl/dz_eta_" + filebasename + ".png").c_str());
+	    c1->SaveAs(("../../plots/dz_eta_correl/dz_eta_" + filebasename + ".png").c_str());
 	    delete hist2d;
 	    delete c1;
 }

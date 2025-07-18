@@ -1,46 +1,22 @@
-#include "TMath.h"
-#include "TTree.h"
-#include "TF1.h"
-#include "TPad.h"
-#include "TH2F.h"
-#include "TH1F.h"
-#include "TGraph.h"
-#include "TFile.h"
-#include "TH1D.h"
-#include "TLegend.h"
-#include "TCanvas.h"
-#include "TAxis.h"
-#include "TGraphErrors.h"
-#include "TLatex.h"
-#include "TLine.h"
-#include "TPaveText.h"
-#include "TMinuit.h"
-#include "TStyle.h"
-#include "TProfile.h"
-#include "TVector.h"
-#include "TMatrix.h"
-#include "TMarker.h"
-#include "TRandom3.h"
-#include "TMultiGraph.h"
-#include <ROOT/RDataFrame.hxx>
-#include "TPaletteAxis.h"
+#include "include/tree_analysis/dxy_phi_correl.h"
+#include "include/tree_analysis/dxy_sigmadxy.h"
+#include "include/tree_analysis/dz_eta_correl.h"
+#include "include/tree_analysis/dz_sigmadz.h"
+#include "include/tree_analysis/loopers.h"
+#include "include/tree_analysis/momentum_dist.h"
+#include "include/tree_analysis/primVertex.h"
+#include "include/tree_analysis/pt_eta_correl.h"
 
-#include <iostream>
-#include <vector>
-#include <map>
+#include "include/invMass_analysis/analysis_inv_mass_hist.h"
+#include "include/invMass_analysis/plot_inv_mass.h"
+
+#include "include/data_manipulation/complicated_cuts.h"
+#include "include/data_manipulation/dataCombiner.h"
+#include "include/data_manipulation/inv_mass.h"
+#include "include/data_manipulation/simplecuts.h"
+
+#include <filesystem>
 #include <fstream>
-#include <string>
-#include <sstream>
-#include <iomanip>
-#include "math.h"
-#include "math.h"
-#include "stdlib.h"
-#include <cstdlib>  
-#include "tools.cc"
-#include "cuts.cc"
-#include "simplecuts.cc"
-#include "dataCombiner.cc"
-
 namespace fs = std::filesystem;
 
 

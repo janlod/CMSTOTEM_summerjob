@@ -1,3 +1,5 @@
+#include "data_manipulation/inv_mass.h"
+
 float massPi = 0.13957;
 auto calcInvMassPairs = [massPi](RVecF pt, RVecF eta, RVecF phi, RVecI q, Int_t ntrk){
 	TLorentzVector pos0, pos1, neg0, neg1;
@@ -71,7 +73,7 @@ void add_inv_massBranches(std::string treename, std::string filepath, std::strin
 		.Define("inv_mass_pair2", [=](RVecF pt, RVecF eta, RVecF phi, RVecI q, int ntrk) {
 		return calcInvMassPairs(pt, eta, phi, q, ntrk).second; }, {"trk_pt", "trk_eta", "trk_phi", "trk_q", "ntrk"});
 
-	df2.Snapshot("tree", ("../data/inv_mass_data/" + filename + ".root").c_str());
+	df2.Snapshot("tree", ("../../data/inv_mass_data/" + filename + ".root").c_str());
 	
 }
 TH2F* get2D_inv_mass_hist(std::string treename, std::string filepath, std::string filename, int nbin, float min, float max){

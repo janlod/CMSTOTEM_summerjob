@@ -1,3 +1,5 @@
+#include "tree_analysis/loopers.h"
+
 void loopers_4trks(TTree *tree, std::string filebasename){
 	    Float_t trk_p[1000];
 	    Int_t ntrk;
@@ -137,7 +139,7 @@ void loopers_4trks(TTree *tree, std::string filebasename){
 	    
 	    legend->Draw();
 
-	    c1->SaveAs(("../plots/loopers_4trks/4trksloopers" + filebasename + ".png").c_str());
+	    c1->SaveAs(("../../plots/loopers_4trks/4trksloopers" + filebasename + ".png").c_str());
 }
 
 void loopers_2trks(TTree *tree, std::string filebasename){
@@ -166,4 +168,6 @@ void loopers_2trks(TTree *tree, std::string filebasename){
 		}
 	    }
 	    hist1->Draw();
-	    c1->SaveAs(("../plots/loopers_2trks/2trksloopers" + filebasename + ".png").c_str());
+	    c1->SaveAs(("../../plots/loopers_2trks/2trksloopers" + filebasename + ".png").c_str());
+
+}

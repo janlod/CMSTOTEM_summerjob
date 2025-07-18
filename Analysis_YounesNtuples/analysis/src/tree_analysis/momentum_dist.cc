@@ -1,3 +1,5 @@
+#include "tree_analysis/momentum_dist.h"
+
 void p_dist(TTree *tree, std::string filebasename){
 	    Float_t trk_p[1000];
 	    Int_t ntrk;
@@ -25,7 +27,7 @@ void p_dist(TTree *tree, std::string filebasename){
 
 
 	    hist1d->Draw("E1");  
-	    c1->SaveAs(("../plots/p_dist/p_" + filebasename + ".png").c_str());
+	    c1->SaveAs(("../../plots/p_dist/p_" + filebasename + ".png").c_str());
 	    delete hist1d;
 	    delete c1;
 }

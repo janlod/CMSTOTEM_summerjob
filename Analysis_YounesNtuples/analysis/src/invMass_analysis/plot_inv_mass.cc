@@ -1,3 +1,5 @@
+#include "invMass_analysis/plot_inv_mass.h"
+
 void plot_invar_mass(TTree* tree, std::string filebasename, float massparam){
 	   Float_t trk_pt[1000], trk_phi[1000], trk_eta[1000];
 	   Int_t ntrk;
@@ -53,5 +55,5 @@ void plot_invar_mass(TTree* tree, std::string filebasename, float massparam){
 	   line->SetLineWidth(2);  
 	   line->Draw("same");
 
-	   c1->SaveAs(("../plots/invariant_mass_pion/inv_mass"+filebasename+"cutted.png").c_str());
+	   c1->SaveAs(("../../plots/invariant_mass_pion/inv_mass"+filebasename+"cutted.png").c_str());
 }
