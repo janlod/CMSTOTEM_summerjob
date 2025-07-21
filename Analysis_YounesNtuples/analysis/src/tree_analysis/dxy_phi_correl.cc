@@ -1,5 +1,25 @@
 #include "tree_analysis/dxy_phi_correl.h"
 
+TH1D* CropHistogram(TH1D* h_original, double x_min, double x_max) {
+	    // Get bin range corresponding to x_min and x_max
+	    int bin_min = h_original->FindBin(x_min);
+	    int bin_max = h_original->FindBin(x_max);
+	    int new_nbins = bin_max - bin_min + 1;
+	    double new_xmin = h_original->GetBinLowEdge(bin_min);
+	    double new_xmax = h_original->GetBinLowEdge(bin_max + 1); // upper edge
+	    // Create cropped histogram
+	    TH1D* h_cropped = new TH1D("h_cropped", "Cropped Histogram;X;Entries", new_nbins, new_xmin, new_xmax);
+	    for (int i = 1; i <= new_nbins; ++i) {
+		int original_bin = bin_min + i - 1;
+		double content = h_original->GetBinContent(original_bin);
+		double error = h_original->GetBinError(original_bin);
+		h_cropped->SetBinContent(i, content);
+		h_cropped->SetBinError(i, error);
+	    }
+    	    return h_cropped;
+}
+
+
 void dxy_phi_correl(TTree *tree, std::string filebasename, bool cut){
 	    Float_t trk_dxy[1000], trk_phi[1000];
 	    Int_t ntrk;

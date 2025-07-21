@@ -1,18 +1,56 @@
 #include "invMass_analysis/analysis_inv_mass_hist.h"
 
+
+TH2F* get2D_inv_mass_hist(std::string treename, std::string filepath, std::string filename, int nbin, float min, float max){
+        auto tree = treename.c_str();
+        auto file = filepath.c_str();
+
+        ROOT::RDataFrame df(tree, file);
+
+        TH2F* hist = new TH2F(("rec. inv. mass from "+filename).c_str(), "Reconstruncted invariant mass in MeV", nbin, min, max, nbin, min, max);
+
+
+        int eventnumber = 0;
+        int empty_count = 0;
+        auto fillhisto = [hist, &eventnumber, &empty_count] (RVecF pair1, RVecF pair2, Int_t ntrk){
+                if(ntrk==4){
+                                eventnumber++;
+                        float rho_inv00 = pair1.at(0);
+                        float rho_inv11 = pair1.at(1);
+                        float rho_inv01 = pair2.at(0);
+                        float rho_inv10 = pair2.at(1);
+                        if(abs(rho_inv00-0.0)<1e-8 && abs(rho_inv01-0.0)<1e-8 && abs(rho_inv11-0.0)<1e-8 && abs(rho_inv10-0.0)<1e-8){
+                        empty_count++;
+                        }else{
+                                hist->Fill(rho_inv00*1e3, rho_inv11*1e3);
+                                hist->Fill(rho_inv01*1e3, rho_inv10*1e3);
+                        }
+
+
+                }
+        };
+
+        df.Foreach(fillhisto, {"inv_mass_pair1", "inv_mass_pair2", "ntrk"});
+        std::cout<<"Total number of 4-trks events: "<<eventnumber<<std::endl;
+        std::cout<<"Number of charge zero 4-trks events: "<<eventnumber-empty_count<<std::endl;
+return hist;
+}
+
+
+
 void plot_2D_inv_mass_hist(TH2F* hist, std::string filename){
 	TCanvas* c1 = new TCanvas("Figure","Fig", 1200, 1000);
 	c1->SetLogz();
 	hist->Draw("COLZ");
-	c1->SaveAs(("../../plots/Invariant_rho_"+filename+".png").c_str());
-	TFile* outfile = new TFile(("../../plots/Invariant_rho_"+filename+".root").c_str(),"RECREATE");
+	c1->SaveAs(("plots/Invariant_rho_"+filename+".png").c_str());
+	TFile* outfile = new TFile(("plots/Invariant_rho_"+filename+".root").c_str(),"RECREATE");
 	c1->Write();
 	c1->Clear();
 	outfile->Close();
 }
 
 
-TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, std::string option, bool save=true){
+TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, std::string option, bool save){
 	TCanvas* c1 = new TCanvas("Figure", "Fig", 1200, 1000);
 	TH1D* proj;
 	if(option=="x"){	
@@ -38,7 +76,7 @@ TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, st
 	proj->Draw();
 
 	if(save==true){
-	std::string name = "../../plots/kaon_mass_fits/" + option + "projection_" + filename + ".root";
+	std::string name = "plots/kaon_mass_fits/" + option + "projection_" + filename + ".root";
 	TFile* outfile = new TFile(name.c_str(), "RECREATE");
 	c1->Write();
 	outfile->Close();
@@ -80,7 +118,7 @@ TF1* gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> in
 			zoom_proj->Draw("same");
 			gausfit->Draw("same");
 
-			TFile* outFile = new TFile(("../../plots/kaon_mass_fits/combined_data/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
+			TFile* outFile = new TFile(("plots/kaon_mass_fits/combined_data/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
 			c2->Write();  // writes the canvas into the file
 			outFile->Close();
 			c2->Clear();
@@ -103,7 +141,7 @@ return gausfit;
 
 
 
-void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename, bool saveplot=false){
+void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename, bool saveplot){
 	TCanvas* c2 = new TCanvas("Canvas", "Figure", 1200, 1000);
 	float sigmax = gausfitx->GetParameter(2);
 	float sigmay = gausfity->GetParameter(2);
@@ -171,7 +209,8 @@ void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename
 
 	c2->Update();
 
-	TFile* outfile = new TFile(("../../plots/kaon_mass_fits/combined_data/overlay"+filename+".root").c_str(), "RECREATE");
+	auto outpath = "plots/kaon_mass_fits/combined_data/overlay" + filename + ".root";
+	TFile* outfile = new TFile(outpath.c_str(), "RECREATE");
 	c2->Write();
 	outfile->Close();
 	

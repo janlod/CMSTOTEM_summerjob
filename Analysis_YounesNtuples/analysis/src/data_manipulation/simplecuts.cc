@@ -45,14 +45,14 @@ void simpleCut(std::string treename, std::string fileloc, std::string filename){
 
 	auto dxydxyerr_cut = dz_cut.Filter([dxydxyerr_max](RVecF x, RVecF xerr){ 
 		     		RVecF dxdxerr {};
-		       		for(int i=0; i<x.size(); i++){
+		       		for(size_t i=0; i<x.size(); i++){
 					dxdxerr.push_back(x.at(i)/xerr.at(i));						      	
 				}
 			return all4Good(dxdxerr, dxydxyerr_max); }, {"trk_dxy", "trk_dxyerr"});
 	
 	auto dzdzerr_cut = dxydxyerr_cut.Filter([dzdzerr_max](RVecF x, RVecF xerr){ 
 		     		RVecF dxdxerr {};
-		       		for(int i=0; i<x.size(); i++){
+		       		for(size_t i=0; i<x.size(); i++){
 					dxdxerr.push_back(x.at(i)/xerr.at(i));						      	
 				}
 			return all4Good(dxdxerr, dzdzerr_max); }, {"trk_dz", "trk_dzerr"});

@@ -52,13 +52,13 @@ int main(){
         std::string filename = fileList.at(ifile);
         std::string filebasename = filename.erase(filename.size() - 5);
 
-        TFile *cutfile = new TFile(("../data/cutted_data/" + filebasename + "cutted.root").c_str(), "read");
-        TTree *cuttree = (TTree*)cutfile->Get("tree");
+    //    TFile *cutfile = new TFile(("../data/cutted_data/" + filebasename + "cutted.root").c_str(), "read");
+      //  TTree *cuttree = (TTree*)cutfile->Get("tree");
 
 
-       TFile *uncutfile = new TFile(("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/" + filename+".root").c_str(), "read");
+       //TFile *uncutfile = new TFile(("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/" + filename+".root").c_str(), "read");
 
-        TTree *uncuttree = (TTree*)uncutfile->Get("tree");
+        //TTree *uncuttree = (TTree*)uncutfile->Get("tree");
         
         // Put the analysis tool here that you want to use
 
@@ -98,13 +98,17 @@ int main(){
     }
 //simpleCut("tree", "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM20.root", "TOTEM20");
 
-   	TH2F* inv_mass_TOTEM2 = get2D_inv_mass_hist("tree", "../data/combined/TOTEM2.root", "TOTEM2", 600, 300, 1200);
-  	TH2F* inv_mass_TOTEM4 = get2D_inv_mass_hist("tree", "../data/combined/TOTEM4.root", "TOTEM4", 600, 300, 1200);
+	auto filepath_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/combined/TOTEM2.root";
+	auto filepath_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/combined/TOTEM4.root";
+
+   	
+	TH2F* inv_mass_TOTEM2 = get2D_inv_mass_hist("tree", filepath_TOTEM2, "TOTEM2", 600, 300, 1200);
+  	TH2F* inv_mass_TOTEM4 = get2D_inv_mass_hist("tree", filepath_TOTEM4, "TOTEM4", 600, 300, 1200);
        	
 	//plot_2D_inv_mass_hist(inv_mass_TOTEM2, "TOTEM2");
 	//plot_2D_inv_mass_hist(inv_mass_TOTEM4, "TOTEM4");
-        TH1D* projx = getProj(inv_mass_TOTEM2, 300, 1200, "TOTEM2", "x");	
-	TH1D* projy = getProj(inv_mass_TOTEM4, 300, 1200, "TOTEM4", "y");
+        //TH1D* projx = getProj(inv_mass_TOTEM2, 300, 1200, "TOTEM2", "x");	
+	//TH1D* projy = getProj(inv_mass_TOTEM4, 300, 1200, "TOTEM4", "y");
 	
 	std::array<float, 3> gauss_guess = {1000, 500, 20};
 	TF1* gausfit2x = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2", gauss_guess, "x");
