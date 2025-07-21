@@ -14,6 +14,7 @@
 #include "include/data_manipulation/dataCombiner.h"
 #include "include/data_manipulation/inv_mass.h"
 #include "include/data_manipulation/simplecuts.h"
+#include "include/data_manipulation/create_chiSquared_tree.h"
 
 #include <filesystem>
 #include <fstream>
@@ -102,23 +103,25 @@ int main(){
 	auto filepath_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/combined/TOTEM4.root";
 
    	
-	TH2F* inv_mass_TOTEM2 = get2D_inv_mass_hist("tree", filepath_TOTEM2, "TOTEM2", 600, 300, 1200);
-  	TH2F* inv_mass_TOTEM4 = get2D_inv_mass_hist("tree", filepath_TOTEM4, "TOTEM4", 600, 300, 1200);
+	//TH2F* inv_mass_TOTEM2 = get2D_inv_mass_hist("tree", filepath_TOTEM2, "TOTEM2", 600, 300, 1200);
+  	//TH2F* inv_mass_TOTEM4 = get2D_inv_mass_hist("tree", filepath_TOTEM4, "TOTEM4", 600, 300, 1200);
        	
 	//plot_2D_inv_mass_hist(inv_mass_TOTEM2, "TOTEM2");
 	//plot_2D_inv_mass_hist(inv_mass_TOTEM4, "TOTEM4");
         //TH1D* projx = getProj(inv_mass_TOTEM2, 300, 1200, "TOTEM2", "x");	
 	//TH1D* projy = getProj(inv_mass_TOTEM4, 300, 1200, "TOTEM4", "y");
 	
-	std::array<float, 3> gauss_guess = {1000, 500, 20};
-	TF1* gausfit2x = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2", gauss_guess, "x");
-	TF1* gausfit2y = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2", gauss_guess, "y");
-	TF1* gausfit4x = gaussfit_kaon_mass(inv_mass_TOTEM4, "TOTEM4", gauss_guess, "x");
-	TF1* gausfit4y = gaussfit_kaon_mass(inv_mass_TOTEM4, "TOTEM4", gauss_guess, "y");
+	//std::array<float, 3> gauss_guess = {1000, 500, 20};
+	//TF1* gausfit2x = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2", gauss_guess, "x");
+	//TF1* gausfit2y = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2", gauss_guess, "y");
+	//TF1* gausfit4x = gaussfit_kaon_mass(inv_mass_TOTEM4, "TOTEM4", gauss_guess, "x");
+	//TF1* gausfit4y = gaussfit_kaon_mass(inv_mass_TOTEM4, "TOTEM4", gauss_guess, "y");
 
-	overlay_fits(inv_mass_TOTEM2, gausfit2x, gausfit2y, "TOTEM2");
-	overlay_fits(inv_mass_TOTEM4, gausfit4x, gausfit4y, "TOTEM4");
+	//overlay_fits(inv_mass_TOTEM2, gausfit2x, gausfit2y, "TOTEM2");
+	//overlay_fits(inv_mass_TOTEM4, gausfit4x, gausfit4y, "TOTEM4");
 
+	auto testfilepath = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/cutted_data/TOTEM20cutted.root";
+	getChiSquared_tree(0.0, "tree", testfilepath, "test20");
 	
 
     return 0;
