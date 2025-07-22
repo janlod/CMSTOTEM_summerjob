@@ -90,3 +90,26 @@ NCalls                    =           89
 Constant                  =      1694.68   +/-   5.63565     
 Mean                      =    -0.315895   +/-   0.016737    
 Sigma                     =       4.3179   +/-   0.0274929    	 (limited)
+./exe_ana
+976439
+Fit for TOTEM2.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      14290.2
+NDf                       =          131
+Edm                       =  2.60376e-06
+NCalls                    =           88
+Constant                  =      6599.71   +/-   11.1878     
+Mean                      =    -0.291125   +/-   0.00814295  
+Sigma                     =      4.21771   +/-   0.0131962    	 (limited)
+1011294
+Fit for TOTEM4.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      10987.3
+NDf                       =          131
+Edm                       =  9.97646e-08
+NCalls                    =           89
+Constant                  =      6809.74   +/-   11.3049     
+Mean                      =    -0.313448   +/-   0.00825423  
+Sigma                     =      4.28686   +/-   0.0134529    	 (limited)

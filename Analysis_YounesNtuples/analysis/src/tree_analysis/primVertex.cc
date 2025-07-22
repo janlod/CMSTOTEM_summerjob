@@ -48,7 +48,7 @@ void primVertex_dist(TTree *tree, std::string filebasename, int option){
 		 hist1d->Draw("E1");
                 gausFit->Draw("same");
                 pave->Draw("same");
-                c1->SaveAs(("../../plots/zPV_dist/zPV_" + filebasename + ".png").c_str());
+                c1->SaveAs(("plots/zPV_dist/zPV_" + filebasename + ".png").c_str());
 
 
                 delete hist1d;
@@ -78,7 +78,7 @@ void primVertex_dist(TTree *tree, std::string filebasename, int option){
                 }
                 std::cout<< counter4 << std::endl;
                 hist1d->Draw();
-                c1->SaveAs(("../../plots/yPV_dist/yPV_" + filebasename + ".png").c_str());
+                c1->SaveAs(("plots/yPV_dist/yPV_" + filebasename + ".png").c_str());
                 delete hist1d;
                 delete c1;
 
@@ -104,7 +104,7 @@ void primVertex_dist(TTree *tree, std::string filebasename, int option){
                 }
                 std::cout<< counter4 << std::endl;
                 hist1d->Draw();
-                c1->SaveAs(("../../plots/xPV_dist/xPV_" + filebasename + ".png").c_str());
+                c1->SaveAs(("plots/xPV_dist/xPV_" + filebasename + ".png").c_str());
                 delete hist1d;
                 delete c1;
 
@@ -132,7 +132,7 @@ void primVertex_dist(TTree *tree, std::string filebasename, int option){
                 }
                 std::cout<< counter4 << std::endl;
                 hist1d->Draw();
-                c1->SaveAs(("../../plots/rPV_dist/radiusPV_" + filebasename + ".png").c_str());
+                c1->SaveAs(("plots/rPV_dist/radiusPV_" + filebasename + ".png").c_str());
                 delete hist1d;
            }else if(option == 12){
                 Float_t xPV, yPV;
@@ -157,7 +157,7 @@ void primVertex_dist(TTree *tree, std::string filebasename, int option){
                 }
                 std::cout<< counter4 << std::endl;
                 hist2d->Draw();
-                c1->SaveAs(("../../plots/xyPV_dist/xyPV_" + filebasename + ".png").c_str());
+                c1->SaveAs(("plots/xyPV_dist/xyPV_" + filebasename + ".png").c_str());
                 delete hist2d;
                 delete c1;
 

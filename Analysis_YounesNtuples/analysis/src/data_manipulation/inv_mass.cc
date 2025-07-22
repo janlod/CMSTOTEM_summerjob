@@ -72,7 +72,15 @@ void add_inv_massBranches(std::string treename, std::string filepath, std::strin
 		.Define("inv_mass_pair2", [=](RVecF pt, RVecF eta, RVecF phi, RVecI q, int ntrk) {
 		return calcInvMassPairs(pt, eta, phi, q, ntrk).second; }, {"trk_pt", "trk_eta", "trk_phi", "trk_q", "ntrk"});
 
-	df2.Snapshot("tree", ("data/inv_mass_data/" + filename + ".root").c_str());
+
+	auto originalColumns = df.GetColumnNames();
+      
+        std::vector<std::string> newColumns = {"inv_mass_pair1", "inv_mass_pair2"};      
+         
+        std::vector<std::string> allColumns(originalColumns.begin(), originalColumns.end());
+        allColumns.insert(allColumns.end(), newColumns.begin(), newColumns.end());
+         
+	df2.Snapshot("tree", ("data/inv_mass_data/" + filename + ".root").c_str(), allColumns);
 	
 }
 

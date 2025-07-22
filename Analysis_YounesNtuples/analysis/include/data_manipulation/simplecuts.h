@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <cmath>      // For std::abs
 #include <ROOT/RDataFrame.hxx>
 #include <ROOT/RVec.hxx>
@@ -12,3 +13,5 @@ bool all4Good(RVecF trks, float cutvalue);
 
 // Applies a series of simple cuts and saves the resulting tree
 void simpleCut(std::string treename, std::string fileloc, std::string filename);
+
+void cutChi2(std::string treename, std::string filepath, std::string outfilename, std::vector<float> cutoffs);

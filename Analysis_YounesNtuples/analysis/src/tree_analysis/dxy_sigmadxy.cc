@@ -28,7 +28,7 @@ void dxy_dist(TTree *tree, std::string filebasename){
 		}
 	    }
 	    //std::cout<< counter4 << std::endl;
-	    TF1* gausFit = new TF1("gausFit", "gaus", -4.5, 4.5);
+	    TF1* gausFit = new TF1("gausFit", "gaus", -1, 1);
 	    std::cout << "Fit for " << filebasename << ".root" <<std::endl;
 	    hist1d->Fit(gausFit, "R");
 
@@ -47,15 +47,15 @@ void dxy_dist(TTree *tree, std::string filebasename){
 	    pave->SetTextAlign(12);    
 	    pave->SetTextSize(0.03);   
 	    pave->AddText(Form("Gaussian Fit:"));
-	    pave->AddText(Form("Mean = %.3f", mean));
-	    pave->AddText(Form("Sigma = %.3f", sigma));
-	    pave->AddText(Form("Amplitude = %.1f", amplitude));
+	    pave->AddText(Form("Mean =%f ", mean));
+	    pave->AddText(Form("Sigma =%f ", sigma));
+	    pave->AddText(Form("Amplitude =%f ", amplitude));
 	    
 
 	    hist1d->Draw("E1");  
 	    gausFit->Draw("same"); 
 	    pave->Draw();             
-	    c1->SaveAs(("../../plots/dxy_dist/dxy_" + filebasename + ".png").c_str());
+	    c1->SaveAs(("plots/dxy_dist/dxy_" + filebasename + ".png").c_str());
 	    delete hist1d;
 	    delete c1;
 }

@@ -1,0 +1,22 @@
+make: Nothing to be done for 'all'.
+./exe_ana
+Fit for TOTEM2.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      159.295
+NDf                       =           85
+Edm                       =  2.30523e-09
+NCalls                    =           82
+Constant                  =      35897.3   +/-   31.839      
+Mean                      =    0.0016423   +/-   0.000824988 
+Sigma                     =     0.825607   +/-   0.00131775   	 (limited)
+Fit for TOTEM4.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      125.131
+NDf                       =           85
+Edm                       =  2.54778e-06
+NCalls                    =           73
+Constant                  =      38241.9   +/-   32.3072     
+Mean                      =  -0.00147728   +/-   0.000773541 
+Sigma                     =     0.809875   +/-   0.00119304   	 (limited)

@@ -21,7 +21,7 @@ using RVecI = ROOT::RVec<int>;
 TH2F* get2D_inv_mass_hist(std::string treename, std::string filepath, std::string filename, int nbin, float min, float max);
 
 /// Plot 2D invariant mass histogram and save PNG + ROOT file.
-void plot_2D_inv_mass_hist(TH2F* hist, const std::string& filename);
+void plot_2D_inv_mass_hist(TH2F* hist, const std::string filename);
 
 /// Project TH2F onto X or Y axis within range [projmin, projmax].
 /// Saves projection plots if save==true.

@@ -1,0 +1,23 @@
+g++ -g -O0 -Wall -pthread -std=c++17 -m64 -I/usr/include/root -Iinclude -c main.cc -o main.o
+g++ -g -O0 -Wall src/data_manipulation/complicated_cuts.o src/data_manipulation/create_chiSquared_tree.o src/data_manipulation/dataCombiner.o src/data_manipulation/inv_mass.o src/data_manipulation/simplecuts.o src/invMass_analysis/analysis_inv_mass_hist.o src/invMass_analysis/plot_inv_mass.o src/tree_analysis/dxy_phi_correl.o src/tree_analysis/dxy_sigmadxy.o src/tree_analysis/dz_eta_correl.o src/tree_analysis/dz_sigmadz.o src/tree_analysis/loopers.o src/tree_analysis/momentum_dist.o src/tree_analysis/primVertex.o src/tree_analysis/pt_eta_correl.o main.o -o exe_ana -L/usr/lib64/root -lGui -lCore -lImt -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lROOTVecOps -lTree -lTreePlayer -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lROOTNTuple -lMultiProc -lROOTDataFrame -lROOTNTupleUtil -pthread -lm -ldl -rdynamic
+./exe_ana
+Fit for TOTEM2.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      1763.94
+NDf                       =           47
+Edm                       =  3.31997e-11
+NCalls                    =          111
+Constant                  =      41635.9   +/-   45.3089     
+Mean                      = -0.000467749   +/-   0.000720385 
+Sigma                     =     0.510776   +/-   0.00144098   	 (limited)
+Fit for TOTEM4.root
+****************************************
+Minimizer is Minuit2 / Migrad
+Chi2                      =      1530.39
+NDf                       =           47
+Edm                       =  6.14427e-11
+NCalls                    =          111
+Constant                  =      43602.4   +/-   46.2714     
+Mean                      =  4.27172e-05   +/-   0.000716859 
+Sigma                     =     0.516165   +/-   0.00144546   	 (limited)

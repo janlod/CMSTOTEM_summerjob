@@ -6,6 +6,7 @@
 #include "include/tree_analysis/momentum_dist.h"
 #include "include/tree_analysis/primVertex.h"
 #include "include/tree_analysis/pt_eta_correl.h"
+#include "include/tree_analysis/plot_chi2.h"
 
 #include "include/invMass_analysis/analysis_inv_mass_hist.h"
 #include "include/invMass_analysis/plot_inv_mass.h"
@@ -99,29 +100,63 @@ int main(){
     }
 //simpleCut("tree", "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM20.root", "TOTEM20");
 
-	auto filepath_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/combined/TOTEM2.root";
+
+auto filepath_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2chi2cut.root";
 	auto filepath_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/combined/TOTEM4.root";
 
    	
-	//TH2F* inv_mass_TOTEM2 = get2D_inv_mass_hist("tree", filepath_TOTEM2, "TOTEM2", 600, 300, 1200);
+	TH2F* inv_mass_TOTEM2 = get2D_inv_mass_hist("tree", filepath_TOTEM2, "TOTEM2chi2cut", 600, 300, 1200);
   	//TH2F* inv_mass_TOTEM4 = get2D_inv_mass_hist("tree", filepath_TOTEM4, "TOTEM4", 600, 300, 1200);
        	
-	//plot_2D_inv_mass_hist(inv_mass_TOTEM2, "TOTEM2");
+	plot_2D_inv_mass_hist(inv_mass_TOTEM2, "TOTEM2chi2cut");
 	//plot_2D_inv_mass_hist(inv_mass_TOTEM4, "TOTEM4");
         //TH1D* projx = getProj(inv_mass_TOTEM2, 300, 1200, "TOTEM2", "x");	
 	//TH1D* projy = getProj(inv_mass_TOTEM4, 300, 1200, "TOTEM4", "y");
 	
-	//std::array<float, 3> gauss_guess = {1000, 500, 20};
-	//TF1* gausfit2x = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2", gauss_guess, "x");
-	//TF1* gausfit2y = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2", gauss_guess, "y");
+	std::array<float, 3> gauss_guess = {1000, 500, 20};
+	TF1* gausfit2x = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2chi2cut", gauss_guess, "x");
+	TF1* gausfit2y = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2chi2cut", gauss_guess, "y");
 	//TF1* gausfit4x = gaussfit_kaon_mass(inv_mass_TOTEM4, "TOTEM4", gauss_guess, "x");
 	//TF1* gausfit4y = gaussfit_kaon_mass(inv_mass_TOTEM4, "TOTEM4", gauss_guess, "y");
 
-	//overlay_fits(inv_mass_TOTEM2, gausfit2x, gausfit2y, "TOTEM2");
+	overlay_fits(inv_mass_TOTEM2, gausfit2x, gausfit2y, "TOTEM2chi2cut");
 	//overlay_fits(inv_mass_TOTEM4, gausfit4x, gausfit4y, "TOTEM4");
 
+
 	auto testfilepath = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/cutted_data/TOTEM20cutted.root";
-	getChiSquared_tree(0.0, "tree", testfilepath, "test20");
+	auto fpTOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/combined/TOTEM2.root";
+	auto fpTOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/combined/TOTEM4.root";
+
+	auto fpTOTEM20 = "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM20.root";
+	
+	TFile* tot2 = new TFile(fpTOTEM2, "READ");
+	TFile* tot4 = new TFile(fpTOTEM4, "READ");
+
+	TTree* treetot2 = (TTree*)tot2->Get("tree");
+	TTree* treetot4 = (TTree*)tot4->Get("tree");
+
+
+	//primVertex_dist(treetot2, "TOTEM2", 3);
+	//dxy_dist(treetot2, "TOTEM2");
+	//dz_dist(treetot2, "TOTEM2");
+	
+	//primVertex_dist(treetot4, "TOTEM4", 3);
+	//dxy_dist(treetot4, "TOTEM4");
+	//dz_dist(treetot4, "TOTEM4");
+
+	float meanzPV_t2 = -0.291125;
+	float meanzPV_t4 = -0.313448;
+	float meandxy_sigmadxy_t2 = 0.0016423;
+	float meandz_sigmadz_t2 = -0.000467749;
+	float meandxy_sigmadxy_t4 = -0.00147728;
+	float meandz_sigmadz_t4 = 4.27172e-05;//Fit says 0.00018
+
+
+	std::vector<float> means_t2 = {meanzPV_t2, meandxy_sigmadxy_t2, meandz_sigmadz_t2};
+	std::vector<float> means_t4 = {meanzPV_t4, meandxy_sigmadxy_t4, meandz_sigmadz_t4};
+
+	std::vector<float> cutoffs = { 50., 50., 50. };
+	
 	
 
     return 0;

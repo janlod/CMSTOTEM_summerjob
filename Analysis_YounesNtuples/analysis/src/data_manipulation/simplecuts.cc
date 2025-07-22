@@ -15,6 +15,7 @@ bool all4Good(RVecF trks, float cutvalue){
 }
 
 
+
 void simpleCut(std::string treename, std::string fileloc, std::string filename){
 	auto tree = treename.c_str();
 	auto file = fileloc.c_str();
@@ -59,4 +60,19 @@ void simpleCut(std::string treename, std::string fileloc, std::string filename){
 
 	dzdzerr_cut.Snapshot("tree", ("../../data/simple_cutted_data/"+filename+"simplecut.root").c_str());
 
+}
+
+// cutoffs expected in order [zPV, dxy_dxyerr, dz_dzerr]
+void cutChi2(std::string treename, std::string filepath, std::string outfilename, std::vector<float> cutoffs){
+	ROOT::RDataFrame df(treename.c_str(), filepath.c_str());
+	
+	float chi2cut_zPV = cutoffs.at(0);
+	float chi2cut_dxy_dxyerr = cutoffs.at(1);
+	float chi2cut_dz_dzerr = cutoffs.at(2);	
+
+	auto zPV_cut = df.Filter([chi2cut_zPV](float x) { return x<chi2cut_zPV; }, {"chi2_zPV"});
+	auto dxy_dxyerr_cut = zPV_cut.Filter([chi2cut_dxy_dxyerr](float x) { return x<chi2cut_dxy_dxyerr; }, {"chi2_dxy_dxyerr"});
+	auto dz_dzerr_cut = dxy_dxyerr_cut.Filter([chi2cut_dz_dzerr](float x) { return x<chi2cut_dz_dzerr; }, {"chi2_dz_dzerr"});
+
+	dz_dzerr_cut.Snapshot("tree", ("data/simple_cutted_data/"+outfilename+".root").c_str());
 }
