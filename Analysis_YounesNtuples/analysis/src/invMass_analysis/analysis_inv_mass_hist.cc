@@ -42,8 +42,8 @@ void plot_2D_inv_mass_hist(TH2F* hist, std::string filename){
 	TCanvas* c1 = new TCanvas("Figure","Fig", 1200, 1000);
 	c1->SetLogz();
 	hist->Draw("COLZ");
-	c1->SaveAs(("plots/Invariant_rho_"+filename+".png").c_str());
-	TFile* outfile = new TFile(("plots/Invariant_rho_"+filename+".root").c_str(),"RECREATE");
+	c1->SaveAs(("plots/2D_invariant_mass/chi2cut/Invariant_"+filename+".png").c_str());
+	TFile* outfile = new TFile(("plots/2D_invariant_mass/chi2cut/Invariant_"+filename+".root").c_str(),"RECREATE");
 	c1->Write();
 	c1->Clear();
 	outfile->Close();
@@ -76,7 +76,7 @@ TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, st
 	proj->Draw();
 
 	if(save==true){
-	std::string name = "plots/kaon_mass_fits/" + option + "projection_" + filename + ".root";
+	std::string name = "plots/rho_inv_mass/" + option + "projection_" + filename + ".root";
 	TFile* outfile = new TFile(name.c_str(), "RECREATE");
 	c1->Write();
 	outfile->Close();

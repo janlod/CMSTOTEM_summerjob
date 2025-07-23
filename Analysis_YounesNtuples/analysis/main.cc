@@ -54,37 +54,6 @@ int main(){
         std::string filename = fileList.at(ifile);
         std::string filebasename = filename.erase(filename.size() - 5);
 
-    //    TFile *cutfile = new TFile(("../data/cutted_data/" + filebasename + "cutted.root").c_str(), "read");
-      //  TTree *cuttree = (TTree*)cutfile->Get("tree");
-
-
-       //TFile *uncutfile = new TFile(("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/" + filename+".root").c_str(), "read");
-
-        //TTree *uncuttree = (TTree*)uncutfile->Get("tree");
-        
-        // Put the analysis tool here that you want to use
-
-        //primVertex_dist(cuttree, filebasename, 3);
-        //dxy_dist(cuttree, filebasename);
-        //dz_dist(cuttree, filebasename);
-        //p_dist(cuttree, filebasename);
-        //pt_eta_correl(cuttree, filebasename);
-        //loopers_4trks(uncuttree, filebasename);
-        //dxy_phi_correl(cuttree, filebasename, true);
-
-        //cut_zPV(cuttree, filebasename);
-        //cut_dzdzerr(cuttree, filebasename);
-	
-	//loopers_2trks(uncuttree, filebasename);
-
-	//plot_invar_mass(cuttree, filebasename, 0.13957);
-
-	//std::cout<<"Performing cuts on file "<<filebasename<<".root \n"<<std::endl;
-	//cut_3sigma(cuttree, filebasename);
-	//std::cout<<"\n\n\n";
-   // simpleCut("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename);
-    //plot_rho_inv_mass("tree",("../data/simple_cutted_data/"+filename+"simplecut.root").c_str(), filename, 0.13957);
-   
 	//add_inv_massBranches("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename, 0.13957);	
 
 	//TH2F* inv_mass_hist2D = get2D_inv_mass_hist("tree",("../data/inv_mass_data/"+filename + ".root").c_str(), filename, 400, 300, 1200);
@@ -98,30 +67,10 @@ int main(){
 
        	
     }
-//simpleCut("tree", "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM20.root", "TOTEM20");
+	//simpleCut("tree", "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM20.root", "TOTEM20");
 
-
-auto filepath_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2chi2cut.root";
-	auto filepath_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/combined/TOTEM4.root";
 
    	
-	TH2F* inv_mass_TOTEM2 = get2D_inv_mass_hist("tree", filepath_TOTEM2, "TOTEM2chi2cut", 600, 300, 1200);
-  	//TH2F* inv_mass_TOTEM4 = get2D_inv_mass_hist("tree", filepath_TOTEM4, "TOTEM4", 600, 300, 1200);
-       	
-	plot_2D_inv_mass_hist(inv_mass_TOTEM2, "TOTEM2chi2cut");
-	//plot_2D_inv_mass_hist(inv_mass_TOTEM4, "TOTEM4");
-        //TH1D* projx = getProj(inv_mass_TOTEM2, 300, 1200, "TOTEM2", "x");	
-	//TH1D* projy = getProj(inv_mass_TOTEM4, 300, 1200, "TOTEM4", "y");
-	
-	std::array<float, 3> gauss_guess = {1000, 500, 20};
-	TF1* gausfit2x = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2chi2cut", gauss_guess, "x");
-	TF1* gausfit2y = gaussfit_kaon_mass(inv_mass_TOTEM2, "TOTEM2chi2cut", gauss_guess, "y");
-	//TF1* gausfit4x = gaussfit_kaon_mass(inv_mass_TOTEM4, "TOTEM4", gauss_guess, "x");
-	//TF1* gausfit4y = gaussfit_kaon_mass(inv_mass_TOTEM4, "TOTEM4", gauss_guess, "y");
-
-	overlay_fits(inv_mass_TOTEM2, gausfit2x, gausfit2y, "TOTEM2chi2cut");
-	//overlay_fits(inv_mass_TOTEM4, gausfit4x, gausfit4y, "TOTEM4");
-
 
 	auto testfilepath = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/cutted_data/TOTEM20cutted.root";
 	auto fpTOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/combined/TOTEM2.root";
@@ -136,13 +85,6 @@ auto filepath_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_Y
 	TTree* treetot4 = (TTree*)tot4->Get("tree");
 
 
-	//primVertex_dist(treetot2, "TOTEM2", 3);
-	//dxy_dist(treetot2, "TOTEM2");
-	//dz_dist(treetot2, "TOTEM2");
-	
-	//primVertex_dist(treetot4, "TOTEM4", 3);
-	//dxy_dist(treetot4, "TOTEM4");
-	//dz_dist(treetot4, "TOTEM4");
 
 	float meanzPV_t2 = -0.291125;
 	float meanzPV_t4 = -0.313448;
@@ -155,9 +97,41 @@ auto filepath_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_Y
 	std::vector<float> means_t2 = {meanzPV_t2, meandxy_sigmadxy_t2, meandz_sigmadz_t2};
 	std::vector<float> means_t4 = {meanzPV_t4, meandxy_sigmadxy_t4, meandz_sigmadz_t4};
 
-	std::vector<float> cutoffs = { 50., 50., 50. };
+//	std::vector<float> cutoffs = { 30., 30., 30. };
+	
+	std::vector<std::vector<float>> cutoffs_list;
+	for(int i=1; i<10; i++){
+		cutoffs_list.push_back({10.0*i, 10.0*i, 10.0*i});
+	}
+	
+
+	
+	auto fp_chi2_TOTEM2_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/";
+	auto fp_chi2_TOTEM4_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/";
+	
+	auto fp_chi2_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2.root";
+	auto fp_chi2_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4chi2.root";
 	
 	
+	for(std::vector<float> cutoffs : cutoffs_list){
+		int cut = static_cast<int>(round(cutoffs.at(0)));
+		auto outname2 = "TOTEM2chi2cut" + std::to_string(cut);
+		auto outname4 = "TOTEM2chi4cut" + std::to_string(cut);
+
+		cutChi2("tree", fp_chi2_TOTEM2, outname2.c_str(), cutoffs);
+		cutChi2("tree", fp_chi2_TOTEM4, outname4.c_str(), cutoffs);
+		TH2F* inv_mass_TOTEM2 = get2D_inv_mass_hist("tree", (fp_chi2_TOTEM2_cut+outname2+".root").c_str(), outname2.c_str(), 600, 300, 1200);
+  		TH2F* inv_mass_TOTEM4 = get2D_inv_mass_hist("tree", (fp_chi2_TOTEM4_cut+outname4+".root").c_str(), outname4.c_str(), 600, 300, 1200);
+		
+		plot_2D_inv_mass_hist(inv_mass_TOTEM2, outname2.c_str());
+		plot_2D_inv_mass_hist(inv_mass_TOTEM4, outname4.c_str());
+	
+		}
+	
+
+	//overlay_fits(inv_mass_TOTEM2, gausfit2x, gausfit2y, "TOTEM2chi2cut");
+	//overlay_fits(inv_mass_TOTEM4, gausfit4x, gausfit4y, "TOTEM4");
+
 
     return 0;
 

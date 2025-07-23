@@ -74,5 +74,5 @@ void cutChi2(std::string treename, std::string filepath, std::string outfilename
 	auto dxy_dxyerr_cut = zPV_cut.Filter([chi2cut_dxy_dxyerr](float x) { return x<chi2cut_dxy_dxyerr; }, {"chi2_dxy_dxyerr"});
 	auto dz_dzerr_cut = dxy_dxyerr_cut.Filter([chi2cut_dz_dzerr](float x) { return x<chi2cut_dz_dzerr; }, {"chi2_dz_dzerr"});
 
-	dz_dzerr_cut.Snapshot("tree", ("data/simple_cutted_data/"+outfilename+".root").c_str());
+	dz_dzerr_cut.Snapshot("tree", ("data/chi2_combined/"+outfilename+".root").c_str());
 }
