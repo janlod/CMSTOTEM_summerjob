@@ -88,25 +88,28 @@ TH1D* getProj(TH2F* hist, float projmin, float projmax, std::string filename, st
 }
 
 
-TF1* gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> initial_guess, std::string option){
+TF1* gaussfit_mass(TH2F* hist, std::string filename, std::vector<float> initial_guess, std::string option){
 	
 	float amp = initial_guess[0];
 	float mean = initial_guess[1];
 	float sigma = initial_guess[2];
+	float offset = initial_guess[3];
 
-	TF1* gausfit = new TF1("gausfit", "gaus", mean - 1.2*sigma, mean + 1.2*sigma);	
+	TF1* gausfit_off = new TF1("gausfit_off", "[0]*exp(-0.5*((x-[1])/[2])**2) + [3]", mean - 1*sigma, mean + 1*sigma);
+	TF1* gausfit = new TF1("gausfit", "gaus", mean - 1*sigma, mean + 1*sigma);	
 	TCanvas* c2 = new TCanvas("Fig1", "Fig1", 1200, 1000);
-	for (int i=0; i<10; i++){
+	for (int i=0; i<100; i++){
+
 		std::string projname = option + "projection_it" + std::to_string(i);
-		TH1D* proj = getProj(hist, mean - 3*sigma, mean + 3*sigma, filename, option);
-		gausfit->SetParameters(amp, mean, sigma);
-		gausfit->SetRange(mean - 1.0*sigma, mean + 1.0*sigma);
-		proj->Fit(gausfit,"R", "",  mean - 1.0* sigma, mean + 1.0*sigma);
+		TH1D* proj = getProj(hist, mean - 2*sigma, mean + 2*sigma, filename, option);
+		gausfit_off->SetParameters(amp, mean, sigma, offset);
+		gausfit_off->SetRange(mean - 1.0*sigma, mean + 1.0*sigma);
+		proj->Fit(gausfit_off,"R", "",  mean - 3.0* sigma, mean + 3.0*sigma);
 		
-		if(abs(amp - gausfit->GetParameter(0))<0.0001 && abs(mean - gausfit->GetParameter(1))<0.0001 && abs(sigma - gausfit->GetParameter(2))<0.0001){
+		if(abs(amp - gausfit_off->GetParameter(0))<0.0001 && abs(mean - gausfit_off->GetParameter(1))<0.0001 && abs(sigma - gausfit_off->GetParameter(2))<0.0001){
 			proj->Draw();
-			gausfit->SetLineColor(proj->GetLineColor()-2);
-			gausfit->Draw("same");
+			gausfit_off->SetLineColor(proj->GetLineColor()-2);
+			gausfit_off->Draw("same");
 			TPad *pad_proj = new TPad(("pad_proj"+option).c_str(), "Zoom inset", 0.35, 0.55, 0.68, 0.88);
 			pad_proj->SetFillStyle(0);  // transparent
 			pad_proj->SetLineColor(kGray + 1);
@@ -115,28 +118,29 @@ TF1* gaussfit_kaon_mass(TH2F* hist, std::string filename, std::array<float,3> in
 
 			TH1D* zoom_proj = (TH1D*)proj->Clone(("zoom_proj"+option).c_str());
 			zoom_proj->GetXaxis()->SetRangeUser(450, 550);
-			zoom_proj->Draw("same");
-			gausfit->Draw("same");
+		//	zoom_proj->Draw("same");
+		//	gausfit_off->Draw("same");
 
-			TFile* outFile = new TFile(("plots/kaon_mass_fits/combined_data/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
+		std::cout<<"\n"<<std::endl;
+			std::cout <<filename<< option + " proj Amplitude: " << gausfit_off->GetParameter(0) << " ± " << gausfit_off->GetParError(0) << std::endl;
+			std::cout <<filename<< option +  " proj Mean:      " << gausfit_off->GetParameter(1) << " ± " << gausfit_off->GetParError(1) << std::endl;
+			std::cout <<filename<< option + " proj Sigma:     " << gausfit_off->GetParameter(2) << " ± " << gausfit_off->GetParError(2) << std::endl;
+			std::cout <<filename<< option + " proj FWHM:     " << 2.35482*gausfit_off->GetParameter(2) << " ± " << 2.35482*gausfit_off->GetParError(2) << std::endl;
+			std::cout<<"\n"<<std::endl;
+
+			TFile* outFile = new TFile(("plots/rho_mass_fits/inv_mass_rho_proj" + option + filename + ".root").c_str(), "RECREATE");
 			c2->Write();  // writes the canvas into the file
 			outFile->Close();
-			c2->Clear();
-			std::cout<<"\n"<<std::endl;
-			std::cout <<filename<< option + " proj Amplitude: " << gausfit->GetParameter(0) << " ± " << gausfit->GetParError(0) << std::endl;
-			std::cout <<filename<< option +  " proj Mean:      " << gausfit->GetParameter(1) << " ± " << gausfit->GetParError(1) << std::endl;
-			std::cout <<filename<< option + " proj Sigma:     " << gausfit->GetParameter(2) << " ± " << gausfit->GetParError(2) << std::endl;
-			std::cout <<filename<< option + " proj FWHM:     " << 2.35482*gausfit->GetParameter(2) << " ± " << 2.35482*gausfit->GetParError(2) << std::endl;
-			std::cout<<"\n"<<std::endl;
 			
 			break;
 		}	
-		amp = gausfit->GetParameter(0);
-		mean = gausfit->GetParameter(1);
-		sigma = gausfit->GetParameter(2);
+		amp = gausfit_off->GetParameter(0);
+		mean = gausfit_off->GetParameter(1);
+		sigma = gausfit_off->GetParameter(2);
+		offset = gausfit_off->GetParameter(3);
 		
 	}
-return gausfit;
+return gausfit_off;
 }
 
 
@@ -162,8 +166,8 @@ void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename
 	projx->SetName(("Projections " + filename).c_str());
 	projx->GetXaxis()->SetTitle("Energy [MeV]");
 	projy->SetLineColor(kRed+2);	
-	projx->Draw();
-	projy->Draw("same");
+	projy->Draw();
+	projx->Draw("same");
 
 	gausfitx->SetLineColor(kBlue);
 	gausfity->SetLineColor(kRed);
@@ -191,25 +195,25 @@ void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename
 	box->AddText(Form("#sigma_{y} =( %.3f #pm %.3f) MeV", sigmay, sigmayerr));
 	box->Draw("same");
 	
-	TPad *pad_proj = new TPad("Zoom", "Zoom inset", 0.45, 0.38, 0.9, 0.68);
+	TPad *pad_proj = new TPad("Zoom", "Zoom inset", 0.25, 0.08, 0.55, 0.38);
 	pad_proj->SetFillStyle(0);  // transparent
 	pad_proj->SetLineColor(kGray + 1);
 	pad_proj->Draw();
 	pad_proj->cd();
 
-	TH1D* zoom_projx = (TH1D*)projx->Clone("zoom");
-	zoom_projx->GetXaxis()->SetRangeUser(480, 520);
-	zoom_projx->Draw("same");
-	gausfitx->Draw("same");
 
 	TH1D* zoom_projy = (TH1D*)projy->Clone("zoom_projy");
-	zoom_projy->GetXaxis()->SetRangeUser(480, 520);
-	zoom_projy->Draw("same");
-	gausfity->Draw("same");
+	zoom_projy->GetXaxis()->SetRangeUser(570, 970);
+	//zoom_projy->Draw("same");
+	//gausfity->Draw("same");
 
+	TH1D* zoom_projx = (TH1D*)projx->Clone("zoom");
+	zoom_projx->GetXaxis()->SetRangeUser(570, 970);
+	//zoom_projx->Draw("same");
+	//gausfitx->Draw("same");
 	c2->Update();
 
-	auto outpath = "plots/kaon_mass_fits/combined_data/overlay" + filename + ".root";
+	auto outpath = "plots/rho_mass_fits/overlay" + filename + ".root";
 	TFile* outfile = new TFile(outpath.c_str(), "RECREATE");
 	c2->Write();
 	outfile->Close();

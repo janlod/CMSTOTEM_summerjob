@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <array>
 #include <TH2F.h>
 #include <TCanvas.h>
@@ -30,8 +31,8 @@ TH1D* getProj(TH2F* hist, float projmin, float projmax, const std::string filena
 
 /// Fit a Gaussian to invariant mass projection (X or Y),
 /// refining initial guess in iterative fitting loop.
-TF1* gaussfit_kaon_mass(TH2F* hist, const std::string filename,
-                       const std::array<float,3> initial_guess,
+TF1* gaussfit_mass(TH2F* hist, const std::string filename,
+                       const std::vector<float> initial_guess,
                        const std::string option);
 
 /// Overlay Gaussian fits on the 2D histogram projections,

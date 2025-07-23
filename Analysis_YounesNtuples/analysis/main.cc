@@ -106,99 +106,21 @@ int main(){
 	
 
 	
-	auto fp_chi2_TOTEM_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/";
+	auto fp_chi2_TOTEM2_cut30 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2cut30.root";
 	
 	auto fp_chi2_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2.root";
 	auto fp_chi2_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4chi2.root";
 	
-	TCanvas* c2 = new TCanvas("Fig2", "fig2", 1200, 1000);
-	TCanvas* c4 = new TCanvas("Fig4", "fig4", 1200, 1000);
-	TLegend* legend2 = new TLegend(0.2, 0.7, 0.5, 0.9);
-	legend2->SetBorderSize(0);
-        legend2->SetFillStyle(0);
-	TLegend* legend4 = new TLegend(0.2, 0.7, 0.5, 0.9);
-	legend4->SetBorderSize(0);
-        legend4->SetFillStyle(0);
+
+	TH2F* tot2chi30 = get2D_inv_mass_hist("tree",fp_chi2_TOTEM2_cut30, "TOT2_cut30", 600, 300, 1200);
 	
-	std::vector<Color_t> xColors = {kBlue, kViolet, kBlack};
-	std::vector<Color_t> yColors = {kYellow, kOrange, kRed};
-
-	bool first = true;
-
-	for (int i = 0; i < cutoffs_list.size()-6; i++) {
-	    std::vector<float> cutoffs = cutoffs_list.at(i);
-	    int cut = static_cast<int>(round(cutoffs.at(0)));
-	    auto outname2 = "TOTEM2chi2cut" + std::to_string(cut);
-	    auto outname4 = "TOTEM2chi4cut" + std::to_string(cut);
-
-	    TH2F* hist2 = get2D_inv_mass_hist("tree", (fp_chi2_TOTEM_cut + outname2 + ".root").c_str(), outname2, 600, 300, 1200);
-	    TH2F* hist4 = get2D_inv_mass_hist("tree", (fp_chi2_TOTEM_cut + outname4 + ".root").c_str(), outname4, 600, 300, 1200);
-
-	    // Get colors
-	    Color_t xColor = xColors[(i - 0) % xColors.size()];
-	    Color_t yColor = yColors[(i - 0) % yColors.size()];
-
-	    // TOTEM2 projections
-	    TH1D* projx2 = getProj(hist2, 570, 970, outname2, "x", false);
-	    projx2->SetLineColorAlpha(xColor, 0.5);
-	    projx2->SetLineWidth(2);
-	    legend2->AddEntry(projx2, ("x-proj for cut " + std::to_string(cut)).c_str(), "l");
-
-	    TH1D* projy2 = getProj(hist2, 570, 970, outname2, "y", false);
-	    projy2->SetLineColorAlpha(yColor, 0.5);
-	    projy2->SetLineWidth(2);
-	    legend2->AddEntry(projy2, ("y-proj for cut " + std::to_string(cut)).c_str(), "l");
-
-	    // TOTEM4 projections
-	    TH1D* projx4 = getProj(hist4, 570, 970, outname4, "x", false);
-	    projx4->SetLineColorAlpha(xColor, 0.5);
-	    projx4->SetLineWidth(2);
-	    legend4->AddEntry(projx4, ("x-proj for cut " + std::to_string(cut)).c_str(), "l");
-
-	    TH1D* projy4 = getProj(hist4, 570, 970, outname4, "y", false);
-	    projy4->SetLineColorAlpha(yColor, 0.5);
-	    projy4->SetLineWidth(2);
-	    legend4->AddEntry(projy4, ("y-proj for cut " + std::to_string(cut)).c_str(), "l");
-
-	    // Drawing
-	    if (first) {
-		c2->cd();
-		projx2->GetYaxis()->SetRangeUser(0, 2000);
-		projx2->Draw("hist");
-		projy2->Draw("hist same");
-
-		c4->cd();
-		projx4->GetYaxis()->SetRangeUser(0, 2000);
-		projx4->Draw("hist");
-		projy4->Draw("hist same");
-
-		first = false;
-	    } else {
-		c2->cd();
-		projx2->Draw("hist same");
-		projy2->Draw("hist same");
-
-		c4->cd();
-		projx4->Draw("hist same");
-		projy4->Draw("hist same");
-	    }
-	}
+	std::vector<float> guessx = {2500., 750., 50., 100.};
+	std::vector<float> guessy = {3500., 750., 50., 100.};
 	
+	TF1* gausfit2x = gaussfit_mass(tot2chi30, "testfit", guessx, "x");
+	TF1* gausfit2y = gaussfit_mass(tot2chi30, "testfit", guessy, "y");
 	
-	c2->cd();
-	legend2->Draw("same");
-	c4->cd();
-	legend4->Draw("same");
-
-	TFile* outfile2 = new TFile("TOTEM2chi2cuts_projs1.root", "RECREATE");
-	c2->Write();
-	outfile2->Close();
-
-	
-	TFile* outfile4 = new TFile("TOTEM4chi2cuts_projs1.root", "RECREATE");
-	c4->Write();
-	outfile4->Close();
-	//overlay_fits(inv_mass_TOTEM2, gausfit2x, gausfit2y, "TOTEM2chi2cut");
+	overlay_fits(tot2chi30, gausfit2x, gausfit2y, "TOTEM2chi2cut");
 	//overlay_fits(inv_mass_TOTEM4, gausfit4x, gausfit4y, "TOTEM4");
 
 
