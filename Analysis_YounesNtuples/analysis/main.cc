@@ -97,16 +97,13 @@ int main(){
 	std::vector<float> means_t2 = {meanzPV_t2, meandxy_sigmadxy_t2, meandz_sigmadz_t2};
 	std::vector<float> means_t4 = {meanzPV_t4, meandxy_sigmadxy_t4, meandz_sigmadz_t4};
 
-//	std::vector<float> cutoffs = { 30., 30., 30. };
+	getChiSquared_tree(means_t4, "tree", fpTOTEM4, "TOTEM4_4trk_");
+
+	std::vector<float> cutoffs = { 30., 30., 30. };
 	
-	std::vector<std::vector<float>> cutoffs_list;
-	for(int i=1; i<10; i++){
-		cutoffs_list.push_back({10.0*i, 10.0*i, 10.0*i});
-	}
 	
 
-	
-	auto fp_chi2_TOTEM2_cut30 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2cut30.root";
+	auto fp_chi2_TOTEM2_cut30 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2cut10.root";
 	
 	auto fp_chi2_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2.root";
 	auto fp_chi2_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4chi2.root";
@@ -114,13 +111,13 @@ int main(){
 
 	TH2F* tot2chi30 = get2D_inv_mass_hist("tree",fp_chi2_TOTEM2_cut30, "TOT2_cut30", 600, 300, 1200);
 	
-	std::vector<float> guessx = {2500., 750., 50., 100.};
-	std::vector<float> guessy = {3500., 750., 50., 100.};
+	std::vector<float> guessx = {500., 745., 50., 0.};
+	std::vector<float> guessy = {500., 745., 50., 0.};
 	
-	TF1* gausfit2x = gaussfit_mass(tot2chi30, "testfit", guessx, "x");
-	TF1* gausfit2y = gaussfit_mass(tot2chi30, "testfit", guessy, "y");
+	//TF1* gausfit2x = gaussfit_mass(tot2chi30, "testfit", guessx, "x");
+	//TF1* gausfit2y = gaussfit_mass(tot2chi30, "testfit", guessy, "y");
 	
-	overlay_fits(tot2chi30, gausfit2x, gausfit2y, "TOTEM2chi2cut");
+	//overlay_fits(tot2chi30, gausfit2x, gausfit2y, "TOTEM2chi2cut");
 	//overlay_fits(inv_mass_TOTEM4, gausfit4x, gausfit4y, "TOTEM4");
 
 

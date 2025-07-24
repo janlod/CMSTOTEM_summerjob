@@ -104,7 +104,7 @@ TF1* gaussfit_mass(TH2F* hist, std::string filename, std::vector<float> initial_
 		TH1D* proj = getProj(hist, mean - 2*sigma, mean + 2*sigma, filename, option);
 		gausfit_off->SetParameters(amp, mean, sigma, offset);
 		gausfit_off->SetRange(mean - 1.0*sigma, mean + 1.0*sigma);
-		proj->Fit(gausfit_off,"R", "",  mean - 3.0* sigma, mean + 3.0*sigma);
+		proj->Fit(gausfit_off,"R", "",  mean - 2.0* sigma, mean + 2.0*sigma);
 		
 		if(abs(amp - gausfit_off->GetParameter(0))<0.0001 && abs(mean - gausfit_off->GetParameter(1))<0.0001 && abs(sigma - gausfit_off->GetParameter(2))<0.0001){
 			proj->Draw();

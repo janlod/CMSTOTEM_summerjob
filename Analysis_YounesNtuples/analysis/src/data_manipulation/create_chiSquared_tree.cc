@@ -1,7 +1,8 @@
 #include "data_manipulation/create_chiSquared_tree.h"
 
 float mean = 0.0;
-auto calcChiSquared_eventVar = [mean](Int_t ntrk, Float_t branch, Float_t branchErr=0.0){
+float sigma = 1.0;
+auto calcChiSquared_eventVar = [mean, sigma](Int_t ntrk, Float_t branch, Float_t branchErr=0.0){
 	Float_t dev = 0.0;
 	Float_t value;
 	if(branchErr==0.0){
@@ -11,7 +12,7 @@ auto calcChiSquared_eventVar = [mean](Int_t ntrk, Float_t branch, Float_t branch
 	}
 
 	if(ntrk==4){
-		dev = (mean - value)*(mean - value);
+		dev = (mean - value)*(mean - value)/(sigma*sigma);
 	}
 	return dev;
 };
@@ -46,6 +47,7 @@ float calcChiSquared(float meanpar, Int_t ntrk, T branch, T branchErr){
 void getChiSquared_tree(std::vector<float> meanpars, std::string treename, std::string filepath, std::string outfilename){
 	ROOT::RDataFrame df(treename.c_str(), filepath.c_str());
 	float mean = meanpars.at(0);
+ 	float sigma = 4.287;	
 	int ntrk = 4;
 	auto df2 = df
 			.Define("chi2_zPV", [=](Int_t ntrk, Float_t zPV){ return calcChiSquared_eventVar(ntrk, zPV); }, {"ntrk", "zPV"})
@@ -53,17 +55,12 @@ void getChiSquared_tree(std::vector<float> meanpars, std::string treename, std::
 		.Define("chi2_dz_dzerr", [=](Int_t ntrk, RVecF dz, RVecF dzerr){ return calcChiSquared<RVecF>(meanpars.at(2), ntrk, dz, dzerr); }, {"ntrk", "trk_dz", "trk_dzerr"})
  		.Filter([ntrk](int x) { return x==ntrk; }, {"ntrk"});
 
-	auto originalColumns = df.GetColumnNames();
-	    
-	std::vector<std::string> newColumns = {
-		"chi2_zPV", "chi2_dxy_dxyerr", "chi2_dz_dzerr"
-	};
-
-	std::vector<std::string> allColumns(originalColumns.begin(), originalColumns.end());
-	allColumns.insert(allColumns.end(), newColumns.begin(), newColumns.end());
+	
+	auto trk4_cut = df2.Filter([ntrk](int x) { return x==ntrk; }, {"ntrk"});
 
 
-	df2.Snapshot(treename.c_str(), ("data/chi2_combined/" + outfilename + "chi2.root").c_str(), allColumns);
+
+	trk4_cut.Snapshot(treename.c_str(), ("data/chi2_combined/" + outfilename + "chi2.root").c_str());
 
 }
 
