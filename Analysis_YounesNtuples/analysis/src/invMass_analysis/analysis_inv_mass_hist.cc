@@ -147,19 +147,36 @@ return gausfit_off;
 
 void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename, bool saveplot){
 	TCanvas* c2 = new TCanvas("Canvas", "Figure", 1200, 1000);
-	float sigmax = gausfitx->GetParameter(2);
-	float sigmay = gausfity->GetParameter(2);
-	float meanx = gausfitx->GetParameter(1);
-	float meany = gausfity->GetParameter(1);
-	float sigmaxerr = gausfitx->GetParError(2);
-	float sigmayerr = gausfity->GetParError(2);
-	float meanxerr = gausfitx->GetParError(1);
-	float meanyerr = gausfity->GetParError(1);
 
+	// For kaon mass fit (just gaussian)
+	//float sigmax = gausfitx->GetParameter(2);
+	//float sigmay = gausfity->GetParameter(2);
+	//float meanx = gausfitx->GetParameter(1);
+	//float meany = gausfity->GetParameter(1);
+	//float sigmaxerr = gausfitx->GetParError(2);
+	//float sigmayerr = gausfity->GetParError(2);
+	//float meanxerr = gausfitx->GetParError(1);
+	//float meanyerr = gausfity->GetParError(1);
+	
 
-	TH1D* projx = getProj(hist, meanx - 3*sigmax, meanx + 3*sigmax, filename.c_str(), "x", saveplot);
-	TH1D* projy = getProj(hist, meany - 3*sigmay, meany + 3*sigmay, filename.c_str(), "y", saveplot);
+	//For rho mas fit with background	
+	float sigmax = gausfitx->GetParameter(6);
+	float sigmay = gausfity->GetParameter(6);
+	float meanx = gausfitx->GetParameter(5);
+	float meany = gausfity->GetParameter(5);
+	float sigmaxerr = gausfitx->GetParError(6);
+	float sigmayerr = gausfity->GetParError(6);
+	float meanxerr = gausfitx->GetParError(5);
+	float meanyerr = gausfity->GetParError(5);
 
+	//For Kaon fit use this
+	//TH1D* projx = getProj(hist, meanx - 3*sigmax, meanx + 3*sigmax, filename.c_str(), "x", saveplot);
+	//TH1D* projy = getProj(hist, meany - 3*sigmay, meany + 3*sigmay, filename.c_str(), "y", saveplot);
+	
+	//For rho mass fits use this
+	TH1D* projx = getProj(hist, 600, 900, filename.c_str(), "x", saveplot);
+	TH1D* projy = getProj(hist, 600, 900, filename.c_str(), "y", saveplot);
+	
 	c2->cd();
 	projx->SetLineColor(kBlue+3);
 	projx->SetTitle("Reconstructed invariant mass");
@@ -219,3 +236,77 @@ void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity, std::string filename
 	outfile->Close();
 	
 }
+
+
+TF1* rhoMassFit(TH2F* hist, std::string filename, std::vector<float> initial_guess, std::string option){
+	// Function from Anna's summer student report
+	//TF1* bg = new TF1("expo-poly","[0]*(x-[1])**[2]*exp([3]*x + [4]*x**2 + [5]*x**3)", 200, 1000);
+	//TF1* sg = new TF1("gauss", "gaus", 600, 900);
+	
+	
+	float bgAmp = initial_guess[0];
+	float bgShift = initial_guess[1];
+	float bgExp = initial_guess[2];
+	float bgA = initial_guess[3];
+	float bgB = initial_guess[4];
+	float bgC = initial_guess[5];
+	float sgAmp = initial_guess[6];
+	float sgMean = initial_guess[7];
+	float sgSigma = initial_guess[8];
+
+	//TF1* total = new TF1("total", "[0]*(x-[1])**[2]*exp([3]*x + [4]*x**2 + [5]*x**3) + [6]*exp(-0.5*((x-[7])/[8])**2)", 400, 1000);
+	//total->SetParNames("BG_amp", "BG_shift", "BG_exp","BG_a", "BG_b", "BG_c", "SG_amp", "SG_mean", "SG_sigma");
+	TF1* total = new TF1("total", "[0]*(x-[1])**[2]*exp([3]*x) + [4]*exp(-0.5*((x-[5])/[6])**2)", 300, 1200);
+	total->SetParNames("BG_amp", "BG_shift", "BG_exp","BG_a", "SG_amp", "SG_mean", "SG_sigma");
+	TH1D* proj = getProj(hist, 600, 900, "TOT2", option);
+
+	for(int i=0; i<100; i++){
+		total->SetParameters(bgAmp, bgShift, bgExp, bgA, sgAmp, sgMean, sgSigma);
+		proj->Fit("total");
+
+		bgAmp = total->GetParameter(0);
+		bgShift = total->GetParameter(1);
+		bgExp = total->GetParameter(2);
+		bgA = total->GetParameter(3);
+		sgAmp = total->GetParameter(4);
+		sgMean = total->GetParameter(5);
+		sgSigma = total->GetParameter(6);
+	}
+
+	TCanvas* c1 = new TCanvas("Fig", "fig", 1000, 1200);
+	c1->cd();
+	proj->Draw();
+	if(option=="x"){
+		total->SetLineColor(kBlue);
+	}else if (option=="y"){
+		total->SetLineColor(kRed);
+	}
+	total->Draw("same");
+
+	auto pave = new TPaveText(0.11, 0.65, 0.32, 0.89, "NDC");
+	pave->SetFillColor(kWhite);
+	pave->SetBorderSize(1);
+	pave->SetTextAlign(12);
+	pave->AddText("Fit Parameters:");
+
+	for (int i = 0; i < total->GetNpar(); ++i) {
+	    TString parName = total->GetParName(i);
+	    double parVal = total->GetParameter(i);
+	    double parErr = total->GetParError(i);
+	    TString line;
+	    line.Form("%s = %.3f #pm %.3f", parName.Data(), parVal, parErr);
+	    pave->AddText(line);
+	}
+
+	pave->Draw();
+
+
+
+	TFile* outfile = new TFile(("/plots/rho_mass_fits/"+filename+option+"proj"+"_BGfit.root").c_str(), "RECREATE");
+	c1->Write();
+	outfile->Close();
+
+	return total;
+}
+
+

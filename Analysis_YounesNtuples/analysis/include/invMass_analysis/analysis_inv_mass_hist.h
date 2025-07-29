@@ -40,3 +40,5 @@ TF1* gaussfit_mass(TH2F* hist, const std::string filename,
 void overlay_fits(TH2F* hist, TF1* gausfitx, TF1* gausfity,
                   const std::string filename,
                   bool saveplot=false);
+
+TF1* rhoMassFit(TH2F* hist, std::string filename, std::vector<float> initial_guess, std::string option);

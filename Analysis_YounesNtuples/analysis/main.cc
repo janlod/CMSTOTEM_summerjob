@@ -97,30 +97,46 @@ int main(){
 	std::vector<float> means_t2 = {meanzPV_t2, meandxy_sigmadxy_t2, meandz_sigmadz_t2};
 	std::vector<float> means_t4 = {meanzPV_t4, meandxy_sigmadxy_t4, meandz_sigmadz_t4};
 
-	getChiSquared_tree(means_t4, "tree", fpTOTEM4, "TOTEM4_4trk_");
+	//getChiSquared_tree(means_t4, "tree", fpTOTEM4, "TOTEM4_new");
+	//getChiSquared_tree(means_t2, "tree", fpTOTEM2, "TOTEM2_new");
 
-	std::vector<float> cutoffs = { 30., 30., 30. };
-	
-	
-
-	auto fp_chi2_TOTEM2_cut30 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2cut10.root";
-	
-	auto fp_chi2_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2.root";
-	auto fp_chi2_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4chi2.root";
+	std::vector<float> cutoffs = { 10., 10., 10. };
 	
 
-	TH2F* tot2chi30 = get2D_inv_mass_hist("tree",fp_chi2_TOTEM2_cut30, "TOT2_cut30", 600, 300, 1200);
+	auto fp_chi2_TOTEM2_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2chi2cut10.root";
+	auto fp_chi2_TOTEM4_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM4chi2cut10.root";
+
+	auto fp_chi2_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2_newchi2.root";
+	auto fp_chi2_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4_newchi2.root";
 	
-	std::vector<float> guessx = {500., 745., 50., 0.};
-	std::vector<float> guessy = {500., 745., 50., 0.};
+	//cutChi2("tree", fp_chi2_TOTEM4, "TOTEM4chi2cut10", cutoffs);
+	//cutChi2("tree", fp_chi2_TOTEM2, "TOTEM2chi2cut10", cutoffs);
+
+	TH2F* tot2chi10 = get2D_inv_mass_hist("tree",fp_chi2_TOTEM2_cut, "TOT2_cut10", 600, 300, 1200);
 	
+	TH2F* tot4chi10 = get2D_inv_mass_hist("tree",fp_chi2_TOTEM4_cut, "TOT4_cut10", 600, 300, 1200);
+
+	plot_2D_inv_mass_hist(tot2chi10, "TOT2chi2cut10");
+	plot_2D_inv_mass_hist(tot4chi10, "TOT4chi2cut10");
+	//TH1D* projx2 = getProj(tot2chi30, 600, 900, "TOT2_", "x", true);
+	//TH1D* projy2 = getProj(tot2chi30, 600, 900, "TOT2_", "y", true);	
 	//TF1* gausfit2x = gaussfit_mass(tot2chi30, "testfit", guessx, "x");
 	//TF1* gausfit2y = gaussfit_mass(tot2chi30, "testfit", guessy, "y");
 	
 	//overlay_fits(tot2chi30, gausfit2x, gausfit2y, "TOTEM2chi2cut");
 	//overlay_fits(inv_mass_TOTEM4, gausfit4x, gausfit4y, "TOTEM4");
+	
+	std::vector<float> initial_guess = {4.05, 245., 1.4, -0.005, -1e-6, 0.45e-9, 571, 746, 69};
 
+	TF1* rhofitx2 = rhoMassFit(tot2chi10, "TOT2chi2cut10", initial_guess, "x");
+	TF1* rhofity2 = rhoMassFit(tot2chi10, "TOT2chi2cut10", initial_guess, "y");
 
+	TF1* rhofitx4 = rhoMassFit(tot4chi10, "TOT4chi2cut10", initial_guess, "x");
+	TF1* rhofity4 = rhoMassFit(tot4chi10, "TOT4chi2cut10", initial_guess, "y");
+
+	overlay_fits(tot2chi10, rhofitx2, rhofity2, "TOT2_chi2cut10", true);
+	overlay_fits(tot4chi10, rhofitx4, rhofity4, "TOT4_chi2cut10", true);
+	
     return 0;
 
 }

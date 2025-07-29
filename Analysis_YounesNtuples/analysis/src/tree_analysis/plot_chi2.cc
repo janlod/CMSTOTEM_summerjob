@@ -8,7 +8,8 @@ void plot_chi2(std::string branchname, std::string treename, std::string filepat
 	
 	TCanvas* c1 = new TCanvas("Fig", "Fig", 1200, 1000);
 	TFile* outfile = new TFile((outfilename + ".root").c_str(), "RECREATE");
-	
+ 	
+	c1->SetLogy();	
 	hist->Draw();
 	c1->Write();
 	outfile->Close();
