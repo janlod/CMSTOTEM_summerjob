@@ -84,3 +84,24 @@ void add_inv_massBranches(std::string treename, std::string filepath, std::strin
 	
 }
 
+float mass = 0.13957;
+auto calcGlueball_mass = [mass](RVecF pt, RVecF eta, RVecF phi, Float_t ntrk){
+	TLorentzVector trk4_system, temp;
+	
+	for(int itrk=0; itrk<ntrk; itrk++){
+		temp.SetPtEtaPhiM(pt.at(itrk), eta.at(itrk), phi.at(itrk), mass);
+		trk4_system += temp;
+		temp = TLorentzVector();
+	}
+	float glueball_mass = trk4_system.M();
+	
+	return glueball_mass;
+};
+
+void add_Glueball_massBranch(std::string filepath, std::string outname, float masspar){
+	ROOT::RDataFrame df("tree", filepath.c_str());
+	float mass = masspar;
+	auto df2 = df.Define("glueball_mass", [mass](RVecF pt, RVecF eta, RVecF phi, Int_t ntrk){ return calcGlueball_mass(pt, eta, phi, ntrk); }, {"trk_pt", "trk_eta", "trk_phi", "ntrk"});
+
+	df2.Snapshot("tree", ("data/glueball/")+outname+".root");
+}

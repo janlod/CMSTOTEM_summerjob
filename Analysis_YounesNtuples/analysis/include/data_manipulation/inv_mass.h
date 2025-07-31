@@ -18,4 +18,4 @@ using RVecI = ROOT::RVec<int>;
 /// Add two new branches to the tree: inv_mass_pair1 and inv_mass_pair2.
 void add_inv_massBranches(std::string treename, std::string filepath, std::string filename, float massPi = 0.13957);
 
-
+void add_Glueball_massBranch(std::string filepath, std::string outname, float masspar=0.13957);

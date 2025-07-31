@@ -37,6 +37,26 @@ return hist;
 }
 
 
+TH2F* plot_2D_rhoMass_hist(std::string filepath, std::string outname, int nbin, float min, float max){
+	TH2F* hist = new TH2F("Mass pairs", "Correct reconstructed mass pair", nbin, min, max, nbin, min, max);
+	TCanvas* c1 = new TCanvas("fig", "Fig", 1200, 1000);
+	ROOT::RDataFrame df("tree", filepath.c_str());
+	auto fill = [=](RVecF correct_pair){
+		hist->Fill(correct_pair.at(0)*1e3, correct_pair.at(1)*1e3);
+	};
+	
+	df.Foreach(fill, {"correct_massPair"});
+	TFile* outfile = new TFile(("plots/correct_2D_mass/"+outname+".root").c_str(),"RECREATE");
+	hist->GetXaxis()->SetTitle("mass in MeV");
+	hist->GetYaxis()->SetTitle("mass in Mev");
+	c1->SetLogz();
+	hist->Draw("COLZ");
+	c1->Write();
+	outfile->Close();
+	
+	return hist;
+}
+
 
 void plot_2D_inv_mass_hist(TH2F* hist, std::string filename){
 	TCanvas* c1 = new TCanvas("Figure","Fig", 1200, 1000);

@@ -62,6 +62,14 @@ void simpleCut(std::string treename, std::string fileloc, std::string filename){
 
 }
 
+
+void cut_badChargeTrks(std::string filepath, std::string outfilename){
+	ROOT::RDataFrame df("tree", filepath.c_str());
+	
+	auto df2 = df.Filter([=](RVecF rhopair1){ return rhopair1.at(0)>1e-8; }, {"inv_mass_pair1"});
+	df2.Snapshot("tree", ("data/chi2_combined/"+outfilename+".root").c_str());
+}
+
 // cutoffs expected in order [zPV, dxy_dxyerr, dz_dzerr]
 void cutChi2(std::string treename, std::string filepath, std::string outfilename, std::vector<float> cutoffs){
 	ROOT::RDataFrame df(treename.c_str(), filepath.c_str());
@@ -76,3 +84,15 @@ void cutChi2(std::string treename, std::string filepath, std::string outfilename
 
 	dz_dzerr_cut.Snapshot("tree", ("data/simple_cutted_data/"+outfilename+".root").c_str());
 }
+
+void cut_rhoMassChi2(std::string filepath, float cutoff, std::string outname){
+	ROOT::RDataFrame df("tree", filepath);
+	
+	auto cutted = df.Filter([=](float x) { return x<cutoff; }, {"chi2_rhoMass_pair1"})
+			.Filter([=](float y) { return y<cutoff; }, {"chi2_rhoMass_pair2"});
+
+	cutted.Snapshot("tree", ("data/simple_cutted_data/" + outname + ".root").c_str());
+}
+
+
+

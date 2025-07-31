@@ -21,6 +21,8 @@ using RVecI = ROOT::RVec<int>;
 // Get the inv mass histo from the modified tree, which has the inv mass pair branches
 TH2F* get2D_inv_mass_hist(std::string treename, std::string filepath, std::string filename, int nbin, float min, float max);
 
+TH2F* plot_2D_rhoMass_hist(std::string filepath, std::string outname, int nbin, float min, float max);
+
 /// Plot 2D invariant mass histogram and save PNG + ROOT file.
 void plot_2D_inv_mass_hist(TH2F* hist, const std::string filename);
 
