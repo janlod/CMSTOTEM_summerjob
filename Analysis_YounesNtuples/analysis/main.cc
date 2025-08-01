@@ -7,6 +7,7 @@
 #include "include/tree_analysis/primVertex.h"
 #include "include/tree_analysis/pt_eta_correl.h"
 #include "include/tree_analysis/plot_chi2.h"
+#include "include/tree_analysis/plotting.h"
 
 #include "include/invMass_analysis/analysis_inv_mass_hist.h"
 #include "include/invMass_analysis/plot_inv_mass.h"
@@ -108,28 +109,16 @@ int main(){
 
 	//TH1D* projx = getProj(testhist, 600, 900, "TOTEM2_corr_cut40_rho30", "x", true); 
 	//TH1D* projy = getProj(testhist, 600, 900, "TOTEM2_corr_cut40_rho30", "y", true); 
- 
-	//add_Glueball_massBranch("/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2_corr_cut40_rho30.root","firsttestTOT2");
-
-	TCanvas* c1 = new TCanvas("Fig", "Fig", 1200, 1000);
-	TH1F* hist = new TH1F("Masses", "Reconstructed four trk invatiant mass", 1700, 100, 2700);
-	TFile* infile = new TFile("/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/glueball/firsttestTOT2.root","READ");
+	//create_correct_massBranch(fp_chi2_TOTEM2_rho, "TOTEM2corr"); 
 	
-	TTree* tree = (TTree*)infile->Get("tree");
-	Float_t glueball_mass;
-	tree->SetBranchAddress("glueball_mass", &glueball_mass);
-	Long64_t nentries = tree->GetEntries();
-	for(int event=0; event<nentries; event++){
-		tree->GetEntry(event);
-		hist->Fill(glueball_mass*1e3);
-	}
-	infile->Close();
+	
+	auto fpTOTEM2corr = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2corr.root";
+	auto fpTOTEM4corr = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4corr.root";
 
-	TFile* outfile = new TFile("glueball_mass.root", "RECREATE");
-	hist->Draw();
-	c1->Write();
-	outfile->Close();
+	auto outpath = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/plots/chi2/TOTEM4chi2_correl.root";
 
-	return 0;
+	plot2D_correl_eventvar(fpTOTEM4corr, outpath, "chi2_rhoMass_pair1", "chi2_rhoMass_pair2", 1e2, 1e2, 0, 0, 5e3, 5e3, true);	
+
+		return 0;
 
 }
