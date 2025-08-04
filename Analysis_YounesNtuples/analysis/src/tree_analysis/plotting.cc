@@ -18,6 +18,29 @@ void plot2D_correl_eventvar(std::string filepath, std::string outpath, std::stri
 }
 
 
+void plot2D_masspairs(bool correct, std::string filepath, std::string outpath, int nbins, float min, float max, bool logscale){
+	TH2F* hist = new TH2F("2d correl", "mass 1 vs. mass 2 ", nbins, min, max, nbins, min, max);
+	TCanvas* c1 = new TCanvas("fig", "fig", 1200, 1000);
+	if(logscale){c1->SetLogz(); }
+	hist->GetXaxis()->SetTitle("mass 1");
+	hist->GetYaxis()->SetTitle("mass 2");
+
+	ROOT::RDataFrame df("tree", filepath);
+	auto fill2D = [=](RVecF pair){ hist->Fill(pair.at(0)*1e3, pair.at(1)*1e3); };
+	
+	if(correct){
+		df.Foreach(fill2D, {"correct_massPair"});
+	}else{
+		df.Foreach(fill2D, {"wrong_massPair"});
+	}
+	TFile* outfile = new TFile(outpath.c_str(), "RECREATE");
+	hist->Draw("COLZ");
+	c1->Write();
+	outfile->Close();
+}
+
+
+
 void plot1D_eventvar(std::string filepath, std::string outpath, std::string branch, int nbins, float min, float max, bool logscale){
 	auto fp = filepath.c_str();
 	auto op = outpath.c_str();
@@ -90,11 +113,9 @@ void plot1D_trkvar(std::string filepath, std::string outpath, std::string branch
 	
 	ROOT::RDataFrame df("tree", fp);
 	auto fill1D = [=](RVecF values, Int_t ntrk){
-			float value = 0.0;
 			for(int itrk=0; itrk<ntrk; itrk++){
-				value += values.at(itrk);
-			} 
-			hist->Fill(value); };
+				hist->Fill(values.at(itrk)); };
+			}; 
 
 	df.Foreach(fill1D, {bname, "ntrk"});
 	TFile* outfile = new TFile(op, "RECREATE");

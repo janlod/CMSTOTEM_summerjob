@@ -26,54 +26,6 @@ namespace fs = std::filesystem;
 
 int main(){
 
-    //First we read in all filenames from a text file to a list to loop over them
-    std::string line;
-    std::ifstream file;
-    std::vector<std::string> fileList;
-    file.open("dataFileList.txt");
-    if(file.is_open()){
-        while (getline(file, line)){
-            fileList.push_back(line);
-        }
-        file.close();
-    }
-
-    std::string folderpath = "../data/inv_mass_data/"; 
-    std::vector<std::string> files2 = { "TOTEM20.root", "TOTEM21.root", "TOTEM22.root", "TOTEM23.root" };
-    std::vector<std::string> files4 = { "TOTEM40.root", "TOTEM41.root", "TOTEM42.root", "TOTEM43.root" };
-    for(std::string& file : files2){
-    	file = folderpath + file;
-    }
-
-    for(std::string& file : files4){
-    	file = folderpath + file;
-    }
-    //std::cout<<files2.at(0)<<std::endl;
-    //combineTrees(files2, "2");
-
-    int listSize = fileList.size();
-    for (int ifile=0; ifile<listSize; ifile++){
-        std::string filename = fileList.at(ifile);
-        std::string filebasename = filename.erase(filename.size() - 5);
-
-	//add_inv_massBranches("tree", ("/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/"+filename+".root").c_str(), filename, 0.13957);	
-
-	//TH2F* inv_mass_hist2D = get2D_inv_mass_hist("tree",("../data/inv_mass_data/"+filename + ".root").c_str(), filename, 400, 300, 1200);
-	//plot_2D_inv_mass_hist(inv_mass_hist2D, filename);
-	//TH1D* projx = getProj(inv_mass_hist2D, 300, 1200, filename, "x");	
-	//TH1D* projy = getProj(inv_mass_hist2D, 300, 1200, filename, "y");
-	
-	//std::array<float, 3> gauss_guess = {1000, 500, 20};
-	//gaussfit_kaon_mass(inv_mass_hist2D, filename, gauss_guess, "y");
-	//gaussfit_kaon_mass(inv_mass_hist2D, filename, gauss_guess, "x");
-
-       	
-    }
-	//simpleCut("tree", "/eos/cms/store/group/phys_diffraction/CMSTotemLowPU2018/YounesNtuples/TOTEM20.root", "TOTEM20");
-
-
-   	
-
 	float meanzPV_t2 = -0.291125;
 	float meanzPV_t4 = -0.313448;
 	float meandxy_sigmadxy_t2 = 0.0016423;
@@ -88,37 +40,32 @@ int main(){
 	//createChiSquared_tree(means_t4, "tree", fpTOTEM4, "TOTEM4_new");
 	//createChiSquared_tree(means_t2, "tree", fpTOTEM2, "TOTEM2_new");
 
-	std::vector<float> cutoffs = { 40., 40., 40. };
+	std::vector<float> cutoffs = { 30., 30., 30. };
 	
 
-	auto fp_chi2_TOTEM2_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2_corr_cut40_rho10.root";
-	auto fp_chi2_TOTEM4_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM4_rhoCut50.root";
 
-	auto fp_chi2_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2_newchi2.root";
-	auto fp_chi2_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4_newchi2.root";
-
-	//cutChi2("tree", "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2_corr.root", "TOTEM2_corr_cut40", cutoffs);	
-
-	auto fp_chi2_TOTEM2_rho = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2rho.root";
-	auto fp_chi2_TOTEM4_rho = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4chi2rho.root";
-	
 
 	//cut_rhoMassChi2("/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2_corr_cut40.root", 10.,"TOTEM2_corr_cut40_rho10");
 	
-	//TH2F* testhist =plot_2D_rhoMass_hist("/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2_corr_cut40_rho30.root", "TOTEM2test", 600, 300, 1200);
+	auto fpTOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2rho.root";
+	auto fpTOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4chi2rho.root";
 
-	//TH1D* projx = getProj(testhist, 600, 900, "TOTEM2_corr_cut40_rho30", "x", true); 
-	//TH1D* projy = getProj(testhist, 600, 900, "TOTEM2_corr_cut40_rho30", "y", true); 
-	//create_correct_massBranch(fp_chi2_TOTEM2_rho, "TOTEM2corr"); 
+	auto fpTOTEM2corr = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2cw.root";
+	auto fpTOTEM4corr = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4cw.root";
+
 	
+	//create_correct_massBranch(fpTOTEM4, "TOTEM4cw");
+
+	auto fpTOTEM2_cut ="/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2corr_eta15.root";
+	auto fpTOTEM4_cut ="/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM4corr_eta15.root";
 	
-	auto fpTOTEM2corr = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2corr.root";
-	auto fpTOTEM4corr = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4corr.root";
+	auto outpath = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/plots/temp/TOTEM2cw_cut30_wrongPair.root";
 
-	auto outpath = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/plots/temp/TOTEM2_eta.root";
+	
+	//cutChi2("tree", "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2cw.root", "TOTEM2cw_cut30", cutoffs);	
 
-	plot1D_trkvar(fp_chi2_TOTEM2_cut, outpath,"trk_eta", 1e2, -15, 15);	
-
+	//TH2F* hist = get2D_inv_mass_hist("tree", fpTOTEM2corr, "TOT2 eta cut", 600, 300, 1200);
+	plot2D_masspairs(false, "data/simple_cutted_data/TOTEM2cw_cut30.root", outpath, 600, 300, 1200);
 		return 0;
 
 }

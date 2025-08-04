@@ -63,7 +63,7 @@ void plot_2D_inv_mass_hist(TH2F* hist, std::string filename){
 	c1->SetLogz();
 	hist->Draw("COLZ");
 	c1->SaveAs(("plots/2D_invariant_mass/chi2cut/Invariant_"+filename+".png").c_str());
-	TFile* outfile = new TFile(("plots/2D_invariant_mass/chi2cut/Invariant_"+filename+".root").c_str(),"RECREATE");
+	TFile* outfile = new TFile(("plots/temp/Invariant_"+filename+".root").c_str(),"RECREATE");
 	c1->Write();
 	c1->Clear();
 	outfile->Close();
