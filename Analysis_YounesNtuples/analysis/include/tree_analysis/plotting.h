@@ -7,17 +7,24 @@
 #include <TFile.h>               
 #include <TString.h>             
 #include <TROOT.h>               
+#include <ROOT/RVec.hxx>
 
 #include <string>                
 #include <vector>                
-#include <iostream>              
+#include <iostream>
+#include <cmath>              
 
-
+using RVecF = ROOT::RVec<float>;
 
 void plot2D_correl_eventvar(std::string filepath, std::string outpath, std::string xbranch, std::string ybranch, int xnbins, int ynbins, float xmin, float ymin, float xmax, float ymax, bool logscale=false);
 
 
 void plot1D_eventvar(std::string filepath, std::string outpath, std::string branch, int nbins, float min, float max, bool logscale=false);
+
 	
+void plot2D_correl_trkp_prp(std::string filepath, std::string outpath, std::string direction, int xnbins, int ynbins, float xmin, float ymin, float xmax, float ymax, bool logscale=false);
+
+
+void plot1D_trkvar(std::string filepath, std::string outpath, std::string branch, int nbins, float min, float max, bool logscale=false);
 	
 	

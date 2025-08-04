@@ -91,19 +91,19 @@ int main(){
 	std::vector<float> cutoffs = { 40., 40., 40. };
 	
 
-	auto fp_chi2_TOTEM2_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2_rhoCut50.root";
+	auto fp_chi2_TOTEM2_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2_corr_cut40_rho10.root";
 	auto fp_chi2_TOTEM4_cut = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM4_rhoCut50.root";
 
 	auto fp_chi2_TOTEM2 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2_newchi2.root";
 	auto fp_chi2_TOTEM4 = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4_newchi2.root";
 
-	cutChi2("tree", "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2_corr.root", "TOTEM2_corr_cut40", cutoffs);	
+	//cutChi2("tree", "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2_corr.root", "TOTEM2_corr_cut40", cutoffs);	
 
 	auto fp_chi2_TOTEM2_rho = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2chi2rho.root";
 	auto fp_chi2_TOTEM4_rho = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4chi2rho.root";
 	
 
-	//cut_rhoMassChi2("/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2_corr_cut40.root", 20.,"TOTEM2_corr_cut40_rho30");
+	//cut_rhoMassChi2("/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2_corr_cut40.root", 10.,"TOTEM2_corr_cut40_rho10");
 	
 	//TH2F* testhist =plot_2D_rhoMass_hist("/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/simple_cutted_data/TOTEM2_corr_cut40_rho30.root", "TOTEM2test", 600, 300, 1200);
 
@@ -115,9 +115,9 @@ int main(){
 	auto fpTOTEM2corr = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM2corr.root";
 	auto fpTOTEM4corr = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/data/chi2_combined/TOTEM4corr.root";
 
-	auto outpath = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/plots/chi2/TOTEM4chi2_correl.root";
+	auto outpath = "/eos/user/j/jloder/private/CMSTOTEM_summerjob/Analysis_YounesNtuples/analysis/plots/temp/TOTEM2_eta.root";
 
-	plot2D_correl_eventvar(fpTOTEM4corr, outpath, "chi2_rhoMass_pair1", "chi2_rhoMass_pair2", 1e2, 1e2, 0, 0, 5e3, 5e3, true);	
+	plot1D_trkvar(fp_chi2_TOTEM2_cut, outpath,"trk_eta", 1e2, -15, 15);	
 
 		return 0;
 
