@@ -9,6 +9,8 @@ TH2F* get2D_inv_mass_hist(std::string treename, std::string filepath, std::strin
 
         TH2F* hist = new TH2F(("rec. inv. mass from "+filename).c_str(), "Reconstruncted invariant mass in MeV", nbin, min, max, nbin, min, max);
 
+	hist->GetXaxis()->SetTitle("mass [MeV]");
+	hist->GetYaxis()->SetTitle("mass [Mev]");
 
         int eventnumber = 0;
         int empty_count = 0;
@@ -47,8 +49,8 @@ TH2F* plot_2D_rhoMass_hist(std::string filepath, std::string outname, int nbin, 
 	
 	df.Foreach(fill, {"correct_massPair"});
 	TFile* outfile = new TFile(("plots/correct_2D_mass/"+outname+".root").c_str(),"RECREATE");
-	hist->GetXaxis()->SetTitle("mass in MeV");
-	hist->GetYaxis()->SetTitle("mass in Mev");
+	hist->GetXaxis()->SetTitle("mass [MeV]");
+	hist->GetYaxis()->SetTitle("mass [Mev]");
 	c1->SetLogz();
 	hist->Draw("COLZ");
 	c1->Write();
@@ -328,5 +330,4 @@ TF1* rhoMassFit(TH2F* hist, std::string filename, std::vector<float> initial_gue
 
 	return total;
 }
-
 

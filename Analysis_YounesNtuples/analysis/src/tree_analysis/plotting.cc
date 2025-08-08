@@ -19,11 +19,11 @@ void plot2D_correl_eventvar(std::string filepath, std::string outpath, std::stri
 
 
 void plot2D_masspairs(bool correct, std::string filepath, std::string outpath, int nbins, float min, float max, bool logscale){
-	TH2F* hist = new TH2F("2d correl", "mass 1 vs. mass 2 ", nbins, min, max, nbins, min, max);
+	TH2F* hist = new TH2F("2d correl", "Reconstructed invariant mass", nbins, min, max, nbins, min, max);
 	TCanvas* c1 = new TCanvas("fig", "fig", 1200, 1000);
 	if(logscale){c1->SetLogz(); }
-	hist->GetXaxis()->SetTitle("mass 1");
-	hist->GetYaxis()->SetTitle("mass 2");
+	hist->GetXaxis()->SetTitle("mass [MeV]");
+	hist->GetYaxis()->SetTitle("mass [MeV]");
 
 	ROOT::RDataFrame df("tree", filepath);
 	auto fill2D = [=](RVecF pair){ hist->Fill(pair.at(0)*1e3, pair.at(1)*1e3); };
@@ -99,6 +99,27 @@ void plot2D_correl_trkp_prp(std::string filepath, std::string outpath, std::stri
 	c1->Write();
 	outfile->Close();
 }
+
+void plot2D_correl_trkvars(std::string filepath, std::string outpath, std::string xbranch, std::string ybranch, int xnbins, int ynbins, float xmin, float ymin, float xmax, float ymax, bool logscale){
+	TH2F* hist = new TH2F("Energy loss", "dE/dx  vs. trk momentum ", xnbins, xmin, xmax, ynbins, ymin, ymax);
+	TCanvas* c1 = new TCanvas("fig", "fig", 1200, 1000);
+	if(logscale){c1->SetLogz(); }
+	hist->GetXaxis()->SetTitle("trk momentum [Mev]");
+	hist->GetYaxis()->SetTitle("dE/dx");
+
+	ROOT::RDataFrame df("tree", filepath);
+	auto fill2D = [=](RVecF x, RVecF y, Int_t ntrk){
+		for(int itrk=0; itrk<ntrk; itrk++){ 
+			hist->Fill(x.at(itrk), y.at(itrk));
+		 };
+	 	};
+	df.Foreach(fill2D, {xbranch.c_str(), ybranch.c_str(), "ntrk"});
+	TFile* outfile = new TFile(outpath.c_str(), "RECREATE");
+	hist->Draw("COLZ");
+	c1->Write();
+	outfile->Close();
+}
+
 
 
 void plot1D_trkvar(std::string filepath, std::string outpath, std::string branch, int nbins, float min, float max, bool logscale){

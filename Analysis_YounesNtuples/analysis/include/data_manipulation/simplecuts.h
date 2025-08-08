@@ -12,7 +12,7 @@ using RVecF = ROOT::VecOps::RVec<float>;
 bool all4Good(RVecF trks, float cutvalue);
 
 // Applies a series of simple cuts and saves the resulting tree
-void simpleCut(std::string treename, std::string fileloc, std::string filename);
+void simpleCut(std::vector<float> cuts, std::string fileloc, std::string outpath);
 
 void cut_badChargeTrks(std::string filepath, std::string outfilename);
 

@@ -16,29 +16,29 @@ bool all4Good(RVecF trks, float cutvalue){
 
 
 
-void simpleCut(std::string treename, std::string fileloc, std::string filename){
-	auto tree = treename.c_str();
+void simpleCut(std::vector<float> cuts, std::string fileloc, std::string outname){
 	auto file = fileloc.c_str();
 
-	ROOT::RDataFrame df(tree, file);
+	ROOT::RDataFrame df("tree", file);
 
 	int ntrk = 4;	
-	float pt_min = 0.0;
-	float eta_max = 1.5;  //1.5
-	float zPV_max = 1e3; //13
-	float dxy_max = 1e3; //0.09
-	float dz_max = 1e3; // 0.65
-	float dxydxyerr_max = 1e3; //2.5
-	float dzdzerr_max = 1e3; //1.2
+	float pt_min = cuts.at(0);
+	float pt_max = cuts.at(1);
+	float eta_max = cuts.at(2);  //1.5
+	float zPV_max = cuts.at(3); //13
+	float dxy_max = cuts.at(4); //0.09
+	float dz_max = cuts.at(5); // 0.65
+	float dxydxyerr_max = cuts.at(6); //2.5
+	float dzdzerr_max = cuts.at(7); //1.2
 
 
 	auto trk4_cut = df.Filter([ntrk](int x) { return x==ntrk; }, {"ntrk"});
 	
 	auto zPV_cut = trk4_cut.Filter([zPV_max](float x) { return abs(x)<zPV_max; }, {"zPV"});
 
-	auto lowpt_cut = zPV_cut.Filter([pt_min](float x) { return abs(x) >= pt_min; }, {"alltrk_pt"});
+	auto pt_cut = zPV_cut.Filter([pt_min, pt_max](float x) { return abs(x) >= pt_min && abs(x) <= pt_max; }, {"alltrk_pt"});
 	
-	auto eta_cut = lowpt_cut.Filter([eta_max](RVecF x){ return all4Good(x, eta_max); }, {"trk_eta"});
+	auto eta_cut = pt_cut.Filter([eta_max](RVecF x){ return all4Good(x, eta_max); }, {"trk_eta"});
 
 	auto dxy_cut = eta_cut.Filter([dxy_max](RVecF x){ return all4Good(x, dxy_max); }, {"trk_dxy"});
 	
@@ -58,7 +58,7 @@ void simpleCut(std::string treename, std::string fileloc, std::string filename){
 				}
 			return all4Good(dxdxerr, dzdzerr_max); }, {"trk_dz", "trk_dzerr"});
 
-	dzdzerr_cut.Snapshot("tree", ("data/simple_cutted_data/"+filename+".root").c_str());
+	dzdzerr_cut.Snapshot("tree", ("data/4trk_invMass/"+outname+".root").c_str());
 
 }
 
@@ -82,7 +82,7 @@ void cutChi2(std::string treename, std::string filepath, std::string outfilename
 	auto dxy_dxyerr_cut = zPV_cut.Filter([chi2cut_dxy_dxyerr](float x) { return x<chi2cut_dxy_dxyerr; }, {"chi2_dxy_dxyerr"});
 	auto dz_dzerr_cut = dxy_dxyerr_cut.Filter([chi2cut_dz_dzerr](float x) { return x<chi2cut_dz_dzerr; }, {"chi2_dz_dzerr"});
 
-	dz_dzerr_cut.Snapshot("tree", ("data/simple_cutted_data/"+outfilename+".root").c_str());
+	dz_dzerr_cut.Snapshot("tree", ("data/4trk_invMass/"+outfilename+".root").c_str());
 }
 
 void cut_rhoMassChi2(std::string filepath, float cutoff, std::string outname){
@@ -91,7 +91,7 @@ void cut_rhoMassChi2(std::string filepath, float cutoff, std::string outname){
 	auto cutted = df.Filter([=](float x) { return x<cutoff; }, {"chi2_rhoMass_pair1"})
 			.Filter([=](float y) { return y<cutoff; }, {"chi2_rhoMass_pair2"});
 
-	cutted.Snapshot("tree", ("data/simple_cutted_data/" + outname + ".root").c_str());
+	cutted.Snapshot("tree", ("data/4trk_invMass/" + outname + ".root").c_str());
 }
 
 
