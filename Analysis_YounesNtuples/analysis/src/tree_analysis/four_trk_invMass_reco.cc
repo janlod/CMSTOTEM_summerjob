@@ -21,8 +21,8 @@ TH1F* get_4trk_invMass(std::string filepath, std::string outpath, int nbins, flo
 	if(draw){
 		TCanvas* c1 = new TCanvas("Fig", "Fig", 1200, 1000);
 		TFile* outfile = new TFile(outpath.c_str(), "RECREATE");
-		hist->SetMarkerStyle(8);
-		hist->SetMarkerColor(kBlue);
+		//hist->SetMarkerStyle(8);
+		//hist->SetMarkerColor(kBlue);
 		hist->Draw("EP");
 		c1->Write();
 		outfile->Close();

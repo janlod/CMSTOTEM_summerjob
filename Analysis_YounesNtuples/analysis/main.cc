@@ -72,26 +72,26 @@ int main(){
 
 	//TH2F* hist = get2D_inv_mass_hist("tree", "data/simple_cutted_data/TOTEM4cw_cut30.root", "TOTEM4cw_cut30_rho20", 600, 300, 1200);
 
-	std::vector<float> chi2cutoffs = { 9, 12, 12};
+	std::vector<float> chi2cutoffs = { 100, 100, 100};
 	// Format: {pt_min, pt_max, eta_max, zPV_max, dxy_max, dz_max, dxydxyerr_max, dzdzerr_max}
-	std::vector<float> kin_cuts = {0.0, 0.8, 1.5, 1e2, 1e2, 1e2, 1e2, 1e2};
-	float rhocut = 20;
+	std::vector<float> kin_cuts = {0.0, 0.8, 2.0 , 1e2, 1e2, 1e2, 1e2, 1e2};
+	float rhocut = 50;
 
-	//simpleCut(kin_cuts, "data/chi2_combined/TOTEM2cw.root","TOTEM2cw_simplecut");
-	//cutChi2("tree", "data/4trk_invMass/TOTEM2cw_simplecut.root", "TOTEM2cw_simplecut_chi2cut", chi2cutoffs);	
-	//cut_rhoMassChi2("data/4trk_invMass/TOTEM2cw_simplecut_chi2cut.root", rhocut,"TOTEM2cw_simplecut_chi2cut_rhocut");
-	//TH1F* four_trk_invMass = get_4trk_invMass("data/4trk_invMass/TOTEM2cw_simplecut_chi2cut_rhocut.root", "plots/4trk_invMass/TOT2cw_temp.root", 300, 1000, 3000);
+	//simpleCut(kin_cuts, "data/chi2_combined/TOTEM4cw.root","TOTEM4cw_simplecut");
+	//cutChi2("tree", "data/4trk_invMass/TOTEM4cw_simplecut.root", "TOTEM4cw_simplecut_chi2cut", chi2cutoffs);	
+	//cut_rhoMassChi2("data/4trk_invMass/TOTEM4cw_simplecut_chi2cut.root", rhocut,"TOTEM4cw_simplecut_chi2cut_rhocut");
+	//TH1F* four_trk_invMass = get_4trk_invMass("data/4trk_invMass/TOTEM4cw_simplecut_chi2cut_rhocut.root", "plots/4trk_invMass/TOT4cw_temp.root", 300, 1000, 3000);
 	
-	std::vector<float> rhoWindow = {687.693, 811.995};
-	std::vector<float> kaonWindow = {486.616, 509.114};
-	std::pair<TH1F*, TH1F*> pdfs;
-	pdfs = plot_chi2_inWindow("data/chi2_combined/TOTEM4cw.root", "plots/temp/chi2dxytest.root","chi2_dxy_dxyerr", rhoWindow, kaonWindow, 150, 0, 150);
+	std::vector<float> rhoWindow = {717, 779.};
+	std::vector<float> kaonWindow = {492., 503.};
+	std::vector<float> ptcuts = {1.0, 0.9, 0.8, 0.7, 0.6, 0.5};
+	std::vector<float> etacuts = {2.0, 1.8, 1.6, 1.4, 1.2, 1.0};
+	std::vector<float> rhocuts = {40, 30 , 20, 15, 10, 5};
+	std::vector<float> chi2cuts = {40, 30, 20, 15, 10, 5};	
+	std::vector<float> dxycuts = {1.0, 0.8, 0.6, 0.5, 0.4, 0.3};
 	
-	TH1F* bg = pdfs.first;
-	TH1F* sg = pdfs.second;
-
-	float perfect_cut = get_chi2Cutoff(bg, sg, 0.5);
-
+	plot_different_cuts(fpTOTEM4corr, "dxy", kin_cuts, chi2cutoffs, rhocut, dxycuts, 200, 1000, 3000, "plots/4trk_invMass/TOT4_pt090_eta25_rho50_dxys_fine.root");
+	
 	return 0;
 
 }

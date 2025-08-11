@@ -52,8 +52,8 @@ std::pair<TH1F*, TH1F*> plot_chi2_inWindow(std::string filepath, std::string out
 	df.Foreach(fill, {"inv_mass_pair1", "inv_mass_pair2", chi2_branch.c_str()});			
 	histrho->Scale(1.0 / histrho->Integral());	
 	histkaon->Scale(1.0 / histkaon->Integral());	
-	histrho->SetLineColor(kBlue);
-	histkaon->SetLineColor(kRed);	
+	histrho->SetLineColor(kRed);
+	histkaon->SetLineColor(kBlue);	
 	histrho->Draw("HIST");
 	histkaon->Draw("HIST SAME");
 	leg->Draw();

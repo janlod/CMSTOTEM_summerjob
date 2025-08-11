@@ -57,3 +57,124 @@ void plot_invar_mass(TTree* tree, std::string filebasename, float massparam){
 
 	   c1->SaveAs(("../../plots/invariant_mass_pion/inv_mass"+filebasename+"cutted.png").c_str());
 }
+
+
+void plot_different_cuts(std::string filepath, std::string cut_option, std::vector<float> initial_kin_cuts, std::vector<float> initial_chi2cuts, float initial_rho_cut, std::vector<float> cuts, int nbins, float min, float max, std::string outpath){
+	auto fp = filepath.c_str();
+	auto op = outpath.c_str();
+	simpleCut(initial_kin_cuts, fp, "init_simpleCuts");
+	cutChi2("tree", "data/4trk_invMass/init_simpleCuts.root", "init_simpleCut_chi2Cut", initial_chi2cuts);
+	cut_rhoMassChi2("data/4trk_invMass/init_simpleCut_chi2Cut.root", initial_rho_cut, "init_simpleCut_chi2Cut_rhoCut");
+	
+	auto data_path = "data/4trk_invMass/init_simpleCut_chi2Cut_rhoCut.root";
+	auto cutted_outpath = "data/4trk_invMass/cutted_data.root";
+	auto trash_path = "data/trash.root";
+
+	TCanvas* c1 = new TCanvas("fig", "fig", 1200, 1000);
+	TFile* outfile = new TFile(op, "RECREATE");
+	TLegend* leg = new TLegend(0.62, 0.45, 0.8, 0.66);
+	leg->SetTextSize(0.05);
+	std::vector<int> colors = {kRed, kBlue, kGreen+2, kMagenta, kTeal-1, kOrange-3};
+	if(cut_option == "pt"){
+		for(int i=0; i<cuts.size(); i++){
+			float pt_max = cuts.at(i);
+			std::vector<float> cutval = {0.0, pt_max, 1e2, 1e2, 1e2, 1e2, 1e2, 1e2};
+			simpleCut(cutval, data_path, "cutted_data");
+			TH1F* temp_hist = get_4trk_invMass(cutted_outpath, trash_path, nbins, min, max);
+			temp_hist->SetLineColor(colors.at(i));
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(1) << pt_max;
+			leg->AddEntry(temp_hist, ("pt_max " + oss.str()).c_str());
+			c1->cd();
+			temp_hist->SetLineWidth(2);
+			if(i==0){temp_hist->Draw("HIST");}
+			else {temp_hist->Draw("HIST SAME");}
+		}
+		leg->Draw("same");
+		outfile->cd();
+		c1->Write();
+		outfile->Close();
+		return;
+	} else if(cut_option =="eta"){
+		for(int i=0; i<cuts.size(); i++){
+			float eta_max = cuts.at(i);
+			std::vector<float> cutval = {0.0, 1e2, eta_max, 1e2, 1e2, 1e2, 1e2, 1e2};
+			simpleCut(cutval, data_path, "cutted_data");
+			TH1F* temp_hist = get_4trk_invMass(cutted_outpath, trash_path, nbins, min, max);
+			temp_hist->SetLineColor(colors.at(i));
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(1) << eta_max;
+			leg->AddEntry(temp_hist, ("eta_max " + oss.str()).c_str());
+			c1->cd();
+			temp_hist->SetLineWidth(2);
+			if(i==0){temp_hist->Draw("HIST");}
+			else {temp_hist->Draw("HIST SAME");}
+		}
+	leg->Draw("same");
+	outfile->cd();
+	c1->Write();
+	outfile->Close();
+	return;
+	}else if(cut_option =="dxy"){
+		for(int i=0; i<cuts.size(); i++){
+			float dxy_max = cuts.at(i);
+			std::vector<float> cutval = {0.0, 1e2, 1e2, 1e2, dxy_max, 1e2, 1e2, 1e2};
+			simpleCut(cutval, data_path, "cutted_data");
+			TH1F* temp_hist = get_4trk_invMass(cutted_outpath, trash_path, nbins, min, max);
+			temp_hist->SetLineColor(colors.at(i));
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(1) << dxy_max;
+			leg->AddEntry(temp_hist, ("dxy_max " + oss.str()).c_str());
+			c1->cd();
+			temp_hist->SetLineWidth(2);
+			if(i==0){temp_hist->Draw("HIST");}
+			else {temp_hist->Draw("HIST SAME");}
+		}
+	leg->Draw("same");
+	outfile->cd();
+	c1->Write();
+	outfile->Close();
+	return;
+	} else if (cut_option=="rho"){
+		for(int i=0; i<cuts.size(); i++){
+			float chirho_max = cuts.at(i);
+			std::vector<float> cutval = {0.0, 1e2, 1e2, 1e2, 1e2, 1e2, 1e2, 1e2};
+			cut_rhoMassChi2(data_path, chirho_max, "cutted_data");
+			TH1F* temp_hist = get_4trk_invMass(cutted_outpath, trash_path, nbins, min, max);
+			temp_hist->SetLineColor(colors.at(i));
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(1) << chirho_max;
+			leg->AddEntry(temp_hist, ("chi2_rho_max " + oss.str()).c_str());
+			c1->cd();
+			temp_hist->SetLineWidth(2);
+			if(i==0){temp_hist->Draw("HIST");}
+			else {temp_hist->Draw("HIST SAME");}
+		}
+	leg->Draw("same");
+	outfile->cd();
+	c1->Write();
+	outfile->Close();
+	return;
+	}else if (cut_option=="chi2"){
+		for(int i=0; i<cuts.size(); i++){
+			float chi2_max = cuts.at(i);
+			std::vector<float> chi2cuts = {chi2_max, chi2_max, chi2_max};
+			cutChi2("tree", data_path, "cutted_data", chi2cuts);
+			TH1F* temp_hist = get_4trk_invMass(cutted_outpath, trash_path, nbins, min, max);
+			temp_hist->SetLineColor(colors.at(i));
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(1) << chi2_max;
+			leg->AddEntry(temp_hist, ("chi2_max " + oss.str()).c_str());
+			c1->cd();
+			temp_hist->SetLineWidth(2);
+			if(i==0){temp_hist->Draw("HIST");}
+			else {temp_hist->Draw("HIST SAME");}
+		}
+	leg->Draw("same");
+	outfile->cd();
+	c1->Write();
+	outfile->Close();
+	return;
+	}
+
+}
