@@ -12,19 +12,22 @@
 #include "TMath.h"
 
 /**
- * @brief Plot distributions of primary vertex positions with various options.
- * 
- * Depending on the option parameter, plots histograms for:
- *  - 1: xPV distribution
- *  - 2: yPV distribution
- *  - 3: zPV distribution with Gaussian fit
- *  - 4: radius = sqrt(xPV^2 + yPV^2)
- *  - 12: 2D xyPV distribution
- * 
+ * @brief Plot distributions of primary vertex positions with selectable options.
+ *
  * Only events with exactly 4 tracks are considered.
- * 
- * @param tree Pointer to a TTree containing branches "xPV", "yPV", "zPV", and "ntrk".
- * @param filebasename Base name for the output plot filenames.
- * @param option Plot option as described above.
+ *
+ * Options:
+ *  - 1: xPV histogram
+ *  - 2: yPV histogram
+ *  - 3: zPV histogram with Gaussian fit and display of mean, sigma, amplitude
+ *  - 4: radius = sqrt(xPV^2 + yPV^2) histogram
+ *  - 12: 2D xyPV correlation plot
+ *
+ * The function creates and saves plots in appropriate folders depending on the option.
+ *
+ * @param tree Pointer to the ROOT TTree with branches: "xPV", "yPV", "zPV", and "ntrk".
+ * @param filebasename Base name for output plot filenames.
+ * @param option Integer selecting the type of plot to generate (1, 2, 3, 4, 12).
  */
 void primVertex_dist(TTree* tree, std::string filebasename, int option);
+
