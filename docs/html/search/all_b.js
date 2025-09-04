@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['quick1dplot_104',['quick1Dplot',['../complicated__cuts_8h.html#a1fdc0d9e1d4fba3c24906a33a7f553b2',1,'quick1Dplot(std::string filename, std::string svar, std::string svarerr, int nbin, float minbin, float maxbin, int trkvar):&#160;complicated_cuts.cc'],['../complicated__cuts_8cc.html#a1fdc0d9e1d4fba3c24906a33a7f553b2',1,'quick1Dplot(std::string filename, std::string svar, std::string svarerr, int nbin, float minbin, float maxbin, int trkvar):&#160;complicated_cuts.cc']]],
+  ['quick2dplot_105',['quick2Dplot',['../complicated__cuts_8h.html#a0f8bdc9cc1f1dd3eae8b04ca8b0f9a26',1,'quick2Dplot(std::string filename, std::string svarX, std::string svarY, int nbinX, float minbinX, float maxbinX, int nbinY, float minbinY, float maxbinY):&#160;complicated_cuts.h'],['../complicated__cuts_8cc.html#a0cf563d49afbc28959c53995dd672036',1,'quick2Dplot(std::string filename, std::string svarX, std::string svarY, int nbinX, float minbinX, float maxbinX, float nbinY, float minbinY, float maxbinY):&#160;complicated_cuts.cc']]]
+];
