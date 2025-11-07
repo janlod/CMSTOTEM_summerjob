@@ -155,7 +155,7 @@ TH1F* get1D_hist_trkvar(TTree* tree, std::string svar, std::string svarerr, int 
    
 
 
-TH2F* get2D_hist(TTree* tree, std::string svarX, std::string svarY, int nbinX, float minbinX, float maxbinX, float nbinY, float minbinY, float maxbinY){
+TH2F* get2D_hist(TTree* tree, std::string svarX, std::string svarY, int nbinX, float minbinX, float maxbinX, int nbinY, float minbinY, float maxbinY){
 	   Float_t varX[1000];
 	   Float_t varY[1000];
 	   Int_t ntrk;

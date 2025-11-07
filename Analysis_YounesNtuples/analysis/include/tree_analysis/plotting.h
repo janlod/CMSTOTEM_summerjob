@@ -8,6 +8,7 @@
 #include <TString.h>             
 #include <TROOT.h>               
 #include <ROOT/RVec.hxx>
+#include <TLegend.h>
 
 #include <string>                
 #include <vector>                

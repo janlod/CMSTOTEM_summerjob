@@ -1,4 +1,4 @@
-pragma once  // Or use traditional include guards
+#pragma once  // Or use traditional include guards
 
 #include <string>
 #include <array>
